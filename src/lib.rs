@@ -153,7 +153,7 @@ fn random_choice<'a>(choices: &'a[&str]) -> &'a str
 
 pub fn oracle() -> String
 {
-    format!("The Oracle says: \"{}\"", random_choice(&ORACLE_ANSWERS))
+    format!("Thus spoke the Oracle: \"{}\"", random_choice(&ORACLE_ANSWERS))
 }
 
 #[cfg(test)]
