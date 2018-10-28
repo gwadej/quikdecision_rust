@@ -1,6 +1,7 @@
 extern crate rand;
 
 use rand::Rng;
+use rand::seq;
 use std::env;
 
 enum Command
@@ -39,6 +40,11 @@ const ORACLE_ANSWERS: [&str; 24] = [
 	"I have no answer at this time",
 ];
 
+const COIN_SIDES: [&str; 2] = [
+    "Heads",
+    "Tails",
+];
+
 fn main()
 {
     let cmd = match parse_args(env::args())
@@ -65,12 +71,12 @@ fn parse_args(mut args: std::env::Args) -> Result<Command, &'static str>
     let cmd = args.next().expect("Missing decision type");
     match &cmd[..]
     {
-        "coin"    => Ok(Command::CoinToss),
-        "pick"    => Ok(Command::PickNumber(int_arg(args.next()), int_arg(args.next()))),
-        "percent" => Ok(Command::PercentTrue(int_arg(args.next()))),
-        "oracle"  => Ok(Command::Oracle),
-        "roll"    => Ok(Command::RollDice(args.next().unwrap())),
-        _         => Err("Unknown command"),
+        "coin"    | "flip"   => Ok(Command::CoinToss),
+        "pick"               => Ok(Command::PickNumber(int_arg(args.next()), int_arg(args.next()))),
+        "percent" | "likely" => Ok(Command::PercentTrue(int_arg(args.next()))),
+        "oracle"             => Ok(Command::Oracle),
+        "roll"    | "die"    => Ok(Command::RollDice(args.next().unwrap())),
+        _                    => Err("Unknown command"),
     }
 }
 
@@ -81,14 +87,7 @@ fn int_arg(arg: Option<String>) -> u32
 
 fn coin_toss() -> String
 {
-    if rand::thread_rng().gen::<f64>() < 0.5
-    {
-        String::from("Heads")
-    }
-    else
-    {
-        String::from("Tails")
-    }
+    String::from(random_choice(&COIN_SIDES))
 }
 
 fn pick_number(low: u32, high: u32) -> String
@@ -99,14 +98,15 @@ fn pick_number(low: u32, high: u32) -> String
 
 fn percent_true(likely: u32) -> String
 {
-    if rand::thread_rng().gen::<f64>() < (likely as f64 / 100.0)
+    let ans = if rand::thread_rng().gen_bool(likely as f64 / 100.0)
     {
-        String::from("True")
+        "True"
     }
     else
     {
-        String::from("False")
-    }
+        "False"
+    };
+    String::from(ans)
 }
 
 fn roll_dice(_expr: String) -> String
@@ -114,8 +114,13 @@ fn roll_dice(_expr: String) -> String
     String::from("")
 }
 
+fn random_choice<'a>(choices: &'a[&str]) -> &'a str
+{
+    let mut rng = rand::thread_rng();
+    seq::sample_slice(&mut rng, choices, 1)[0]
+}
+
 fn oracle() -> String
 {
-    let index = rand::thread_rng().gen_range(0,ORACLE_ANSWERS.len()-1);
-    String::from(ORACLE_ANSWERS[index])
+    format!("The Oracle says: \"{}\"", random_choice(&ORACLE_ANSWERS))
 }
