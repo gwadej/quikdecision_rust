@@ -23,3 +23,17 @@ pub fn choose(likely: u32) -> String
     };
     String::from(ans)
 }
+
+#[cfg(test)]
+mod tests
+{
+    #[test]
+    fn percent_test()
+    {
+        let choices: usize = (1..=1000)
+            .map(|_| super::choose(35))
+            .filter(|x| x == "True")
+            .count();
+        assert!(300 <= choices && choices <= 400);
+    }
+}

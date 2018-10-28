@@ -1,3 +1,4 @@
+use rand::seq;
 use super::Command;
 
 const ORACLE_ANSWERS: [&str; 24] = [
@@ -28,7 +29,7 @@ const ORACLE_ANSWERS: [&str; 24] = [
     "Reply hazy, try again",
     "The future is uncertain",
     "I have no answer at this time",
-    ];
+];
 
 pub fn command() -> Result<Command, String>
 {
@@ -37,5 +38,7 @@ pub fn command() -> Result<Command, String>
 
 pub fn spake() -> String
 {
-    format!("Thus spoke the Oracle: \"{}\"", super::random_choice(&ORACLE_ANSWERS))
+    let mut rng = rand::thread_rng();
+    let ans = seq::sample_slice(&mut rng, &ORACLE_ANSWERS, 1)[0];
+    format!("Thus spoke the Oracle: \"{}\"", ans)
 }

@@ -2,7 +2,6 @@ extern crate rand;
 extern crate regex;
 
 use std::env;
-use rand::seq;
 
 pub enum Command
 {
@@ -59,71 +58,8 @@ pub fn int_arg(args: &mut env::Args) -> Result<u32, String>
     }
 }
 
-fn random_choice<'a>(choices: &'a[&str]) -> &'a str
-{
-    let mut rng = rand::thread_rng();
-    seq::sample_slice(&mut rng, choices, 1)[0]
-}
-
 mod pick;
 mod percent;
 mod dice;
 mod coin;
 mod oracle;
-
-#[cfg(test)]
-mod tests
-{
-    const NUM_TRIES: u32 = 3;
-
-    #[test]
-    fn coin_tosses()
-    {
-        let expected = ["Heads", "Tails"];
-
-        for _ in 1..=NUM_TRIES
-        {
-            let flip = super::coin_toss();
-            assert_ne!(expected.iter().find(|&&x| x == flip), None);
-        }
-    }
-
-    #[test]
-    fn choose_a_small_number()
-    {
-        let expected = ["1", "2"];
-
-        for _ in 1..=NUM_TRIES
-        {
-            let choice = super::pick_number(1, 2);
-            assert_ne!(expected.iter().find(|&&x| x == choice), None);
-        }
-    }
-
-    #[test]
-    fn choose_a_larger_number()
-    {
-        let low: u32 = 2;
-        let high: u32 = 10;
-        let expected = [
-            "2", "3", "4", "5", "6",
-            "7", "8", "9", "10",
-        ];
-
-        for _ in 1..=NUM_TRIES
-        {
-            let choice = super::pick_number(low, high);
-            assert_ne!(expected.iter().find(|&&x| x == choice), None);
-        }
-    }
-
-    #[test]
-    fn percent_test()
-    {
-        let choices: usize = (1..=1000)
-            .map(|_| super::percent_true(35))
-            .filter(|x| x == "True")
-            .count();
-        assert!(300 <= choices && choices <= 400);
-    }
-}
