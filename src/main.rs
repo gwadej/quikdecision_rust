@@ -72,17 +72,33 @@ fn parse_args(mut args: std::env::Args) -> Result<Command, &'static str>
     match &cmd[..]
     {
         "coin"    | "flip"   => Ok(Command::CoinToss),
-        "pick"               => Ok(Command::PickNumber(int_arg(args.next()), int_arg(args.next()))),
-        "percent" | "likely" => Ok(Command::PercentTrue(int_arg(args.next()))),
+        "pick"    | "choose" => pick_command(&mut args),
+        "percent" | "likely" => percent_command(&mut args),
+        "roll"    | "dice"   => Ok(Command::RollDice(args.next().unwrap())),
         "oracle"             => Ok(Command::Oracle),
-        "roll"    | "die"    => Ok(Command::RollDice(args.next().unwrap())),
         _                    => Err("Unknown command"),
     }
 }
 
-fn int_arg(arg: Option<String>) -> u32
+fn int_arg(args: &mut env::Args) -> u32
 {
-    arg.unwrap().parse::<u32>().unwrap()
+    let arg = args.next().expect("Missing required parameter");
+    arg.parse::<u32>().expect("Required argument not a valid integer")
+}
+
+fn pick_command(args: &mut env::Args) -> Result<Command, &'static str>
+{
+    let low  = int_arg(args);
+    let high = int_arg(args);
+
+    Ok(Command::PickNumber(low, high))
+}
+
+fn percent_command(args: &mut env::Args) -> Result<Command, &'static str>
+{
+    let likely = int_arg(args);
+
+    Ok(Command::PercentTrue(likely))
 }
 
 fn coin_toss() -> String
