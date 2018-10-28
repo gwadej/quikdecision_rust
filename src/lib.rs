@@ -201,4 +201,14 @@ mod tests
             assert_ne!(expected.iter().find(|&&x| x == choice), None);
         }
     }
+
+    #[test]
+    fn percent_test()
+    {
+        let choices: usize = (1..=1000)
+            .map(|_| super::percent_true(35))
+            .filter(|x| x == "True")
+            .count();
+        assert!(300 <= choices && choices <= 400);
+    }
 }
