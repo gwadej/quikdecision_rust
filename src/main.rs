@@ -90,7 +90,7 @@ fn int_arg(args: &mut env::Args) -> Result<u32, String>
     match arg.parse::<u32>()
     {
         Ok(a) => Ok(a),
-        Err(_) => Err(String::from("Required argument not a valid integer")),
+        Err(_) => Err(String::from("Argument not a valid integer")),
     }
 }
 
@@ -99,12 +99,12 @@ fn pick_command(args: &mut env::Args) -> Result<Command, String>
     let low  = match int_arg(args)
     {
         Ok(val) => val,
-        Err(e)  => return Err(e),
+        Err(e)  => return Err(format!("low arg: {}", e)),
     };
     let high = match int_arg(args)
     {
         Ok(val) => val,
-        Err(e)  => return Err(e),
+        Err(e)  => return Err(format!("high arg: {}", e)),
     };
 
     Ok(Command::PickNumber(low, high))
@@ -115,7 +115,7 @@ fn percent_command(args: &mut env::Args) -> Result<Command, String>
     let likely = match int_arg(args)
     {
         Ok(val) => val,
-        Err(e)  => return Err(e),
+        Err(e)  => return Err(format!("likely arg: {}", e)),
     };
 
     Ok(Command::PercentTrue(likely))
