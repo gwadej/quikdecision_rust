@@ -1,8 +1,10 @@
 extern crate rand;
+extern crate regex;
 
 use std::env;
 use rand::Rng;
 use rand::seq;
+use regex::Regex;
 
 pub enum Command
 {
@@ -140,9 +142,34 @@ pub fn percent_true(likely: u32) -> String
     String::from(ans)
 }
 
-pub fn roll_dice(_expr: String) -> String
+pub fn roll_dice(expr: String) -> String
 {
-    String::from("")
+    let re = Regex::new(r"^\s*([0-9]+)[dD]([0-9]+)(?:\+([0-9]+))?$").unwrap();
+    let cap = re.captures(&expr).unwrap();
+    let num_dice  = match cap.get(1)
+    {
+        None    => return String::from("No dice specified"),
+        Some(n) => n.as_str().parse::<u32>().expect("Non-number somehow passed parsing"),
+    };
+
+    let num_sides = match cap.get(2)
+    {
+        None    => return String::from("No sides specified"),
+        Some(n) => n.as_str().parse::<u32>().expect("Non-number somehow passed parsing"),
+    };
+
+    let num_incr  = match cap.get(3)
+    {
+        None    => 0,
+        Some(n) => n.as_str().parse::<u32>().expect("Non-number somehow passed parsing"),
+    };
+
+    let mut rng = rand::thread_rng();
+    let value: u32 = (1..=num_dice)
+        .map(|_| rng.gen_range(1, num_sides+1))
+        .sum::<u32>()
+        + num_incr;
+    value.to_string()
 }
 
 fn random_choice<'a>(choices: &'a[&str]) -> &'a str

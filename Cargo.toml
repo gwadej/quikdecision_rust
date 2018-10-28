@@ -6,3 +6,4 @@ authors = ["G. Wade Johnson <gwadej@anomaly.org>"]
 [dependencies]
 
 rand = "0.5.5"
+regex = "1"
