@@ -14,6 +14,7 @@ enum Command
 }
 
 const ORACLE_ANSWERS: [&str; 24] = [
+    // Positive answeers
     "It is certain",
     "It is decidedly so",
     "So it is written",
@@ -23,6 +24,7 @@ const ORACLE_ANSWERS: [&str; 24] = [
     "Without a doubt",
     "Yes",
     "You may rely on it",
+    // Negative answers
     "Don't count on it",
     "My reply is no",
     "My sources say no",
@@ -32,6 +34,7 @@ const ORACLE_ANSWERS: [&str; 24] = [
     "Very doubtful",
     "You must be joking",
     "The spirits say no",
+    // Unknown answers
     "Ask again later",
     "Cannot predict now",
     "Concentrate and ask again",
@@ -40,19 +43,19 @@ const ORACLE_ANSWERS: [&str; 24] = [
 	"I have no answer at this time",
 ];
 
-const COIN_SIDES: [&str; 2] = [
-    "Heads",
-    "Tails",
-];
+const COIN_SIDES: [&str; 2] = [ "Heads", "Tails" ];
 
 fn main()
 {
-    let cmd = match parse_args(env::args())
+    match parse_args(env::args())
     {
-        Ok(c) => c,
-        Err(m) => panic!(m)
+        Ok(cmd)  => decide(cmd),
+        Err(msg) => eprintln!("Error: {}", msg),
     };
+}
 
+fn decide(cmd: Command)
+{
     let output = match cmd
     {
         Command::CoinToss             => coin_toss(),
@@ -82,21 +85,20 @@ fn parse_args(mut args: std::env::Args) -> Result<Command, String>
 
 fn int_arg(args: &mut env::Args) -> Result<u32, String>
 {
-    let arg = match args.next()
+    match args.next()
     {
-        Some(a) => a,
-        None => return Err(String::from("Missing required parameter")),
-    };
-    match arg.parse::<u32>()
-    {
-        Ok(a) => Ok(a),
-        Err(_) => Err(String::from("Argument not a valid integer")),
+        None => Err(String::from("Missing required parameter")),
+        Some(arg) => match arg.parse::<u32>()
+        {
+            Ok(a) => Ok(a),
+            Err(_) => Err(String::from("Argument not a valid integer")),
+        }
     }
 }
 
 fn pick_command(args: &mut env::Args) -> Result<Command, String>
 {
-    let low  = match int_arg(args)
+    let low = match int_arg(args)
     {
         Ok(val) => val,
         Err(e)  => return Err(format!("low arg: {}", e)),
@@ -112,13 +114,11 @@ fn pick_command(args: &mut env::Args) -> Result<Command, String>
 
 fn percent_command(args: &mut env::Args) -> Result<Command, String>
 {
-    let likely = match int_arg(args)
+    match int_arg(args)
     {
-        Ok(val) => val,
-        Err(e)  => return Err(format!("likely arg: {}", e)),
-    };
-
-    Ok(Command::PercentTrue(likely))
+        Ok(likely) => Ok(Command::PercentTrue(likely)),
+        Err(e)     => Err(format!("likely arg: {}", e)),
+    }
 }
 
 fn coin_toss() -> String
