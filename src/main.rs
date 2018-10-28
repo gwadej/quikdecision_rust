@@ -65,7 +65,7 @@ fn main()
     println!("{}", output);
 }
 
-fn parse_args(mut args: std::env::Args) -> Result<Command, &'static str>
+fn parse_args(mut args: std::env::Args) -> Result<Command, String>
 {
     args.next();  // discard program name
     let cmd = args.next().expect("Missing decision type");
@@ -76,27 +76,47 @@ fn parse_args(mut args: std::env::Args) -> Result<Command, &'static str>
         "percent" | "likely" => percent_command(&mut args),
         "roll"    | "dice"   => Ok(Command::RollDice(args.next().unwrap())),
         "oracle"             => Ok(Command::Oracle),
-        _                    => Err("Unknown command"),
+        _                    => Err(String::from("Unknown command")),
     }
 }
 
-fn int_arg(args: &mut env::Args) -> u32
+fn int_arg(args: &mut env::Args) -> Result<u32, String>
 {
-    let arg = args.next().expect("Missing required parameter");
-    arg.parse::<u32>().expect("Required argument not a valid integer")
+    let arg = match args.next()
+    {
+        Some(a) => a,
+        None => return Err(String::from("Missing required parameter")),
+    };
+    match arg.parse::<u32>()
+    {
+        Ok(a) => Ok(a),
+        Err(_) => Err(String::from("Required argument not a valid integer")),
+    }
 }
 
-fn pick_command(args: &mut env::Args) -> Result<Command, &'static str>
+fn pick_command(args: &mut env::Args) -> Result<Command, String>
 {
-    let low  = int_arg(args);
-    let high = int_arg(args);
+    let low  = match int_arg(args)
+    {
+        Ok(val) => val,
+        Err(e)  => return Err(e),
+    };
+    let high = match int_arg(args)
+    {
+        Ok(val) => val,
+        Err(e)  => return Err(e),
+    };
 
     Ok(Command::PickNumber(low, high))
 }
 
-fn percent_command(args: &mut env::Args) -> Result<Command, &'static str>
+fn percent_command(args: &mut env::Args) -> Result<Command, String>
 {
-    let likely = int_arg(args);
+    let likely = match int_arg(args)
+    {
+        Ok(val) => val,
+        Err(e)  => return Err(e),
+    };
 
     Ok(Command::PercentTrue(likely))
 }
