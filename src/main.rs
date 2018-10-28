@@ -1,6 +1,16 @@
 extern crate rand;
 
 use rand::Rng;
+use std::env;
+
+enum Command
+{
+    CoinToss,
+    PickNumber(u32,u32),
+    PercentTrue(u32),
+    RollDice(String),
+    Oracle,
+}
 
 const ORACLE_ANSWERS: [&str; 24] = [
     "It is certain",
@@ -31,11 +41,42 @@ const ORACLE_ANSWERS: [&str; 24] = [
 
 fn main()
 {
-    println!("coin toss: {}",    coin_toss());
-    println!("pick number: {}",  pick_number(1, 32));
-    println!("percent true: {}", percent_true(30));
-    println!("roll dice: {}",    roll_dice(""));
-    println!("The Oracle: {}",   oracle());
+    let cmd = match parse_args(env::args())
+    {
+        Ok(c) => c,
+        Err(m) => panic!(m)
+    };
+
+    let output = match cmd
+    {
+        Command::CoinToss             => coin_toss(),
+        Command::PickNumber(low,high) => pick_number(low, high),
+        Command::PercentTrue(likely)  => percent_true(likely),
+        Command::RollDice(expr)       => roll_dice(expr),
+        Command::Oracle               => oracle(),
+    };
+
+    println!("{}", output);
+}
+
+fn parse_args(mut args: std::env::Args) -> Result<Command, &'static str>
+{
+    args.next();  // discard program name
+    let cmd = args.next().expect("Missing decision type");
+    match &cmd[..]
+    {
+        "coin"    => Ok(Command::CoinToss),
+        "pick"    => Ok(Command::PickNumber(int_arg(args.next()), int_arg(args.next()))),
+        "percent" => Ok(Command::PercentTrue(int_arg(args.next()))),
+        "oracle"  => Ok(Command::Oracle),
+        "roll"    => Ok(Command::RollDice(args.next().unwrap())),
+        _         => Err("Unknown command"),
+    }
+}
+
+fn int_arg(arg: Option<String>) -> u32
+{
+    arg.unwrap().parse::<u32>().unwrap()
 }
 
 fn coin_toss() -> String
@@ -52,7 +93,7 @@ fn coin_toss() -> String
 
 fn pick_number(low: u32, high: u32) -> String
 {
-    let guess = rand::thread_rng().gen_range(low, high);
+    let guess = rand::thread_rng().gen_range(low, high+1);
     guess.to_string()
 }
 
@@ -68,7 +109,7 @@ fn percent_true(likely: u32) -> String
     }
 }
 
-fn roll_dice(_expr: &str) -> String
+fn roll_dice(_expr: String) -> String
 {
     String::from("")
 }
