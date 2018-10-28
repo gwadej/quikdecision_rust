@@ -2,7 +2,6 @@ extern crate rand;
 extern crate regex;
 
 use std::env;
-use rand::Rng;
 use rand::seq;
 
 pub enum Command
@@ -57,8 +56,8 @@ pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
     match &cmd[..]
     {
         "coin"    | "flip"   => Ok(Command::CoinToss),
-        "pick"    | "choose" => pick_command(&mut args),
-        "percent" | "likely" => percent_command(&mut args),
+        "pick"    | "choose" => pick::command(&mut args),
+        "percent" | "likely" => percent::command(&mut args),
         "roll"    | "dice"   => dice::command(&mut args),
         "oracle"             => Ok(Command::Oracle),
         _                    => Err(String::from("Unknown command")),
@@ -71,15 +70,15 @@ impl Decider for Command {
         match self
         {
             Command::CoinToss             => coin_toss(),
-            Command::PickNumber(low,high) => pick_number(low, high),
-            Command::PercentTrue(likely)  => percent_true(likely),
+            Command::PickNumber(low,high) => pick::choose(low, high),
+            Command::PercentTrue(likely)  => percent::choose(likely),
             Command::RollDice(expr)       => dice::roll(expr),
             Command::Oracle               => oracle(),
         }
     }
 }
 
-fn int_arg(args: &mut env::Args) -> Result<u32, String>
+pub fn int_arg(args: &mut env::Args) -> Result<u32, String>
 {
     match args.next()
     {
@@ -92,53 +91,13 @@ fn int_arg(args: &mut env::Args) -> Result<u32, String>
     }
 }
 
-fn pick_command(args: &mut env::Args) -> Result<Command, String>
-{
-    let low = match int_arg(args)
-    {
-        Ok(val) => val,
-        Err(e)  => return Err(format!("low arg: {}", e)),
-    };
-    let high = match int_arg(args)
-    {
-        Ok(val) => val,
-        Err(e)  => return Err(format!("high arg: {}", e)),
-    };
-
-    Ok(Command::PickNumber(low, high))
-}
-
-fn percent_command(args: &mut env::Args) -> Result<Command, String>
-{
-    match int_arg(args)
-    {
-        Ok(likely) => Ok(Command::PercentTrue(likely)),
-        Err(e)     => Err(format!("likely arg: {}", e)),
-    }
-}
+mod pick;
+mod percent;
+mod dice;
 
 pub fn coin_toss() -> String
 {
     String::from(random_choice(&COIN_SIDES))
-}
-
-pub fn pick_number(low: u32, high: u32) -> String
-{
-    let guess = rand::thread_rng().gen_range(low, high+1);
-    guess.to_string()
-}
-
-pub fn percent_true(likely: u32) -> String
-{
-    let ans = if rand::thread_rng().gen_bool(likely as f64 / 100.0)
-    {
-        "True"
-    }
-    else
-    {
-        "False"
-    };
-    String::from(ans)
 }
 
 fn random_choice<'a>(choices: &'a[&str]) -> &'a str
@@ -151,8 +110,6 @@ pub fn oracle() -> String
 {
     format!("Thus spoke the Oracle: \"{}\"", random_choice(&ORACLE_ANSWERS))
 }
-
-mod dice;
 
 #[cfg(test)]
 mod tests
