@@ -3,6 +3,32 @@ extern crate regex;
 
 use std::env;
 
+mod coin;
+mod pick;
+mod percent;
+mod dice;
+mod oracle;
+
+pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
+{
+    args.next();  // discard program name
+    let cmd = match args.next()
+    {
+        Some(c)  => c,
+        None     => return Err(String::from("Missing decision type")),
+    };
+
+    match &cmd[..]
+    {
+        "coin"    | "flip"   => coin::command(),
+        "pick"    | "choose" => pick::command(&mut args),
+        "percent" | "likely" => percent::command(&mut args),
+        "roll"    | "dice"   => dice::command(&mut args),
+        "oracle"             => oracle::command(),
+        _                    => Err(String::from("Unknown command")),
+    }
+}
+
 pub enum Command
 {
     CoinFlip,
@@ -14,21 +40,6 @@ pub enum Command
 
 pub trait Decider {
     fn decide(self) -> String;
-}
-
-pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
-{
-    args.next();  // discard program name
-    let cmd = args.next().expect("Missing decision type");
-    match &cmd[..]
-    {
-        "coin"    | "flip"   => coin::command(),
-        "pick"    | "choose" => pick::command(&mut args),
-        "percent" | "likely" => percent::command(&mut args),
-        "roll"    | "dice"   => dice::command(&mut args),
-        "oracle"             => oracle::command(),
-        _                    => Err(String::from("Unknown command")),
-    }
 }
 
 impl Decider for Command {
@@ -57,9 +68,3 @@ pub fn int_arg(args: &mut env::Args) -> Result<u32, String>
         }
     }
 }
-
-mod pick;
-mod percent;
-mod dice;
-mod coin;
-mod oracle;
