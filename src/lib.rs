@@ -4,7 +4,6 @@ extern crate regex;
 use std::env;
 use rand::Rng;
 use rand::seq;
-use regex::Regex;
 
 pub enum Command
 {
@@ -66,7 +65,7 @@ pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
         "coin"    | "flip"   => Ok(Command::CoinToss),
         "pick"    | "choose" => pick_command(&mut args),
         "percent" | "likely" => percent_command(&mut args),
-        "roll"    | "dice"   => roll_command(&mut args),
+        "roll"    | "dice"   => dice::command(&mut args),
         "oracle"             => Ok(Command::Oracle),
         _                    => Err(String::from("Unknown command")),
     }
@@ -80,7 +79,7 @@ impl Decider for Command {
             Command::CoinToss             => coin_toss(),
             Command::PickNumber(low,high) => pick_number(low, high),
             Command::PercentTrue(likely)  => percent_true(likely),
-            Command::RollDice(expr)       => roll_dice(expr),
+            Command::RollDice(expr)       => dice::roll(expr),
             Command::Oracle               => oracle(),
         }
     }
@@ -124,36 +123,6 @@ fn percent_command(args: &mut env::Args) -> Result<Command, String>
     }
 }
 
-fn roll_command(args: &mut env::Args) -> Result<Command, String>
-{
-    let re = Regex::new(r"^\s*([0-9]+)[dD]([0-9]+)(?:\+([0-9]+))?$").unwrap();
-    let expr = match args.next()
-    {
-        Some(e) => e,
-        None    => return Err(String::from("Missing dice expression")),
-    };
-    let cap = re.captures(&expr).unwrap();
-    let num_dice  = match cap.get(1)
-    {
-        None    => return Err(String::from("No dice specified")),
-        Some(n) => n.as_str().parse::<u32>().expect("Non-number somehow passed parsing"),
-    };
-
-    let num_sides = match cap.get(2)
-    {
-        None    => return Err(String::from("No sides specified")),
-        Some(n) => n.as_str().parse::<u32>().expect("Non-number somehow passed parsing"),
-    };
-    let mut descr = vec![Roll::Dice(num_dice, num_sides)];
-
-    if let Some(num_incr)  = cap.get(3)
-    {
-        descr.push( Roll::Incr(num_incr.as_str().parse::<u32>().expect("Non-number somehow passed parsing")));
-    }
-
-    Ok(Command::RollDice(descr))
-}
-
 pub fn coin_toss() -> String
 {
     String::from(random_choice(&COIN_SIDES))
@@ -178,33 +147,6 @@ pub fn percent_true(likely: u32) -> String
     String::from(ans)
 }
 
-fn sub_roll(num: u32, sides: u32) -> u32
-{
-    if num == 0 || sides == 0
-    {
-        return 0
-    }
-
-    let mut rng = rand::thread_rng();
-    (1..=num)
-        .map(|_| rng.gen_range(1, sides+1))
-        .sum::<u32>()
-}
-
-pub fn roll_dice(descr: Vec<Roll>) -> String
-{
-
-    let value = descr.iter()
-        .map(|ref x| match x
-             {
-                 Roll::Dice(num,sides) => sub_roll(*num, *sides),
-                 Roll::Incr(num)       => *num,
-             }
-        )
-        .sum::<u32>();
-    value.to_string()
-}
-
 fn random_choice<'a>(choices: &'a[&str]) -> &'a str
 {
     let mut rng = rand::thread_rng();
@@ -214,6 +156,81 @@ fn random_choice<'a>(choices: &'a[&str]) -> &'a str
 pub fn oracle() -> String
 {
     format!("Thus spoke the Oracle: \"{}\"", random_choice(&ORACLE_ANSWERS))
+}
+
+mod dice
+{
+    use super::*;
+    use rand::Rng;
+    use regex::Regex;
+
+
+    pub fn command(args: &mut env::Args) -> Result<Command, String>
+    {
+        let expr = match args.next()
+        {
+            Some(e) => e,
+            None    => return Err(String::from("Missing dice expression")),
+        };
+
+        let re = Regex::new(r"^\s*(?:([1-9][0-9]*)[dD](4|6|8|10|12|20|100)|([1-9][0-9]*))\s*$").unwrap();
+        let mut descr: Vec<Roll> = vec![];
+        for term in expr.split("+")
+        {
+            let cap = match re.captures(&term)
+            {
+                Some(c) => c,
+                None    => return Err(String::from("Failed parsing dice expression")),
+            };
+            if cap.get(1).is_some()
+            {
+                let num_dice  = match cap.get(1)
+                {
+                    None    => return Err(String::from("No dice specified")),
+                    Some(n) => n.as_str().parse::<u32>().expect("Non-number somehow passed parsing"),
+                };
+
+                let num_sides = match cap.get(2)
+                {
+                    None    => return Err(String::from("No sides specified")),
+                    Some(n) => n.as_str().parse::<u32>().expect("Non-number somehow passed parsing"),
+                };
+                descr.push( Roll::Dice(num_dice, num_sides) );
+            }
+            else if let Some(num_incr)  = cap.get(3)
+            {
+                descr.push( Roll::Incr(num_incr.as_str().parse::<u32>().expect("Non-number somehow passed parsing")));
+            }
+            else
+            {
+                return Err(String::from("Unparseable term"));
+            }
+        }
+
+        Ok(Command::RollDice(descr))
+    }
+
+    fn roll_step(num: u32, sides: u32) -> u32
+    {
+        let mut rng = rand::thread_rng();
+        (1..=num)
+            .map(|_| rng.gen_range(1, sides+1))
+            .sum::<u32>()
+    }
+
+    pub fn roll(descr: Vec<Roll>) -> String
+    {
+
+        let value = descr.iter()
+            .map(|ref x| match x
+                {
+                    Roll::Dice(num,sides) => roll_step(*num, *sides),
+                    Roll::Incr(num)       => *num,
+                }
+            )
+            .sum::<u32>();
+        value.to_string()
+    }
 }
 
 #[cfg(test)]
