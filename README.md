@@ -33,5 +33,6 @@
    - Reply hazy, try again,
 	- The future is uncertain,
 	- I have no answer at this time
-5. Roll Dice
+5. Select from a supplied list
+6. Roll Dice
    - <num>d{4,6,8,10,12,20,100}[+<num>]

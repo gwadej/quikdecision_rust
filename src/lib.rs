@@ -7,6 +7,7 @@ mod coin;
 mod pick;
 mod percent;
 mod dice;
+mod select;
 mod oracle;
 
 pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
@@ -24,6 +25,7 @@ pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
         "pick"    | "choose" => pick::command(&mut args),
         "percent" | "likely" => percent::command(&mut args),
         "roll"    | "dice"   => dice::command(&mut args),
+        "select"             => select::command(&mut args),
         "oracle"             => oracle::command(),
         _                    => Err(String::from("Unknown command")),
     }
@@ -35,6 +37,7 @@ pub enum Command
     PickNumber(u32,u32),
     PercentTrue(u32),
     RollDice(Vec<dice::Roll>),
+    Selection(Vec<String>),
     Oracle,
 }
 
@@ -51,6 +54,7 @@ impl Decider for Command {
             Command::PickNumber(low,high) => pick::choose(low, high),
             Command::PercentTrue(likely)  => percent::choose(likely),
             Command::RollDice(expr)       => dice::roll(expr),
+            Command::Selection(strvec)    => select::choose(strvec),
             Command::Oracle               => oracle::spake(),
         }
     }
