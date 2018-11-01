@@ -35,7 +35,7 @@ pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
 pub enum Command
 {
     CoinFlip,
-    PickNumber(u32,u32),
+    PickNumber(i32,i32),
     PercentTrue(u32),
     RollDice(Vec<dice::Roll>),
     Selection(Vec<String>),
@@ -90,12 +90,13 @@ fn usage(progname: String) -> !
     std::process::exit(1);
 }
 
-pub fn int_arg(args: &mut env::Args) -> Result<u32, String>
+pub fn int_arg<T>(args: &mut env::Args) -> Result<T, String>
+    where T: std::str::FromStr
 {
     match args.next()
     {
         None => Err(String::from("Missing required parameter")),
-        Some(arg) => match arg.parse::<u32>()
+        Some(arg) => match arg.parse::<T>()
         {
             Ok(a) => Ok(a),
             Err(_) => Err(String::from("Argument not a valid integer")),

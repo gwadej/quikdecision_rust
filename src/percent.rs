@@ -4,7 +4,7 @@ use super::Command;
 
 pub fn command(args: &mut env::Args) -> Result<Command, String>
 {
-    match super::int_arg(args)
+    match super::int_arg::<u32>(args)
     {
         Ok(likely) => Ok(Command::PercentTrue(likely)),
         Err(e)     => Err(format!("likely arg: {}", e)),

@@ -4,21 +4,29 @@ use super::Command;
 
 pub fn command(args: &mut env::Args) -> Result<Command, String>
 {
-    let low = match super::int_arg(args)
+    let low = match super::int_arg::<i32>(args)
     {
         Ok(val) => val,
         Err(e)  => return Err(format!("low arg: {}", e)),
     };
-    let high = match super::int_arg(args)
+    let high = match super::int_arg::<i32>(args)
     {
         Ok(val) => val,
         Err(e)  => return Err(format!("high arg: {}", e)),
     };
+    if low == high
+    {
+        return Err(String::from("High parameter cannot equal low parameter"));
+    }
+    if low > high
+    {
+        return Ok(Command::PickNumber(high, low));
+    }
 
     Ok(Command::PickNumber(low, high))
 }
 
-pub fn choose(low: u32, high: u32) -> String
+pub fn choose(low: i32, high: i32) -> String
 {
     let guess = rand::thread_rng().gen_range(low, high+1);
     guess.to_string()
