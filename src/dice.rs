@@ -11,6 +11,10 @@ pub enum Roll
 
 fn uint_from_match(m: regex::Match) -> Result<u32, String>
 {
+    if m.as_str() == ""
+    {
+        return Ok(1);
+    }
     match m.as_str().parse::<u32>()
     {
         Ok(n)  => Ok(n),
@@ -42,7 +46,7 @@ pub fn command(args: &mut env::Args) -> Result<Command, String>
         None    => return Err(String::from("Missing dice expression")),
     };
 
-    let re = Regex::new(r"^\s*(?:([1-9][0-9]*)[dD](4|6|8|10|12|20|100)|([1-9][0-9]*))\s*$").unwrap();
+    let re = Regex::new(r"^\s*(?:((?:[1-9][0-9]*)?)[dDxX](4|6|8|10|12|20|100)|([1-9][0-9]*))\s*$").unwrap();
     let mut descr: Vec<Roll> = vec![];
     for term in expr.split("+")
     {
