@@ -4,11 +4,16 @@ use super::Command;
 
 pub fn command(args: &mut env::Args) -> Result<Command, String>
 {
-    match super::int_arg::<u32>(args)
+    let likely = match super::int_arg::<u32>(args)
     {
-        Ok(likely) => Ok(Command::PercentTrue(likely)),
-        Err(e)     => Err(format!("likely arg: {}", e)),
+        Ok(val) => val,
+        Err(e)  => return Err(format!("likely arg: {}", e)),
+    };
+    if likely > 100
+    {
+        return Err(String::from("likely arg cannot be greater than 100 percent"));
     }
+    Ok(Command::PercentTrue(likely))
 }
 
 pub fn choose(likely: u32) -> String
