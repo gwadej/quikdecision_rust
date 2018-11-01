@@ -79,6 +79,7 @@ fn usage(progname: String) -> !
     println!("{}", "            where {n} is a positive integer, {s} is a number of sides");
     println!("{}", "            for the dice (4, 6, 8, 10, 12, 20, or 100). A term can also");
     println!("{}", "            be just an integer. (e.g. 2d6+1d4+2)");
+    println!("{}", "            Replace the 'd' with 'x' for exploding dice.");
     println!("{}", "  dice    - alias for roll");
     println!("{}", "  select {strs}");
     println!("{}", "          - Select one of two or more string supplied as arguments");

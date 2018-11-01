@@ -24,6 +24,7 @@ The interface is pretty simple:
                 where {n} is a positive integer, {s} is a number of sides
                 for the dice (4, 6, 8, 10, 12, 20, or 100). A term can also
                 be just an integer. (e.g. 2d6+1d4+2)
+                Replace the 'd' with 'x' for exploding dice.
       dice    - alias for roll
       select {strs}
               - Select one of two or more string supplied as arguments
