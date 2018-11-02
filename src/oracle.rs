@@ -31,6 +31,14 @@ const ORACLE_ANSWERS: [&str; 24] = [
     "I have no answer at this time",
 ];
 
+pub fn hint() -> super::Hint
+{
+    ("oracle",
+     "Return a random answer from the oracle",
+     None
+    )
+}
+
 pub fn command() -> Result<Command, String>
 {
     Ok(Command::Oracle)

@@ -32,6 +32,14 @@ pub fn choose(low: i32, high: i32) -> String
     guess.to_string()
 }
 
+pub fn hint() -> super::Hint
+{
+   ( "pick {low} {high}",
+     "pick a number between {low} and {high}",
+     Some(("choose", "alias for pick"))
+    )
+}
+
 #[cfg(test)]
 mod tests
 {

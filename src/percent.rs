@@ -29,6 +29,14 @@ pub fn choose(likely: u32) -> String
     String::from(ans)
 }
 
+pub fn hint() -> super::Hint
+{
+    ("percent {num}",
+     "True {num} percent of the time, otherwise False",
+     Some(("likely", "alias for percent"))
+    )
+}
+
 #[cfg(test)]
 mod tests
 {

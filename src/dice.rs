@@ -12,6 +12,20 @@ pub enum Roll
 
 type RollStep = (String, u32);
 
+pub fn hint() -> super::Hint
+{
+    ("roll {dice expr}",
+     "Roll the described combination of dice",
+     Some(("dice", "alias for roll"))
+    )
+//"  roll {dice expr}
+//          - Roll the described combination of dice, returning a number
+//            {dice expr} is a combination of terms of the form {n}[dx]{s}
+//            where {n} is a positive integer, {s} is a number of sides
+//            for the dice (4, 6, 8, 10, 12, 20, or 100). A term can also
+//            be just an integer. (e.g. 2d6+1d4+2)
+}
+
 fn uint_from_match(m: regex::Match) -> Result<u32, String>
 {
     match m.as_str()

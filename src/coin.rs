@@ -17,6 +17,13 @@ pub fn flip() -> String
     String::from(ans)
 }
 
+pub fn hint() -> super::Hint
+{
+    ("flip",
+     "50% chance of a Heads or Tails",
+     Some(("coin", "alias for flip")))
+}
+
 #[cfg(test)]
 mod tests
 {
