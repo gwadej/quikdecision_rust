@@ -17,13 +17,18 @@ pub fn flip() -> String
     String::from(ans)
 }
 
-pub fn hint() -> super::Hint
+pub fn hint() -> Vec<super::Hint>
 {
-    (
-        "flip",
-        "50% chance of a Heads or Tails",
-        Some(("coin", "alias for flip")),
-    )
+    vec![
+        super::Hint { 
+            clue: "flip",
+            blurb: "50% chance of a Heads or Tails"
+        },
+        super::Hint {
+            clue: "coin",
+            blurb: "alias for flip"
+        },
+    ]
 }
 
 #[cfg(test)]

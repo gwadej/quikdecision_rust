@@ -33,16 +33,18 @@ pub fn command(args: &mut env::Args) -> Result<Command, String>
     }
 }
 
-pub fn hint() -> super::Hint
+pub fn hint() -> Vec<super::Hint>
 {
-    (
-        "select {strs}",
-        "Select one of two or more strings supplied as arguments",
-        Some((
-            "select @{filename}",
-            "Select one of the lines in the file specified",
-        )),
-    )
+    vec![
+        super::Hint {
+            clue: "select {strs}",
+            blurb: "Select one of two or more strings supplied as arguments",
+        },
+        super::Hint {
+            clue: "select @{filename}",
+            blurb: "Select one of the lines in the file specified",
+        },
+    ]
 }
 
 fn list_from_args(first: String, args: &mut env::Args) -> Result<StrVec, String>

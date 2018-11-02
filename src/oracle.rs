@@ -31,9 +31,14 @@ const ORACLE_ANSWERS: [&str; 24] = [
     "I have no answer at this time",
 ];
 
-pub fn hint() -> super::Hint
+pub fn hint() -> Vec<super::Hint>
 {
-    ("oracle", "Return a random answer from the oracle", None)
+    vec![
+        super::Hint {
+            clue: "oracle",
+            blurb: "Return a random answer from the oracle",
+        }
+    ]
 }
 
 pub fn command() -> Result<Command, String>

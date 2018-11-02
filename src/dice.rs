@@ -12,13 +12,18 @@ pub enum Roll
 
 type RollStep = (String, u32);
 
-pub fn hint() -> super::Hint
+pub fn hint() -> Vec<super::Hint>
 {
-    (
-        "roll {dice expr}",
-        "Roll the described combination of dice",
-        Some(("dice", "alias for roll")),
-    )
+    vec![
+        super::Hint {
+            clue: "roll {dice expr}",
+            blurb: "Roll the described combination of dice",
+        },
+        super::Hint {
+            clue: "dice {dice expr}",
+            blurb: "alias for roll",
+        }
+    ]
     //"  roll {dice expr}
     // 
     //          - Roll the described combination of dice, returning a number

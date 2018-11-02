@@ -5,10 +5,13 @@ use std::env;
 
 mod coin;
 mod dice;
+mod help;
 mod oracle;
 mod percent;
 mod pick;
 mod select;
+
+type Hint = help::Hint;
 
 pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
 {
@@ -27,7 +30,15 @@ pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
         "roll" | "dice" => dice::command(&mut args),
         "select" => select::command(&mut args),
         "oracle" => oracle::command(),
-        "help" => usage(progname),
+        "help" => help::usage(progname, vec![
+                coin::hint(),
+                pick::hint(),
+                percent::hint(),
+                dice::hint(),
+                select::hint(),
+                oracle::hint(),
+                help::hint(),
+            ]),
         _ => Err(String::from("Unknown command")),
     }
 }
@@ -61,47 +72,6 @@ impl Decider for Command
             Command::Oracle => oracle::spake(),
         }
     }
-}
-
-type Hint = (
-    &'static str,
-    &'static str,
-    Option<(&'static str, &'static str)>,
-);
-fn print_hint(hint: Hint)
-{
-    print_hint_seg(hint.0, hint.1);
-    if let Some((alias, blurb)) = hint.2
-    {
-        print_hint_seg(alias, blurb);
-    }
-}
-
-fn print_hint_seg(clue: &str, blurb: &str)
-{
-    if clue.len() < 8
-    {
-        println!("  {:8}- {}", clue, blurb);
-    }
-    else
-    {
-        println!("  {}\n  {:8}- {}", clue, "", blurb);
-    }
-}
-
-fn usage(progname: String) -> !
-{
-    println!("{} {}\n", progname, "{command} [cmd_args ...]");
-    println!("{}\n", "where {command} is one of:");
-    print_hint(coin::hint());
-    print_hint(pick::hint());
-    print_hint(percent::hint());
-    print_hint(dice::hint());
-    print_hint(select::hint());
-    print_hint(oracle::hint());
-    print_hint(("help", "This screen", None));
-
-    std::process::exit(1);
 }
 
 pub fn int_arg<T>(args: &mut env::Args) -> Result<T, String>

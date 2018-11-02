@@ -32,13 +32,18 @@ pub fn choose(low: i32, high: i32) -> String
     guess.to_string()
 }
 
-pub fn hint() -> super::Hint
+pub fn hint() -> Vec<super::Hint>
 {
-    (
-        "pick {low} {high}",
-        "pick a number between {low} and {high}",
-        Some(("choose", "alias for pick")),
-    )
+    vec![
+        super::Hint {
+            clue: "pick {low} {high}",
+            blurb: "pick a number between {low} and {high}",
+        },
+        super::Hint {
+            clue: "choose",
+            blurb: "alias for pick",
+        },
+    ]
 }
 
 #[cfg(test)]

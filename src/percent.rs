@@ -31,13 +31,18 @@ pub fn choose(likely: u32) -> String
     String::from(ans)
 }
 
-pub fn hint() -> super::Hint
+pub fn hint() -> Vec<super::Hint>
 {
-    (
-        "percent {num}",
-        "True {num} percent of the time, otherwise False",
-        Some(("likely", "alias for percent")),
-    )
+    vec![
+        super::Hint {
+            clue: "percent {num}",
+            blurb: "True {num} percent of the time, otherwise False",
+        },
+        super::Hint {
+            clue: "likely {num}",
+            blurb: "alias for percent",
+        }
+    ]
 }
 
 #[cfg(test)]
