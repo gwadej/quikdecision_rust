@@ -1,6 +1,6 @@
-use std::env;
-use rand::seq;
 use super::Command;
+use rand::seq;
+use std::env;
 use std::fs::File;
 use std::io::prelude::*;
 
@@ -10,8 +10,8 @@ pub fn command(args: &mut env::Args) -> Result<Command, String>
 {
     let first = match args.next()
     {
-        Some(s)  => s,
-        None     => return Err(String::from("Missing required strings")),
+        Some(s) => s,
+        None => return Err(String::from("Missing required strings")),
     };
 
     let strvec = if first.starts_with("@")
@@ -35,9 +35,13 @@ pub fn command(args: &mut env::Args) -> Result<Command, String>
 
 pub fn hint() -> super::Hint
 {
-    ("select {strs}",
-     "Select one of two or more strings supplied as arguments",
-     Some(("select @{filename}", "Select one of the lines in the file specified"))
+    (
+        "select {strs}",
+        "Select one of two or more strings supplied as arguments",
+        Some((
+            "select @{filename}",
+            "Select one of the lines in the file specified",
+        )),
     )
 }
 
@@ -60,7 +64,7 @@ fn list_from_file(filename: &str) -> Result<StrVec, String>
 
     let mut file = match File::open(filename)
     {
-        Ok(f)  => f,
+        Ok(f) => f,
         Err(_) => return Err(String::from("Cannot open supplied file")),
     };
     let mut contents = String::new();
@@ -68,7 +72,6 @@ fn list_from_file(filename: &str) -> Result<StrVec, String>
     {
         return Err(String::from("Cannot read supplied file"));
     }
-    // TODO: I'd like a way to trim whitespace off the end of these strings
     for a in contents.split("\n").filter(|line| line.len() > 0)
     {
         strvec.push(String::from(a));

@@ -1,18 +1,18 @@
-use std::env;
-use rand::Rng;
 use super::Command;
+use rand::Rng;
+use std::env;
 
 pub fn command(args: &mut env::Args) -> Result<Command, String>
 {
     let low = match super::int_arg::<i32>(args)
     {
         Ok(val) => val,
-        Err(e)  => return Err(format!("low arg: {}", e)),
+        Err(e) => return Err(format!("low arg: {}", e)),
     };
     let high = match super::int_arg::<i32>(args)
     {
         Ok(val) => val,
-        Err(e)  => return Err(format!("high arg: {}", e)),
+        Err(e) => return Err(format!("high arg: {}", e)),
     };
     if low == high
     {
@@ -28,15 +28,16 @@ pub fn command(args: &mut env::Args) -> Result<Command, String>
 
 pub fn choose(low: i32, high: i32) -> String
 {
-    let guess = rand::thread_rng().gen_range(low, high+1);
+    let guess = rand::thread_rng().gen_range(low, high + 1);
     guess.to_string()
 }
 
 pub fn hint() -> super::Hint
 {
-   ( "pick {low} {high}",
-     "pick a number between {low} and {high}",
-     Some(("choose", "alias for pick"))
+    (
+        "pick {low} {high}",
+        "pick a number between {low} and {high}",
+        Some(("choose", "alias for pick")),
     )
 }
 
@@ -62,10 +63,7 @@ mod tests
     {
         let low: u32 = 2;
         let high: u32 = 10;
-        let expected = [
-            "2", "3", "4", "5", "6",
-            "7", "8", "9", "10",
-        ];
+        let expected = ["2", "3", "4", "5", "6", "7", "8", "9", "10"];
 
         for _ in 1..=NUM_TRIES
         {

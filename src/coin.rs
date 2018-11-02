@@ -2,7 +2,7 @@ use rand::seq;
 
 use super::Command;
 
-const COIN_SIDES: [&str; 2] = [ "Heads", "Tails" ];
+const COIN_SIDES: [&str; 2] = ["Heads", "Tails"];
 
 pub fn command() -> Result<Command, String>
 {
@@ -19,9 +19,11 @@ pub fn flip() -> String
 
 pub fn hint() -> super::Hint
 {
-    ("flip",
-     "50% chance of a Heads or Tails",
-     Some(("coin", "alias for flip")))
+    (
+        "flip",
+        "50% chance of a Heads or Tails",
+        Some(("coin", "alias for flip")),
+    )
 }
 
 #[cfg(test)]

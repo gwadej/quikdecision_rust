@@ -1,5 +1,5 @@
-use rand::seq;
 use super::Command;
+use rand::seq;
 
 const ORACLE_ANSWERS: [&str; 24] = [
     // Positive answeers
@@ -33,10 +33,7 @@ const ORACLE_ANSWERS: [&str; 24] = [
 
 pub fn hint() -> super::Hint
 {
-    ("oracle",
-     "Return a random answer from the oracle",
-     None
-    )
+    ("oracle", "Return a random answer from the oracle", None)
 }
 
 pub fn command() -> Result<Command, String>

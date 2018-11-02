@@ -1,17 +1,19 @@
-use std::env;
-use rand::Rng;
 use super::Command;
+use rand::Rng;
+use std::env;
 
 pub fn command(args: &mut env::Args) -> Result<Command, String>
 {
     let likely = match super::int_arg::<u32>(args)
     {
         Ok(val) => val,
-        Err(e)  => return Err(format!("likely arg: {}", e)),
+        Err(e) => return Err(format!("likely arg: {}", e)),
     };
     if likely > 100
     {
-        return Err(String::from("likely arg cannot be greater than 100 percent"));
+        return Err(String::from(
+            "likely arg cannot be greater than 100 percent",
+        ));
     }
     Ok(Command::PercentTrue(likely))
 }
@@ -31,9 +33,10 @@ pub fn choose(likely: u32) -> String
 
 pub fn hint() -> super::Hint
 {
-    ("percent {num}",
-     "True {num} percent of the time, otherwise False",
-     Some(("likely", "alias for percent"))
+    (
+        "percent {num}",
+        "True {num} percent of the time, otherwise False",
+        Some(("likely", "alias for percent")),
     )
 }
 
