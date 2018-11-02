@@ -10,49 +10,29 @@ pub enum Roll
     Incr(u32),
 }
 
+type RollStep = (String, u32);
+
 fn uint_from_match(m: regex::Match) -> Result<u32, String>
 {
-    if m.as_str() == ""
+    match m.as_str()
     {
-        return Ok(1);
-    }
-    match m.as_str().parse::<u32>()
-    {
-        Ok(n)  => Ok(n),
-        Err(_) => Err(String::from("Non-number somehow passed parsing")),
+        ""   => Ok(1),
+        nstr => match nstr.parse::<u32>()
+        {
+            Ok(n)  => Ok(n),
+            Err(_) => Err(String::from("Non-number somehow passed parsing")),
+        }
     }
 }
 
-fn make_dice(dice: Option<regex::Match>, sides: Option<regex::Match>) -> Result<Roll,String>
+fn make_dice(dice: regex::Match, sides: regex::Match) -> Result<Roll,String>
 {
-    let dice  = match dice
-    {
-        None    => return Err(String::from("No dice specified")),
-        Some(n) => uint_from_match(n)?
-    };
-
-    let sides = match sides
-    {
-        None    => return Err(String::from("No sides specified")),
-        Some(n) => uint_from_match(n)?
-    };
-    Ok(Roll::Dice(dice, sides))
+    Ok(Roll::Dice(uint_from_match(dice)?, uint_from_match(sides)?))
 }
 
-fn make_exploding_dice(dice: Option<regex::Match>, sides: Option<regex::Match>) -> Result<Roll,String>
+fn make_exploding_dice(dice: regex::Match, sides: regex::Match) -> Result<Roll,String>
 {
-    let dice  = match dice
-    {
-        None    => return Err(String::from("No dice specified")),
-        Some(n) => uint_from_match(n)?
-    };
-
-    let sides = match sides
-    {
-        None    => return Err(String::from("No sides specified")),
-        Some(n) => uint_from_match(n)?
-    };
-    Ok(Roll::ExplodingDice(dice, sides))
+    Ok(Roll::ExplodingDice(uint_from_match(dice)?, uint_from_match(sides)?))
 }
 
 pub fn command(args: &mut env::Args) -> Result<Command, String>
@@ -72,49 +52,42 @@ pub fn command(args: &mut env::Args) -> Result<Command, String>
             Some(c) => c,
             None    => return Err(String::from("Failed parsing dice expression")),
         };
-        if cap.name("num").is_some()
+        descr.push(match (cap.name("num"), cap.name("sides"))
         {
-            let dice = match cap.name("type").unwrap().as_str()
+            (Some(n), Some(s)) => match cap.name("type").unwrap().as_str()
             {
-                "x" | "X" => make_exploding_dice(cap.name("num"), cap.name("sides"))?,
-                "d" | "D" => make_dice(cap.name("num"), cap.name("sides"))?,
+                "x" | "X" => make_exploding_dice(n, s)?,
+                "d" | "D" => make_dice(n, s)?,
                 _         => return Err(String::from("Unrecognized die type")),
-            };
-            descr.push(dice);
-        }
-        else if let Some(incr) = cap.name("val")
-        {
-            descr.push( Roll::Incr(uint_from_match(incr)?) );
-        }
-        else
-        {
-            return Err(String::from("Unparseable term"));
-        }
+            },
+            (Some(_), None) => return Err(String::from("No sides specified")),
+            (None, _)  => match cap.name("val")
+            {
+                Some(n) => Roll::Incr(uint_from_match(n)?),
+                None    => return Err(String::from("Unparseable term")),
+            }
+        });
     }
 
     Ok(Command::RollDice(descr))
 }
 
-fn roll_die(rng: &mut rand::ThreadRng, sides: u32) -> (String, u32)
+fn roll_die(rng: &mut rand::ThreadRng, sides: u32) -> RollStep
 {
     let n = rng.gen_range(1, sides+1);
     (n.to_string(), n)
 }
 
-fn accum_roll(acc: (String, u32), roll: (String, u32), sep: &str) -> (String, u32)
+fn accum_roll(acc: RollStep, roll: RollStep, sep: &str) -> RollStep
 {
     if acc.0.len() == 0
     {
-        (roll.0, acc.1+roll.1)
+        return (roll.0, acc.1+roll.1)
     }
-    else
-    {
-//        (format!("{}{}{}", acc.0, sep, roll.0), acc.1+roll.1)
-        (acc.0 + sep + &roll.0, acc.1+roll.1)
-    }
+    (acc.0 + sep + &roll.0, acc.1+roll.1)
 }
 
-fn roll_step(num: u32, sides: u32) -> (String, u32)
+fn roll_step(num: u32, sides: u32) -> RollStep
 {
     let mut rng = rand::thread_rng();
     let out = (1..=num)
@@ -123,7 +96,7 @@ fn roll_step(num: u32, sides: u32) -> (String, u32)
     (format!("{}d{}({})", num, sides, out.0), out.1)
 }
 
-fn roll_explode_step(num: u32, sides: u32) -> (String, u32)
+fn roll_explode_step(num: u32, sides: u32) -> RollStep
 {
     let mut rng = rand::thread_rng();
     let out = (1..=num)
@@ -138,29 +111,27 @@ fn trim(instr: String) -> String
     String::from(instr.trim_start().trim_end())
 }
 
-fn roll_exploded_step(sides: u32) -> (String, u32)
+fn roll_exploded_step(sides: u32) -> RollStep
 {
     let mut rng = rand::thread_rng();
     let r = roll_die(&mut rng, sides);
     explode(r, sides)
 }
 
-fn incr_step(num: u32) -> (String, u32)
+fn incr_step(num: u32) -> RollStep
 {
     (num.to_string(), num)
 }
 
-fn explode(val: (String, u32), sides: u32) -> (String, u32)
+fn explode(val: RollStep, sides: u32) -> RollStep
 {
-    if val.1 == sides
+    if val.1 != sides
     {
-        let roll = roll_exploded_step(sides);
-        (format!(" ({}!+{}) ",val.0, roll.0), val.1+roll.1)
+        return val;
     }
-    else
-    {
-        val
-    }
+
+    let roll = roll_exploded_step(sides);
+    (format!(" ({}!+{}) ",val.0, roll.0), val.1+roll.1)
 }
 
 pub fn roll(descr: Vec<Roll>) -> String
@@ -175,4 +146,3 @@ pub fn roll(descr: Vec<Roll>) -> String
         .fold((String::new(), 0), |acc, r| accum_roll(acc, r, " + "));
         format!("{}: {}", val.1, val.0)
 }
-
