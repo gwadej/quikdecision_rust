@@ -25,7 +25,7 @@ pub fn hint() -> Vec<super::Hint>
         }
     ]
     //"  roll {dice expr}
-    // 
+    //
     //          - Roll the described combination of dice, returning a number
     //            {dice expr} is a combination of terms of the form {n}[dx]{s}
     //            where {n} is a positive integer, {s} is a number of sides
@@ -38,11 +38,8 @@ fn uint_from_match(m: regex::Match) -> Result<u32, String>
     match m.as_str()
     {
         "" => Ok(1),
-        nstr => match nstr.parse::<u32>()
-        {
-            Ok(n) => Ok(n),
-            Err(_) => Err(String::from("Non-number somehow passed parsing")),
-        },
+        nstr => nstr.parse::<u32>()
+                    .map_err(|_| String::from("Non-number somehow passed parsing")),
     }
 }
 
