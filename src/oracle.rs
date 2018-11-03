@@ -1,6 +1,8 @@
 use super::Command;
 use rand::seq;
 
+use ::help;
+
 const ORACLE_ANSWERS: [&str; 24] = [
     // Positive answeers
     "It is certain",
@@ -31,10 +33,10 @@ const ORACLE_ANSWERS: [&str; 24] = [
     "I have no answer at this time",
 ];
 
-pub fn hint() -> Vec<super::Hint>
+pub fn hint() -> Vec<help::Hint>
 {
     vec![
-        super::Hint {
+        help::Hint {
             clue: "oracle",
             blurb: "Return a random answer from the oracle",
         }

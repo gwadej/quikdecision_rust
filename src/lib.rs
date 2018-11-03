@@ -11,8 +11,6 @@ mod percent;
 mod pick;
 mod select;
 
-type Hint = help::Hint;
-
 pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
 {
     let progname = args.next().unwrap();

@@ -1,6 +1,7 @@
 use super::Command;
 use rand::Rng;
 use std::env;
+use ::help;
 
 pub fn command(args: &mut env::Args) -> Result<Command, String>
 {
@@ -32,14 +33,14 @@ pub fn choose(low: i32, high: i32) -> String
     guess.to_string()
 }
 
-pub fn hint() -> Vec<super::Hint>
+pub fn hint() -> Vec<help::Hint>
 {
     vec![
-        super::Hint {
+        help::Hint {
             clue: "pick {low} {high}",
             blurb: "pick a number between {low} and {high}",
         },
-        super::Hint {
+        help::Hint {
             clue: "choose",
             blurb: "alias for pick",
         },

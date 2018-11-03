@@ -3,6 +3,7 @@ use rand::seq;
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
+use ::help;
 
 type StrVec = Vec<String>;
 
@@ -33,14 +34,14 @@ pub fn command(args: &mut env::Args) -> Result<Command, String>
     }
 }
 
-pub fn hint() -> Vec<super::Hint>
+pub fn hint() -> Vec<help::Hint>
 {
     vec![
-        super::Hint {
+        help::Hint {
             clue: "select {strs}",
             blurb: "Select one of two or more strings supplied as arguments",
         },
-        super::Hint {
+        help::Hint {
             clue: "select @{filename}",
             blurb: "Select one of the lines in the file specified",
         },

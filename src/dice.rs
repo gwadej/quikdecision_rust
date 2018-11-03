@@ -2,6 +2,7 @@ use super::Command;
 use rand::Rng;
 use regex::Regex;
 use std::env;
+use ::help;
 
 pub enum Roll
 {
@@ -12,14 +13,14 @@ pub enum Roll
 
 type RollStep = (String, u32);
 
-pub fn hint() -> Vec<super::Hint>
+pub fn hint() -> Vec<help::Hint>
 {
     vec![
-        super::Hint {
+        help::Hint {
             clue: "roll {dice expr}",
             blurb: "Roll the described combination of dice",
         },
-        super::Hint {
+        help::Hint {
             clue: "dice {dice expr}",
             blurb: "alias for roll",
         }

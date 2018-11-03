@@ -25,7 +25,7 @@ fn print_hint_seg(clue: &str, blurb: &str)
     }
 }
 
-pub fn usage(progname: String, hints: Vec<Vec<super::Hint>>) -> !
+pub fn usage(progname: String, hints: Vec<Vec<Hint>>) -> !
 {
     println!("{} {}\n", progname, "{command} [cmd_args ...]");
     println!("{}\n", "where {command} is one of:");

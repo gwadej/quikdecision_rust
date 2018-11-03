@@ -1,6 +1,7 @@
 use super::Command;
 use rand::Rng;
 use std::env;
+use ::help;
 
 pub fn command(args: &mut env::Args) -> Result<Command, String>
 {
@@ -31,14 +32,14 @@ pub fn choose(likely: u32) -> String
     String::from(ans)
 }
 
-pub fn hint() -> Vec<super::Hint>
+pub fn hint() -> Vec<help::Hint>
 {
     vec![
-        super::Hint {
+        help::Hint {
             clue: "percent {num}",
             blurb: "True {num} percent of the time, otherwise False",
         },
-        super::Hint {
+        help::Hint {
             clue: "likely {num}",
             blurb: "alias for percent",
         }
