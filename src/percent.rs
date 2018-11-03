@@ -38,10 +38,18 @@ pub fn hint() -> Vec<help::Hint>
         help::Hint {
             clue: "percent {num}",
             blurb: "True {num} percent of the time, otherwise False",
+            help: vec![
+                "Treats the supplied integer as a percentage and returns the string 'True'",
+                "that percent of the time. Otherwise, return the string 'False'."
+            ],
         },
         help::Hint {
             clue: "likely {num}",
             blurb: "alias for percent",
+            help: vec![
+                "Treats the supplied integer as a percentage and returns the string 'True'",
+                "that percent of the time. Otherwise, return the string 'False'."
+            ],
         }
     ]
 }

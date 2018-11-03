@@ -23,11 +23,19 @@ pub fn hint() -> Vec<help::Hint>
     vec![
         help::Hint { 
             clue: "flip",
-            blurb: "50% chance of a Heads or Tails"
+            blurb: "50% chance of a Heads or Tails",
+            help: vec![
+                "Returns one of the two strings 'Heads' or 'Tails'. There is an equal probability",
+                "of returning either one.",
+            ],
         },
         help::Hint {
             clue: "coin",
-            blurb: "alias for flip"
+            blurb: "alias for flip",
+            help: vec![
+                "Returns one of the two strings 'Heads' or 'Tails'. There is an equal probability",
+                "of returning either one.",
+            ],
         },
     ]
 }

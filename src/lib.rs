@@ -19,6 +19,15 @@ pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
         Some(c) => c,
         None => return Err(String::from("Missing decision type")),
     };
+    let all_hints = vec![
+        coin::hint(),
+        pick::hint(),
+        percent::hint(),
+        dice::hint(),
+        select::hint(),
+        oracle::hint(),
+        help::hint(),
+    ];
 
     match &cmd[..]
     {
@@ -28,15 +37,8 @@ pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
         "roll" | "dice" => dice::command(&mut args),
         "select" => select::command(&mut args),
         "oracle" => oracle::command(),
-        "help" => help::usage(progname, vec![
-                coin::hint(),
-                pick::hint(),
-                percent::hint(),
-                dice::hint(),
-                select::hint(),
-                oracle::hint(),
-                help::hint(),
-            ]),
+        "help" => help::usage(progname, all_hints),
+        "man" => help::help(progname, all_hints),
         _ => Err(String::from("Unknown command")),
     }
 }

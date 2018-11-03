@@ -39,10 +39,18 @@ pub fn hint() -> Vec<help::Hint>
         help::Hint {
             clue: "pick {low} {high}",
             blurb: "pick a number between {low} and {high}",
+            help: vec![
+                "Selects a number between two supplied values (inclusive) with equal probability.",
+                "The two numbers cannot be the same."
+            ],
         },
         help::Hint {
             clue: "choose",
             blurb: "alias for pick",
+            help: vec![
+                "Selects a number between two supplied values (inclusive) with equal probability.",
+                "The two numbers cannot be the same."
+            ],
         },
     ]
 }

@@ -39,6 +39,10 @@ pub fn hint() -> Vec<help::Hint>
         help::Hint {
             clue: "oracle",
             blurb: "Return a random answer from the oracle",
+            help: vec![
+                "This command returns a string randomly selected from the Oracle's set of",
+                "9 positive answers, 9 negative answers, or 6 indeterminate answers."
+            ],
         }
     ]
 }
