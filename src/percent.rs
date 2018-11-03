@@ -7,12 +7,12 @@ pub fn command(args: &mut env::Args) -> Result<Command, String>
     let likely = match super::int_arg::<u32>(args)
     {
         Ok(val) => val,
-        Err(e) => return Err(format!("likely arg: {}", e)),
+        Err(e) => return Err(format!("percentage: {}", e)),
     };
     if likely > 100
     {
         return Err(String::from(
-            "likely arg cannot be greater than 100 percent",
+            "percent arg cannot be greater than 100 percent",
         ));
     }
     Ok(Command::PercentTrue(likely))
