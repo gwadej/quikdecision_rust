@@ -109,15 +109,19 @@ pub fn hint() -> Vec<Hint>
     vec![
         Hint {
             cmd: "help",
-            clue: "help",
-            blurb: "The help screen",
+            clue: "help [cmd]",
+            blurb: "The help screen, or help on a particular command if one is supplied.",
             help: vec![],
         },
         Hint {
             cmd: "man",
-            clue: "man",
-            blurb: "The full help description.",
-            help: vec!["A long form description of the various commands."],
+            clue: "man [cmd]",
+            blurb: "The full help description, or full help on a particular command.",
+            help: vec![
+                "A long form description of the various commands.",
+                "If a command name is supplied, provice the full help for that",
+                "command only."
+            ],
         },
     ]
 }
