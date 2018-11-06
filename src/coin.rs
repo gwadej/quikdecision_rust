@@ -1,5 +1,5 @@
+use help;
 use rand::seq;
-use ::help;
 
 use super::Command;
 
@@ -21,7 +21,8 @@ pub fn flip() -> String
 pub fn hint() -> Vec<help::Hint>
 {
     vec![
-        help::Hint { 
+        help::Hint {
+            cmd: "flip",
             clue: "flip",
             blurb: "50% chance of a Heads or Tails",
             help: vec![
@@ -30,6 +31,7 @@ pub fn hint() -> Vec<help::Hint>
             ],
         },
         help::Hint {
+            cmd: "coin",
             clue: "coin",
             blurb: "alias for flip",
             help: vec![

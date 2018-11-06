@@ -1,9 +1,9 @@
 use super::Command;
+use help;
 use rand::seq;
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
-use ::help;
 
 type StrVec = Vec<String>;
 
@@ -38,20 +38,22 @@ pub fn hint() -> Vec<help::Hint>
 {
     vec![
         help::Hint {
+            cmd: "select",
             clue: "select {strs}",
             blurb: "Select one of two or more strings supplied as arguments",
             help: vec![
                 "Selects one of the supplied strings with equal probability. There must be",
-                "at least two strings to choose between."
+                "at least two strings to choose between.",
             ],
         },
         help::Hint {
+            cmd: "select",
             clue: "select @{filename}",
             blurb: "Select one of the lines in the file specified",
             help: vec![
                 "Loads a series of strings from the specified file. (Each line is one string.)",
                 "Selects one of the supplied strings with equal probability. There must be",
-                "at least two strings to choose between."
+                "at least two strings to choose between.",
             ],
         },
     ]

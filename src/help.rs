@@ -1,10 +1,10 @@
 pub struct Hint
 {
+    pub cmd: &'static str,
     pub clue: &'static str,
     pub blurb: &'static str,
     pub help: Vec<&'static str>,
 }
-
 
 fn print_hint(hints: Vec<Hint>)
 {
@@ -32,16 +32,16 @@ fn print_help(hints: Vec<Hint>)
     {
         if h.help.len() == 0
         {
-            print_help_seg(h.clue, vec![h.blurb]);
+            print_help_seg(h.clue, &vec![h.blurb]);
         }
         else
         {
-            print_help_seg(h.clue, h.help);
+            print_help_seg(h.clue, &h.help);
         }
     }
 }
 
-fn print_help_seg(clue: &str, help: Vec<&str>)
+fn print_help_seg(clue: &str, help: &Vec<&str>)
 {
     println!("  {}", clue);
     for h in help
@@ -50,25 +50,55 @@ fn print_help_seg(clue: &str, help: Vec<&str>)
     }
 }
 
-pub fn usage(progname: String, hints: Vec<Vec<Hint>>) -> !
+pub fn usage(progname: String, cmd: Option<String>, hints: Vec<Vec<Hint>>) -> !
 {
-    println!("{} {}\n", progname, "{command} [cmd_args ...]");
-    println!("{}\n", "where {command} is one of:");
-    for h in hints
+    match cmd
     {
-        print_hint(h);
+        None => {
+            println!("{} {}\n", progname, "{command} [cmd_args ...]");
+            println!("{}\n", "where {command} is one of:");
+            for h in hints
+            {
+                print_hint(h);
+            }
+        },
+        Some(c) => {
+            for h in find_hints(&hints, c)
+            {
+                print_hint_seg(h.clue, h.blurb);
+            }
+        },
     }
 
     std::process::exit(1);
 }
 
-pub fn help(progname: String, hints: Vec<Vec<Hint>>) -> !
+fn find_hints<'a>(hints: &'a Vec<Vec<Hint>>, cmd: String) -> Vec<&'a Hint>
 {
-    println!("{} {}\n", progname, "{command} [cmd_args ...]");
-    println!("{}\n", "where {command} is one of:");
-    for h in hints
+    hints.iter()
+        .flat_map(|hvec| hvec.iter())
+        .filter(|h| h.cmd == cmd)
+        .collect()
+}
+
+pub fn help(progname: String, cmd: Option<String>, hints: Vec<Vec<Hint>>) -> !
+{
+    match cmd
     {
-        print_help(h);
+        None => {
+            println!("{} {}\n", progname, "{command} [cmd_args ...]");
+            println!("{}\n", "where {command} is one of:");
+            for h in hints
+            {
+                print_help(h);
+            }
+        },
+        Some(c) => {
+            for h in find_hints(&hints, c)
+            {
+                print_help_seg(h.clue, &h.help);
+            }
+        },
     }
 
     std::process::exit(1);
@@ -78,16 +108,16 @@ pub fn hint() -> Vec<Hint>
 {
     vec![
         Hint {
+            cmd: "help",
             clue: "help",
             blurb: "The help screen",
             help: vec![],
         },
         Hint {
+            cmd: "man",
             clue: "man",
             blurb: "The full help description.",
-            help: vec![
-                "A long form description of the various commands.",
-            ],
+            help: vec!["A long form description of the various commands."],
         },
     ]
 }

@@ -1,7 +1,7 @@
 use super::Command;
 use rand::seq;
 
-use ::help;
+use help;
 
 const ORACLE_ANSWERS: [&str; 24] = [
     // Positive answeers
@@ -35,16 +35,15 @@ const ORACLE_ANSWERS: [&str; 24] = [
 
 pub fn hint() -> Vec<help::Hint>
 {
-    vec![
-        help::Hint {
-            clue: "oracle",
-            blurb: "Return a random answer from the oracle",
-            help: vec![
-                "This command returns a string randomly selected from the Oracle's set of",
-                "9 positive answers, 9 negative answers, or 6 indeterminate answers."
-            ],
-        }
-    ]
+    vec![help::Hint {
+        cmd: "oracle",
+        clue: "oracle",
+        blurb: "Return a random answer from the oracle",
+        help: vec![
+            "This command returns a string randomly selected from the Oracle's set of",
+            "9 positive answers, 9 negative answers, or 6 indeterminate answers.",
+        ],
+    }]
 }
 
 pub fn command() -> Result<Command, String>

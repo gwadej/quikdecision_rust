@@ -32,13 +32,13 @@ pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
     match &cmd[..]
     {
         "coin" | "flip" => coin::command(),
-        "pick" | "choose" => pick::command(&mut args),
+        "pick" => pick::command(&mut args),
         "percent" | "likely" => percent::command(&mut args),
-        "roll" | "dice" => dice::command(&mut args),
+        "roll"  => dice::command(&mut args),
         "select" => select::command(&mut args),
         "oracle" => oracle::command(),
-        "help" => help::usage(progname, all_hints),
-        "man" => help::help(progname, all_hints),
+        "help" => help::usage(progname, args.next(), all_hints),
+        "man" => help::help(progname, args.next(), all_hints),
         _ => Err(String::from("Unknown command")),
     }
 }

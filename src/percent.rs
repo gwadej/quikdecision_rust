@@ -1,7 +1,7 @@
 use super::Command;
+use help;
 use rand::Rng;
 use std::env;
-use ::help;
 
 pub fn command(args: &mut env::Args) -> Result<Command, String>
 {
@@ -36,21 +36,23 @@ pub fn hint() -> Vec<help::Hint>
 {
     vec![
         help::Hint {
+            cmd: "percent",
             clue: "percent {num}",
             blurb: "True {num} percent of the time, otherwise False",
             help: vec![
                 "Treats the supplied integer as a percentage and returns the string 'True'",
-                "that percent of the time. Otherwise, return the string 'False'."
+                "that percent of the time. Otherwise, return the string 'False'.",
             ],
         },
         help::Hint {
+            cmd: "likely",
             clue: "likely {num}",
             blurb: "alias for percent",
             help: vec![
                 "Treats the supplied integer as a percentage and returns the string 'True'",
-                "that percent of the time. Otherwise, return the string 'False'."
+                "that percent of the time. Otherwise, return the string 'False'.",
             ],
-        }
+        },
     ]
 }
 
