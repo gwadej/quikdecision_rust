@@ -86,7 +86,7 @@ fn list_from_file(filename: &str) -> Result<StrVec, String>
     {
         return Err(String::from("Cannot read supplied file"));
     }
-    for a in contents.split("\n").filter(|line| line.len() > 0)
+    for a in contents.split("\n").filter(|line| !line.is_empty())
     {
         strvec.push(String::from(a));
     }

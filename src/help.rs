@@ -30,7 +30,7 @@ fn print_help(hints: Vec<Hint>)
 {
     for h in hints
     {
-        if h.help.len() == 0
+        if h.help.is_empty()
         {
             print_help_seg(h.clue, &vec![h.blurb]);
         }

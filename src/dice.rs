@@ -73,7 +73,7 @@ fn get_expr(args: &mut env::Args) -> Result<String, String>
     {
         expr.push_str(&e);
     }
-    if expr.len() == 0
+    if expr.is_empty()
     {
         return Err(String::from("Missing dice expression"));
     }
@@ -121,7 +121,7 @@ fn roll_die(rng: &mut rand::ThreadRng, sides: u32) -> RollStep
 
 fn accum_roll(acc: RollStep, roll: RollStep, sep: &str) -> RollStep
 {
-    if acc.0.len() == 0
+    if acc.0.is_empty()
     {
         return (roll.0, acc.1 + roll.1);
     }
