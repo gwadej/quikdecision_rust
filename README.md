@@ -1,7 +1,6 @@
 # Quick Decision in Rust
 
-A new implementation of a program I wrote for my wife back in the '90s to
-make random decisions.
+Make random decisions using one of a few different methods.
 
 ## Interface
 
