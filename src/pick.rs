@@ -2,35 +2,23 @@ use super::Command;
 use help;
 use rand::Rng;
 use std::env;
+use super::int_arg;
 
 pub fn command(args: &mut env::Args) -> Result<Command, String>
 {
-    let low = match super::int_arg::<i32>(args)
+    match (int_arg::<i32>(args), int_arg::<i32>(args))
     {
-        Ok(val) => val,
-        Err(e) => return Err(format!("low arg: {}", e)),
-    };
-    let high = match super::int_arg::<i32>(args)
-    {
-        Ok(val) => val,
-        Err(e) => return Err(format!("high arg: {}", e)),
-    };
-    if low == high
-    {
-        return Err(String::from("High parameter cannot equal low parameter"));
+        (Ok(low), Ok(high)) if low == high => return Err(String::from("High parameter cannot equal low parameter")),
+        (Ok(low), Ok(high)) if low > high => Ok(Command::PickNumber(high, low)),
+        (Ok(low), Ok(high)) => Ok(Command::PickNumber(low, high)),
+        (Err(e),  _) => return Err(format!("low arg: {}", e)),
+        (_,       Err(e)) => return Err(format!("high arg: {}", e)),
     }
-    if low > high
-    {
-        return Ok(Command::PickNumber(high, low));
-    }
-
-    Ok(Command::PickNumber(low, high))
 }
 
 pub fn choose(low: i32, high: i32) -> String
 {
-    let guess = rand::thread_rng().gen_range(low, high + 1);
-    guess.to_string()
+    rand::thread_rng().gen_range(low, high + 1).to_string()
 }
 
 pub fn hint() -> Vec<help::Hint>
@@ -68,8 +56,8 @@ mod tests
     #[test]
     fn choose_a_larger_number()
     {
-        let low: u32 = 2;
-        let high: u32 = 10;
+        let low: i32 = 2;
+        let high: i32 = 10;
         let expected = ["2", "3", "4", "5", "6", "7", "8", "9", "10"];
 
         for _ in 1..=NUM_TRIES

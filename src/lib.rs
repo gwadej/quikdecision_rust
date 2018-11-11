@@ -2,6 +2,7 @@ extern crate rand;
 extern crate regex;
 
 use std::env;
+use rand::seq;
 
 mod coin;
 mod dice;
@@ -72,6 +73,13 @@ impl Decider for Command
             Command::Oracle => oracle::spake(),
         }
     }
+}
+
+pub fn pick_one<T>(choices: &[T]) -> String
+    where T : std::string::ToString + std::clone::Clone
+{
+    let mut rng = rand::thread_rng();
+    seq::sample_slice(&mut rng, choices, 1)[0].to_string()
 }
 
 pub fn int_arg<T>(args: &mut env::Args) -> Result<T, String>

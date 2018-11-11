@@ -1,5 +1,4 @@
 use super::Command;
-use rand::seq;
 
 use help;
 
@@ -53,7 +52,6 @@ pub fn command() -> Result<Command, String>
 
 pub fn spake() -> String
 {
-    let mut rng = rand::thread_rng();
-    let ans = seq::sample_slice(&mut rng, &ORACLE_ANSWERS, 1)[0];
+    let ans = super::pick_one(&ORACLE_ANSWERS);
     format!("Thus spoke the Oracle: \"{}\"", ans)
 }

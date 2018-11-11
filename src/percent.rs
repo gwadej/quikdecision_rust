@@ -5,31 +5,22 @@ use std::env;
 
 pub fn command(args: &mut env::Args) -> Result<Command, String>
 {
-    let likely = match super::int_arg::<u32>(args)
+    match super::int_arg::<u32>(args)
     {
-        Ok(val) => val,
+        Ok(likely) if likely > 100 =>
+            return Err(String::from("percent arg cannot be greater than 100 percent")),
+        Ok(likely) => Ok(Command::PercentTrue(likely)),
         Err(e) => return Err(format!("percentage: {}", e)),
-    };
-    if likely > 100
-    {
-        return Err(String::from(
-            "percent arg cannot be greater than 100 percent",
-        ));
     }
-    Ok(Command::PercentTrue(likely))
 }
 
 pub fn choose(likely: u32) -> String
 {
-    let ans = if rand::thread_rng().gen_bool(likely as f64 / 100.0)
+    match rand::thread_rng().gen_bool(likely as f64 / 100.0)
     {
-        "True"
+        true => String::from("True"),
+        _    => String::from("False"),
     }
-    else
-    {
-        "False"
-    };
-    String::from(ans)
 }
 
 pub fn hint() -> Vec<help::Hint>

@@ -45,7 +45,7 @@ fn uint_from_match(m: regex::Match) -> Result<u32, String>
 {
     match m.as_str()
     {
-        "" => Ok(1),
+        ""   => Ok(1),
         nstr => nstr
             .parse::<u32>()
             .map_err(|_| String::from("Non-number somehow passed parsing")),
@@ -67,12 +67,8 @@ fn make_exploding_dice(dice: regex::Match, sides: regex::Match) -> Result<Roll, 
 
 fn get_expr(args: &mut env::Args) -> Result<String, String>
 {
-    let mut expr = String::new();
+    let expr = args.collect::<Vec<String>>().join("");
 
-    for e in args
-    {
-        expr.push_str(&e);
-    }
     if expr.is_empty()
     {
         return Err(String::from("Missing dice expression"));
@@ -115,8 +111,7 @@ pub fn command(args: &mut env::Args) -> Result<Command, String>
 
 fn roll_die(rng: &mut rand::ThreadRng, sides: u32) -> RollStep
 {
-    let n = rng.gen_range(1, sides + 1);
-    (n.to_string(), n)
+    incr_step(rng.gen_range(1, sides + 1))
 }
 
 fn accum_roll(acc: RollStep, roll: RollStep, sep: &str) -> RollStep
@@ -145,19 +140,13 @@ fn roll_explode_step(num: u32, sides: u32) -> RollStep
         .map(|r| explode(r, sides))
         .map(|r| (format!(" ({}) ", r.0), r.1))
         .fold((String::new(), 0), |acc, r| accum_roll(acc, r, "+"));
-    (format!("{}x{}<{}>", num, sides, trim(out.0)), out.1)
-}
-
-fn trim(instr: String) -> String
-{
-    String::from(instr.trim_start().trim_end())
+    (format!("{}x{}<{}>", num, sides, out.0.trim()), out.1)
 }
 
 fn roll_exploded_step(sides: u32) -> RollStep
 {
     let mut rng = rand::thread_rng();
-    let r = roll_die(&mut rng, sides);
-    explode(r, sides)
+    explode(roll_die(&mut rng, sides), sides)
 }
 
 fn incr_step(num: u32) -> RollStep
@@ -167,10 +156,7 @@ fn incr_step(num: u32) -> RollStep
 
 fn explode(val: RollStep, sides: u32) -> RollStep
 {
-    if val.1 != sides
-    {
-        return val;
-    }
+    if val.1 != sides { return val; }
 
     let roll = roll_exploded_step(sides);
     (format!("{}!+{}", val.0, roll.0), val.1 + roll.1)

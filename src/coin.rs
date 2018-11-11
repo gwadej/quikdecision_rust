@@ -1,5 +1,4 @@
 use help;
-use rand::seq;
 
 use super::Command;
 
@@ -12,10 +11,7 @@ pub fn command() -> Result<Command, String>
 
 pub fn flip() -> String
 {
-    let mut rng = rand::thread_rng();
-    let ans = seq::sample_slice(&mut rng, &COIN_SIDES, 1)[0];
-
-    String::from(ans)
+    super::pick_one(&COIN_SIDES)
 }
 
 pub fn hint() -> Vec<help::Hint>
