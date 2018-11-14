@@ -12,8 +12,9 @@ fn main()
                 match cmd.decide()
                 {
                     Decision::Text(ans) => ans,
+                    Decision::LabeledText{ value, label } => format!("{}: \"{}\"", label, value),
                     Decision::Num(ans) => ans.to_string(),
-                    Decision::AnnotatedNum(ans, extra) => format!("{}: {}", ans, extra),
+                    Decision::AnnotatedNum{ value, extra } => format!("{}: {}", value, extra),
                 }
             )
         },

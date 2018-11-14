@@ -177,5 +177,5 @@ pub fn roll(descr: Vec<Roll>) -> Decision
             Roll::Incr(num) => incr_step(*num),
         })
         .fold((String::new(), 0), |acc, r| accum_roll(acc, r, " + "));
-    Decision::AnnotatedNum(val.1, val.0.to_string())
+    Decision::AnnotatedNum{ value: val.1, extra: val.0.to_string() }
 }

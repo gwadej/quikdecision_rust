@@ -12,6 +12,45 @@ mod percent;
 mod pick;
 mod select;
 
+pub enum Command
+{
+    CoinFlip,
+    PickNumber(i32, i32),
+    PercentTrue(u32),
+    RollDice(Vec<dice::Roll>),
+    Selection(Vec<String>),
+    Oracle,
+}
+
+pub enum Decision
+{
+    Text(String),
+    LabeledText{ value: String, label: String },
+    Num(i32),
+    AnnotatedNum{ value: u32, extra: String },
+}
+
+pub trait Decider
+{
+    fn decide(self) -> Decision;
+}
+
+impl Decider for Command
+{
+    fn decide(self) -> Decision
+    {
+        match self
+        {
+            Command::CoinFlip => coin::flip(),
+            Command::PickNumber(low, high) => pick::choose(low, high),
+            Command::PercentTrue(likely) => percent::choose(likely),
+            Command::RollDice(expr) => dice::roll(expr),
+            Command::Selection(strvec) => select::choose(strvec),
+            Command::Oracle => oracle::choose(),
+        }
+    }
+}
+
 pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
 {
     let progname = args.next().unwrap();
@@ -41,44 +80,6 @@ pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
         "help" => help::usage(progname, args.next(), all_hints),
         "man" => help::help(progname, args.next(), all_hints),
         _ => Err(String::from("Unknown command")),
-    }
-}
-
-pub enum Command
-{
-    CoinFlip,
-    PickNumber(i32, i32),
-    PercentTrue(u32),
-    RollDice(Vec<dice::Roll>),
-    Selection(Vec<String>),
-    Oracle,
-}
-
-pub enum Decision
-{
-    Text(String),
-    Num(i32),
-    AnnotatedNum(u32, String),
-}
-
-pub trait Decider
-{
-    fn decide(self) -> Decision;
-}
-
-impl Decider for Command
-{
-    fn decide(self) -> Decision
-    {
-        match self
-        {
-            Command::CoinFlip => coin::flip(),
-            Command::PickNumber(low, high) => pick::choose(low, high),
-            Command::PercentTrue(likely) => percent::choose(likely),
-            Command::RollDice(expr) => dice::roll(expr),
-            Command::Selection(strvec) => select::choose(strvec),
-            Command::Oracle => oracle::spake(),
-        }
     }
 }
 

@@ -33,6 +33,19 @@ const ORACLE_ANSWERS: [&str; 24] = [
     "I have no answer at this time",
 ];
 
+const ORACLE_LABELS: [&str; 10] = [
+    "Thus spoke the Oracle",
+    "Thus sayeth the Oracle",
+    "The Oracle says",
+    "The Oracle intoned",
+    "On this day, the Oracle says",
+    "It is commonly said",
+    "The voices told me to say",
+    "The elder said",
+    "Would you believe",
+    "The fortune cookie says",
+];
+
 pub fn hint() -> Vec<help::Hint>
 {
     vec![help::Hint {
@@ -53,15 +66,8 @@ pub fn command() -> Result<Command, String>
 
 pub fn choose() -> Decision
 {
-    Decision::Text(super::pick_one(&ORACLE_ANSWERS).to_string())
-}
-
-pub fn spake() -> Decision
-{
-    let ans = match choose()
-    {
-        Decision::Text(ans) => ans,
-        _ => panic!(),
-    };
-    Decision::Text(format!("Thus spoke the Oracle: \"{}\"", ans))
+    Decision::LabeledText{
+        value: ::pick_one(&ORACLE_ANSWERS).to_string(),
+        label: ::pick_one(&ORACLE_LABELS).to_string(),
+    }
 }
