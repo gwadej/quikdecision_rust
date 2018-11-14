@@ -1,7 +1,7 @@
 use ::Command;
 use ::Decision;
-
-use help;
+use ::Hint;
+use ::HintList;
 
 use rand::Rng;
 use std::env;
@@ -22,10 +22,10 @@ pub fn choose(likely: u32) -> Decision
     Decision::Bool(rand::thread_rng().gen_bool(likely as f64 / 100.0))
 }
 
-pub fn hint() -> Vec<help::Hint>
+pub fn hint() -> HintList
 {
     vec![
-        help::Hint {
+        Hint {
             cmd: "percent",
             clue: "percent {num}",
             blurb: "True {num} percent of the time, otherwise False",
@@ -34,7 +34,7 @@ pub fn hint() -> Vec<help::Hint>
                 "that percent of the time. Otherwise, return the string 'False'.",
             ],
         },
-        help::Hint {
+        Hint {
             cmd: "likely",
             clue: "likely {num}",
             blurb: "alias for percent",

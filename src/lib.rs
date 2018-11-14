@@ -22,6 +22,16 @@ pub enum Command
     Oracle,
 }
 
+pub struct Hint
+{
+    pub cmd: &'static str,
+    pub clue: &'static str,
+    pub blurb: &'static str,
+    pub help: Vec<&'static str>,
+}
+
+type HintList = Vec<Hint>;
+
 pub enum Decision
 {
     Text(String),

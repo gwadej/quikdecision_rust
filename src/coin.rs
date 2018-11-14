@@ -1,7 +1,7 @@
 use ::Command;
 use ::Decision;
-
-use help;
+use ::Hint;
+use ::HintList;
 
 const COIN_SIDES: [&str; 2] = ["Heads", "Tails"];
 
@@ -15,10 +15,10 @@ pub fn flip() -> Decision
     Decision::Text(super::pick_one(&COIN_SIDES))
 }
 
-pub fn hint() -> Vec<help::Hint>
+pub fn hint() -> HintList
 {
     vec![
-        help::Hint {
+        Hint {
             cmd: "flip",
             clue: "flip",
             blurb: "50% chance of a Heads or Tails",
@@ -27,7 +27,7 @@ pub fn hint() -> Vec<help::Hint>
                 "of returning either one.",
             ],
         },
-        help::Hint {
+        Hint {
             cmd: "coin",
             clue: "coin",
             blurb: "alias for flip",

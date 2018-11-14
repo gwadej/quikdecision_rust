@@ -1,7 +1,7 @@
 use ::Command;
 use ::Decision;
-
-use help;
+use ::Hint;
+use ::HintList;
 
 const ORACLE_ANSWERS: [&str; 24] = [
     // Positive answeers
@@ -46,9 +46,9 @@ const ORACLE_LABELS: [&str; 10] = [
     "The fortune cookie says",
 ];
 
-pub fn hint() -> Vec<help::Hint>
+pub fn hint() -> HintList
 {
-    vec![help::Hint {
+    vec![Hint {
         cmd: "oracle",
         clue: "oracle",
         blurb: "Return a random answer from the oracle",

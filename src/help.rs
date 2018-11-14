@@ -1,12 +1,7 @@
-pub struct Hint
-{
-    pub cmd: &'static str,
-    pub clue: &'static str,
-    pub blurb: &'static str,
-    pub help: Vec<&'static str>,
-}
+use ::Hint;
+use ::HintList;
 
-fn print_hint(hints: Vec<Hint>)
+fn print_hint(hints: HintList)
 {
     for h in hints
     {
@@ -26,7 +21,7 @@ fn print_hint_seg(clue: &str, blurb: &str)
     }
 }
 
-fn print_help(hints: Vec<Hint>)
+fn print_help(hints: HintList)
 {
     for h in hints
     {
@@ -50,7 +45,7 @@ fn print_help_seg(clue: &str, help: &Vec<&str>)
     }
 }
 
-pub fn usage(progname: String, cmd: Option<String>, hints: Vec<Vec<Hint>>) -> !
+pub fn usage(progname: String, cmd: Option<String>, hints: Vec<HintList>) -> !
 {
     match cmd
     {
@@ -73,7 +68,7 @@ pub fn usage(progname: String, cmd: Option<String>, hints: Vec<Vec<Hint>>) -> !
     std::process::exit(1);
 }
 
-fn find_hints<'a>(hints: &'a Vec<Vec<Hint>>, cmd: String) -> Vec<&'a Hint>
+fn find_hints<'a>(hints: &'a Vec<HintList>, cmd: String) -> Vec<&'a Hint>
 {
     hints.iter()
         .flat_map(|hvec| hvec.iter())
@@ -81,7 +76,7 @@ fn find_hints<'a>(hints: &'a Vec<Vec<Hint>>, cmd: String) -> Vec<&'a Hint>
         .collect()
 }
 
-pub fn help(progname: String, cmd: Option<String>, hints: Vec<Vec<Hint>>) -> !
+pub fn help(progname: String, cmd: Option<String>, hints: Vec<HintList>) -> !
 {
     match cmd
     {
@@ -104,7 +99,7 @@ pub fn help(progname: String, cmd: Option<String>, hints: Vec<Vec<Hint>>) -> !
     std::process::exit(1);
 }
 
-pub fn hint() -> Vec<Hint>
+pub fn hint() -> HintList
 {
     vec![
         Hint {

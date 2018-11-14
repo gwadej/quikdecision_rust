@@ -1,7 +1,7 @@
 use ::Command;
 use ::Decision;
-
-use help;
+use ::Hint;
+use ::HintList;
 
 use rand::Rng;
 use regex::Regex;
@@ -16,10 +16,10 @@ pub enum Roll
 
 type RollStep = (String, u32);
 
-pub fn hint() -> Vec<help::Hint>
+pub fn hint() -> HintList
 {
     vec![
-        help::Hint {
+        Hint {
             cmd: "roll",
             clue: "roll {dice expr}",
             blurb: "Roll the described combination of dice",

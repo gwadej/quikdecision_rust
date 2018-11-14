@@ -1,7 +1,7 @@
 use ::Command;
 use ::Decision;
-
-use help;
+use ::Hint;
+use ::HintList;
 
 use rand::Rng;
 use std::env;
@@ -24,10 +24,10 @@ pub fn choose(low: i32, high: i32) -> Decision
     Decision::Num(rand::thread_rng().gen_range(low, high + 1))
 }
 
-pub fn hint() -> Vec<help::Hint>
+pub fn hint() -> HintList
 {
     vec![
-        help::Hint {
+        Hint {
             cmd: "pick",
             clue: "pick {low} {high}",
             blurb: "pick a number between {low} and {high}",

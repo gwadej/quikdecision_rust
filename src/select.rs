@@ -1,7 +1,7 @@
 use ::Command;
 use ::Decision;
-
-use help;
+use ::Hint;
+use ::HintList;
 
 use std::env;
 use std::fs::File;
@@ -37,10 +37,10 @@ pub fn command(args: &mut env::Args) -> Result<Command, String>
     }
 }
 
-pub fn hint() -> Vec<help::Hint>
+pub fn hint() -> HintList
 {
     vec![
-        help::Hint {
+        Hint {
             cmd: "select",
             clue: "select {strs}",
             blurb: "Select one of two or more strings supplied as arguments",
@@ -49,7 +49,7 @@ pub fn hint() -> Vec<help::Hint>
                 "at least two strings to choose between.",
             ],
         },
-        help::Hint {
+        Hint {
             cmd: "select",
             clue: "select @{filename}",
             blurb: "Select one of the lines in the file specified",
