@@ -28,6 +28,7 @@ pub enum Decision
     LabeledText{ value: String, label: String },
     Num(i32),
     AnnotatedNum{ value: u32, extra: String },
+    Bool(bool),
 }
 
 pub trait Decider

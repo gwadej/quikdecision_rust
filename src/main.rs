@@ -15,6 +15,7 @@ fn main()
                     Decision::LabeledText{ value, label } => format!("{}: \"{}\"", label, value),
                     Decision::Num(ans) => ans.to_string(),
                     Decision::AnnotatedNum{ value, extra } => format!("{}: {}", value, extra),
+                    Decision::Bool(ans) => ans.to_string(),
                 }
             )
         },

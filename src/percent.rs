@@ -19,11 +19,7 @@ pub fn command(args: &mut env::Args) -> Result<Command, String>
 
 pub fn choose(likely: u32) -> Decision
 {
-    match rand::thread_rng().gen_bool(likely as f64 / 100.0)
-    {
-        true => Decision::Text(String::from("True")),
-        _    => Decision::Text(String::from("False")),
-    }
+    Decision::Bool(rand::thread_rng().gen_bool(likely as f64 / 100.0))
 }
 
 pub fn hint() -> Vec<help::Hint>
