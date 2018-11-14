@@ -1,5 +1,8 @@
-use super::Command;
+use ::Command;
+use ::Decision;
+
 use help;
+
 use rand::Rng;
 use regex::Regex;
 use std::env;
@@ -162,8 +165,9 @@ fn explode(val: RollStep, sides: u32) -> RollStep
     (format!("{}!+{}", val.0, roll.0), val.1 + roll.1)
 }
 
-pub fn roll(descr: Vec<Roll>) -> String
+pub fn roll(descr: Vec<Roll>) -> Decision
 {
+    // { value: roll, description: roll_string }
     let val = descr
         .iter()
         .map(|ref x| match x
@@ -173,5 +177,5 @@ pub fn roll(descr: Vec<Roll>) -> String
             Roll::Incr(num) => incr_step(*num),
         })
         .fold((String::new(), 0), |acc, r| accum_roll(acc, r, " + "));
-    format!("{}: {}", val.1, val.0)
+    Decision::AnnotatedNum(val.1, val.0.to_string())
 }

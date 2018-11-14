@@ -1,5 +1,8 @@
-use super::Command;
+use ::Command;
+use ::Decision;
+
 use help;
+
 use rand::Rng;
 use std::env;
 
@@ -14,12 +17,12 @@ pub fn command(args: &mut env::Args) -> Result<Command, String>
     }
 }
 
-pub fn choose(likely: u32) -> String
+pub fn choose(likely: u32) -> Decision
 {
     match rand::thread_rng().gen_bool(likely as f64 / 100.0)
     {
-        true => String::from("True"),
-        _    => String::from("False"),
+        true => Decision::Text(String::from("True")),
+        _    => Decision::Text(String::from("False")),
     }
 }
 

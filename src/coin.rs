@@ -1,6 +1,7 @@
-use help;
+use ::Command;
+use ::Decision;
 
-use super::Command;
+use help;
 
 const COIN_SIDES: [&str; 2] = ["Heads", "Tails"];
 
@@ -9,9 +10,9 @@ pub fn command() -> Result<Command, String>
     Ok(Command::CoinFlip)
 }
 
-pub fn flip() -> String
+pub fn flip() -> Decision
 {
-    super::pick_one(&COIN_SIDES)
+    Decision::Text(super::pick_one(&COIN_SIDES))
 }
 
 pub fn hint() -> Vec<help::Hint>

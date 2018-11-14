@@ -1,5 +1,8 @@
-use super::Command;
+use ::Command;
+use ::Decision;
+
 use help;
+
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
@@ -82,7 +85,7 @@ fn list_from_file(filename: &str) -> Result<StrVec, String>
                .collect::<Vec<String>>())
 }
 
-pub fn choose(strvec: StrVec) -> String
+pub fn choose(strvec: StrVec) -> Decision
 {
-    super::pick_one(&strvec[..])
+    Decision::Text(super::pick_one(&strvec[..]))
 }

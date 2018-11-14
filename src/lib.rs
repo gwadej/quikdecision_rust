@@ -54,14 +54,21 @@ pub enum Command
     Oracle,
 }
 
+pub enum Decision
+{
+    Text(String),
+    Num(i32),
+    AnnotatedNum(u32, String),
+}
+
 pub trait Decider
 {
-    fn decide(self) -> String;
+    fn decide(self) -> Decision;
 }
 
 impl Decider for Command
 {
-    fn decide(self) -> String
+    fn decide(self) -> Decision
     {
         match self
         {

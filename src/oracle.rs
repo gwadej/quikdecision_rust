@@ -1,4 +1,5 @@
-use super::Command;
+use ::Command;
+use ::Decision;
 
 use help;
 
@@ -50,8 +51,17 @@ pub fn command() -> Result<Command, String>
     Ok(Command::Oracle)
 }
 
-pub fn spake() -> String
+pub fn choose() -> Decision
 {
-    let ans = super::pick_one(&ORACLE_ANSWERS);
-    format!("Thus spoke the Oracle: \"{}\"", ans)
+    Decision::Text(super::pick_one(&ORACLE_ANSWERS).to_string())
+}
+
+pub fn spake() -> Decision
+{
+    let ans = match choose()
+    {
+        Decision::Text(ans) => ans,
+        _ => panic!(),
+    };
+    Decision::Text(format!("Thus spoke the Oracle: \"{}\"", ans))
 }

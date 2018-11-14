@@ -1,5 +1,8 @@
-use super::Command;
+use ::Command;
+use ::Decision;
+
 use help;
+
 use rand::Rng;
 use std::env;
 use super::int_arg;
@@ -16,9 +19,9 @@ pub fn command(args: &mut env::Args) -> Result<Command, String>
     }
 }
 
-pub fn choose(low: i32, high: i32) -> String
+pub fn choose(low: i32, high: i32) -> Decision
 {
-    rand::thread_rng().gen_range(low, high + 1).to_string()
+    Decision::Num(rand::thread_rng().gen_range(low, high + 1))
 }
 
 pub fn hint() -> Vec<help::Hint>
