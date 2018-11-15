@@ -111,11 +111,11 @@ pub fn pick_one<T>(choices: &[T]) -> String
     seq::sample_slice(&mut rng, choices, 1)[0].to_string()
 }
 
-pub fn int_arg<T>(args: &mut env::Args) -> Result<T, String>
+pub fn int_arg<T>(opt: Option<String>) -> Result<T, String>
 where
     T: std::str::FromStr,
 {
-    match args.next()
+    match opt
     {
         None => Err(String::from("Missing required parameter")),
         Some(arg) => match arg.parse::<T>()

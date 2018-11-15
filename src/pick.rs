@@ -2,23 +2,9 @@ use ::Command;
 use ::Decision;
 use ::Hint;
 use ::HintList;
+use ::int_arg;
 
 use rand::Rng;
-
-pub fn int_arg<T>(opt: Option<String>) -> Result<T, String>
-where
-    T: std::str::FromStr,
-{
-    match opt
-    {
-        None => Err(String::from("Missing required parameter")),
-        Some(arg) => match arg.parse::<T>()
-        {
-            Ok(a) => Ok(a),
-            Err(_) => Err(String::from("Argument not a valid integer")),
-        },
-    }
-}
 
 pub fn command(low: Option<String>, high: Option<String>) -> Result<Command, String>
 {
