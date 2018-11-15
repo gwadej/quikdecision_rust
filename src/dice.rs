@@ -5,7 +5,6 @@ use ::HintList;
 
 use rand::Rng;
 use regex::Regex;
-use std::env;
 
 pub enum Roll
 {
@@ -68,20 +67,12 @@ fn make_exploding_dice(dice: regex::Match, sides: regex::Match) -> Result<Roll, 
     ))
 }
 
-fn get_expr(args: &mut env::Args) -> Result<String, String>
+pub fn command(expr: String) -> Result<Command, String>
 {
-    let expr = args.collect::<Vec<String>>().join("");
-
     if expr.is_empty()
     {
         return Err(String::from("Missing dice expression"));
     }
-    Ok(expr)
-}
-
-pub fn command(args: &mut env::Args) -> Result<Command, String>
-{
-    let expr = get_expr(args)?;
 
     let re = Regex::new(r"^\s*(?:(?P<num>(?:[1-9][0-9]*)?)(?P<type>[dDxX])(?P<sides>4|6|8|10|12|20|100)|(?P<val>[1-9][0-9]*))\s*$").unwrap();
     let mut descr: Vec<Roll> = vec![];

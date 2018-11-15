@@ -3,16 +3,16 @@ use ::Decision;
 use ::Hint;
 use ::HintList;
 
-use std::env;
 use std::fs::File;
 use std::io::prelude::*;
 use std::iter::once;
 
 type StrVec = Vec<String>;
 
-pub fn command(args: &mut env::Args) -> Result<Command, String>
+pub fn command(args: StrVec) -> Result<Command, String>
 {
-    let first = match args.next()
+    let mut it = args.into_iter();
+    let first = match it.next()
     {
         Some(s) => s,
         None => return Err(String::from("Missing required strings")),
@@ -24,7 +24,7 @@ pub fn command(args: &mut env::Args) -> Result<Command, String>
     }
     else
     {
-        list_from_args(first, args)?
+        once(first).chain(it).collect::<StrVec>()
     };
 
     if strvec.len() > 1
@@ -62,11 +62,6 @@ pub fn hint() -> HintList
     ]
 }
 
-fn list_from_args(first: String, args: &mut env::Args) -> Result<StrVec, String>
-{
-    Ok(once(first).chain(args).collect::<Vec<String>>())
-}
-
 fn list_from_file(filename: &str) -> Result<StrVec, String>
 {
     let mut file = match File::open(filename)
@@ -82,7 +77,7 @@ fn list_from_file(filename: &str) -> Result<StrVec, String>
     Ok(contents.split("\n")
                .filter(|line| !line.is_empty())
                .map(|s| s.to_string())
-               .collect::<Vec<String>>())
+               .collect::<StrVec>())
 }
 
 pub fn choose(strvec: StrVec) -> Decision

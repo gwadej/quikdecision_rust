@@ -83,15 +83,25 @@ pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
     match &cmd[..]
     {
         "coin" | "flip" => coin::command(),
-        "pick" => pick::command(&mut args),
-        "percent" | "likely" => percent::command(&mut args),
-        "roll"  => dice::command(&mut args),
-        "select" => select::command(&mut args),
+        "pick" => pick::command(args.next(), args.next()),
+        "percent" | "likely" => percent::command(args.next()),
+        "roll"  => dice::command(args_to_string(&mut args)),
+        "select" => select::command(args_to_string_vec(&mut args)),
         "oracle" => oracle::command(),
         "help" => help::usage(progname, args.next(), all_hints),
         "man" => help::help(progname, args.next(), all_hints),
         _ => Err(String::from("Unknown command")),
     }
+}
+
+fn args_to_string(args: &mut env::Args) -> String
+{
+    args.collect::<Vec<String>>().join(" ")
+}
+
+fn args_to_string_vec(args: &mut env::Args) -> Vec<String>
+{
+    args.into_iter().collect::<Vec<String>>()
 }
 
 pub fn pick_one<T>(choices: &[T]) -> String

@@ -4,11 +4,25 @@ use ::Hint;
 use ::HintList;
 
 use rand::Rng;
-use std::env;
 
-pub fn command(args: &mut env::Args) -> Result<Command, String>
+pub fn int_arg<T>(opt: Option<String>) -> Result<T, String>
+where
+    T: std::str::FromStr,
 {
-    match super::int_arg::<u32>(args)
+    match opt
+    {
+        None => Err(String::from("Missing required parameter")),
+        Some(arg) => match arg.parse::<T>()
+        {
+            Ok(a) => Ok(a),
+            Err(_) => Err(String::from("Argument not a valid integer")),
+        },
+    }
+}
+
+pub fn command(likely: Option<String>) -> Result<Command, String>
+{
+    match int_arg::<u32>(likely)
     {
         Ok(likely) if likely > 100 =>
             return Err(String::from("percent arg cannot be greater than 100 percent")),

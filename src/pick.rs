@@ -4,12 +4,25 @@ use ::Hint;
 use ::HintList;
 
 use rand::Rng;
-use std::env;
-use super::int_arg;
 
-pub fn command(args: &mut env::Args) -> Result<Command, String>
+pub fn int_arg<T>(opt: Option<String>) -> Result<T, String>
+where
+    T: std::str::FromStr,
 {
-    match (int_arg::<i32>(args), int_arg::<i32>(args))
+    match opt
+    {
+        None => Err(String::from("Missing required parameter")),
+        Some(arg) => match arg.parse::<T>()
+        {
+            Ok(a) => Ok(a),
+            Err(_) => Err(String::from("Argument not a valid integer")),
+        },
+    }
+}
+
+pub fn command(low: Option<String>, high: Option<String>) -> Result<Command, String>
+{
+    match (int_arg::<i32>(low), int_arg::<i32>(high))
     {
         (Ok(low), Ok(high)) if low == high => return Err(String::from("High parameter cannot equal low parameter")),
         (Ok(low), Ok(high)) if low > high => Ok(Command::PickNumber(high, low)),
