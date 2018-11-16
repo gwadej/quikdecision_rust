@@ -83,8 +83,13 @@ pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
     match &cmd[..]
     {
         "coin" | "flip" => coin::command(),
-        "pick" => pick::command(args.next(), args.next()),
-        "percent" | "likely" => percent::command(args.next()),
+        "pick" => match (int_arg::<i32>(args.next()), int_arg::<i32>(args.next()))
+        {
+            (Ok(low), Ok(high)) => pick::command(low, high),
+            (Err(e),  _) => return Err(format!("low arg: {}", e)),
+            (_,       Err(e)) => return Err(format!("high arg: {}", e)),
+        },
+        "percent" | "likely" => percent::command(int_arg::<u32>(args.next())?),
         "roll"  => dice::command(args_to_string(&mut args)),
         "select" => select::command(args_to_string_vec(&mut args)),
         "oracle" => oracle::command(),

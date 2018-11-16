@@ -2,22 +2,22 @@ use ::Command;
 use ::Decision;
 use ::Hint;
 use ::HintList;
-use ::int_arg;
 
 use rand::Rng;
 
-pub fn command(low: Option<String>, high: Option<String>) -> Result<Command, String>
+/// Create a PickNumber command based on the two supplied values
+/// Return either the command or an error if the parameters are not appropriate.
+pub fn command(low: i32, high: i32) -> Result<Command, String>
 {
-    match (int_arg::<i32>(low), int_arg::<i32>(high))
+    match (low, high)
     {
-        (Ok(low), Ok(high)) if low == high => return Err(String::from("High parameter cannot equal low parameter")),
-        (Ok(low), Ok(high)) if low > high => Ok(Command::PickNumber(high, low)),
-        (Ok(low), Ok(high)) => Ok(Command::PickNumber(low, high)),
-        (Err(e),  _) => return Err(format!("low arg: {}", e)),
-        (_,       Err(e)) => return Err(format!("high arg: {}", e)),
+        (l, h) if l == h => return Err(String::from("High parameter cannot equal low parameter")),
+        (l, h) if l > h => Ok(Command::PickNumber(h, l)),
+        (l, h) => Ok(Command::PickNumber(l, h)),
     }
 }
 
+/// Return a numeric Decision with a value between low and high (inclusive).
 pub fn choose(low: i32, high: i32) -> Decision
 {
     Decision::Num(rand::thread_rng().gen_range(low, high + 1))

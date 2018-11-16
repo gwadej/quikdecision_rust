@@ -2,21 +2,22 @@ use ::Command;
 use ::Decision;
 use ::Hint;
 use ::HintList;
-use ::int_arg;
 
 use rand::Rng;
 
-pub fn command(likely: Option<String>) -> Result<Command, String>
+/// Create a PercentTrue Command based on the supplied percent value.
+/// Returns the command or an error specifying an invald parameter.
+pub fn command(likely: u32) -> Result<Command, String>
 {
-    match int_arg::<u32>(likely)
+    match likely
     {
-        Ok(likely) if likely > 100 =>
-            return Err(String::from("percent arg cannot be greater than 100 percent")),
-        Ok(likely) => Ok(Command::PercentTrue(likely)),
-        Err(e) => return Err(format!("percentage: {}", e)),
+        0 => Err(String::from("percent arg cannot be 0")),
+        num if num > 100 => Err(String::from("percent arg cannot be greater than 100 percent")),
+        num => Ok(Command::PercentTrue(num))
     }
 }
 
+/// Return a boolean Decision with a true value likely% of the time.
 pub fn choose(likely: u32) -> Decision
 {
     Decision::Bool(rand::thread_rng().gen_bool(likely as f64 / 100.0))
