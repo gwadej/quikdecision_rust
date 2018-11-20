@@ -2,6 +2,7 @@ use ::Command;
 use ::Decision;
 use ::Hint;
 use ::HintList;
+use ::ApiDoc;
 
 use rand::Rng;
 
@@ -21,6 +22,19 @@ pub fn command(low: i32, high: i32) -> Result<Command, String>
 pub fn choose(low: i32, high: i32) -> Decision
 {
     Decision::Num(rand::thread_rng().gen_range(low, high + 1))
+}
+
+pub fn api_doc() -> ApiDoc
+{
+    ApiDoc {
+        name: "pick",
+        params: vec!["low", "high"],
+        hint: "pick a number between {low} and {high}",
+        help: vec![
+            "Selects a number between two supplied values (inclusive) with equal probability.",
+            "The two numbers cannot be the same.",
+        ],
+    }
 }
 
 pub fn hint() -> HintList

@@ -2,6 +2,7 @@ use ::Command;
 use ::Decision;
 use ::Hint;
 use ::HintList;
+use ::ApiDoc;
 
 const ORACLE_ANSWERS: [&str; 24] = [
     // Positive answeers
@@ -45,6 +46,19 @@ const ORACLE_LABELS: [&str; 10] = [
     "Would you believe",
     "The fortune cookie says",
 ];
+
+pub fn api_doc() -> ApiDoc
+{
+    ApiDoc {
+        name: "oracle",
+        params: vec![],
+        hint: "Return a random answer from the oracle",
+        help: vec![
+            "This command returns a string randomly selected from the Oracle's set of",
+            "9 positive answers, 9 negative answers, or 6 indeterminate answers.",
+        ],
+    }
+}
 
 pub fn hint() -> HintList
 {

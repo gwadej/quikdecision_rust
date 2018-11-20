@@ -2,38 +2,37 @@ use ::Command;
 use ::Decision;
 use ::Hint;
 use ::HintList;
-
-use std::fs::File;
-use std::io::prelude::*;
-use std::iter::once;
+use ::ApiDoc;
 
 type StrVec = Vec<String>;
 
-pub fn command(args: StrVec) -> Result<Command, String>
+pub fn command(strings: StrVec) -> Result<Command, String>
 {
-    let mut it = args.into_iter();
-    let first = match it.next()
+    if strings.is_empty()
     {
-        Some(s) => s,
-        None => return Err(String::from("Missing required strings")),
-    };
-
-    let strvec = if first.starts_with("@")
-    {
-        list_from_file(&first[1..])?
+        return Err(String::from("Missing required strings"));
     }
-    else
-    {
-        once(first).chain(it).collect::<StrVec>()
-    };
 
-    if strvec.len() > 1
+    if strings.len() > 1
     {
-        Ok(Command::Selection(strvec))
+        Ok(Command::Selection(strings))
     }
     else
     {
         Err(String::from("Must supply at least two strings"))
+    }
+}
+
+pub fn api_doc() -> ApiDoc
+{
+    ApiDoc {
+        name: "select",
+        params: vec!["strs"],
+        hint: "Select one of two or more strings supplied as arguments",
+        help: vec![
+            "Selects one of the supplied strings with equal probability. There must be",
+            "at least two strings to choose between.",
+        ],
     }
 }
 
@@ -60,24 +59,6 @@ pub fn hint() -> HintList
             ],
         },
     ]
-}
-
-fn list_from_file(filename: &str) -> Result<StrVec, String>
-{
-    let mut file = match File::open(filename)
-    {
-        Ok(f) => f,
-        Err(_) => return Err(String::from("Cannot open supplied file")),
-    };
-    let mut contents = String::new();
-    if let Err(_) = file.read_to_string(&mut contents)
-    {
-        return Err(String::from("Cannot read supplied file"));
-    }
-    Ok(contents.split("\n")
-               .filter(|line| !line.is_empty())
-               .map(|s| s.to_string())
-               .collect::<StrVec>())
 }
 
 pub fn choose(strvec: StrVec) -> Decision

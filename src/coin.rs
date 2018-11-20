@@ -2,6 +2,7 @@ use ::Command;
 use ::Decision;
 use ::Hint;
 use ::HintList;
+use ::ApiDoc;
 
 const COIN_SIDES: [&str; 2] = ["Heads", "Tails"];
 
@@ -13,6 +14,19 @@ pub fn command() -> Result<Command, String>
 pub fn flip() -> Decision
 {
     Decision::Text(super::pick_one(&COIN_SIDES))
+}
+
+pub fn api_doc() -> ApiDoc
+{
+    ApiDoc {
+        name: "coin",
+        params: vec![],
+        hint: "50% chance of a Heads or Tails",
+        help: vec![
+            "Returns one of the two strings 'Heads' or 'Tails'. There is an equal probability",
+            "of returning either one.",
+        ],
+    }
 }
 
 pub fn hint() -> HintList

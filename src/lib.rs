@@ -30,6 +30,14 @@ pub struct Hint
     pub help: Vec<&'static str>,
 }
 
+pub struct ApiDoc
+{
+    pub name: &'static str,
+    pub params: Vec<&'static str>,
+    pub hint: &'static str,
+    pub help: Vec<&'static str>,
+}
+
 pub type HintList = Vec<Hint>;
 
 /// The Decision enum encapsulates values returned from the decide method.

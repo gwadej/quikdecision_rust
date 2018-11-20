@@ -2,6 +2,7 @@ use ::Command;
 use ::Decision;
 use ::Hint;
 use ::HintList;
+use ::ApiDoc;
 
 use rand::Rng;
 
@@ -21,6 +22,19 @@ pub fn command(likely: u32) -> Result<Command, String>
 pub fn choose(likely: u32) -> Decision
 {
     Decision::Bool(rand::thread_rng().gen_bool(likely as f64 / 100.0))
+}
+
+pub fn api_doc() -> ApiDoc
+{
+    ApiDoc {
+        name: "percent",
+        params: vec!["num"],
+        hint: "True {num} percent of the time, otherwise False",
+        help: vec![
+            "Treats the supplied integer as a percentage and returns the string 'True'",
+            "that percent of the time. Otherwise, return the string 'False'.",
+        ],
+    }
 }
 
 pub fn hint() -> HintList
