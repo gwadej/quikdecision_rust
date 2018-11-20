@@ -42,16 +42,20 @@ pub fn hint() -> HintList
 mod tests
 {
     const NUM_TRIES: u32 = 3;
+    use ::Decision;
 
     #[test]
     fn choose_a_small_number()
     {
-        let expected = ["1", "2"];
+        let expected = [1, 2];
 
         for _ in 1..=NUM_TRIES
         {
-            let choice = super::choose(1, 2);
-            assert_ne!(expected.iter().find(|&&x| x == choice), None);
+            match super::choose(1, 2)
+            {
+                Decision::Num(choice) => assert_ne!(expected.iter().find(|&&x| x == choice), None),
+                _ => panic!(),
+            }
         }
     }
 
@@ -60,12 +64,15 @@ mod tests
     {
         let low: i32 = 2;
         let high: i32 = 10;
-        let expected = ["2", "3", "4", "5", "6", "7", "8", "9", "10"];
+        let expected = [2, 3, 4, 5, 6, 7, 8, 9, 10];
 
         for _ in 1..=NUM_TRIES
         {
-            let choice = super::choose(low, high);
-            assert_ne!(expected.iter().find(|&&x| x == choice), None);
+            match super::choose(low, high)
+            {
+                Decision::Num(choice) => assert_ne!(expected.iter().find(|&&x| x == choice), None),
+                _ => panic!(),
+            }
         }
     }
 }

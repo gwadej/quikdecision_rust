@@ -43,6 +43,7 @@ pub fn hint() -> HintList
 mod tests
 {
     const NUM_TRIES: u32 = 3;
+    use ::Decision;
 
     #[test]
     fn coin_tosses()
@@ -51,8 +52,12 @@ mod tests
 
         for _ in 1..=NUM_TRIES
         {
-            let flip = super::flip();
-            assert_ne!(expected.iter().find(|&&x| x == flip), None);
+            match super::flip()
+            {
+                Decision::Text(flip) =>
+                    assert_ne!(expected.iter().find(|&&x| x == flip), None),
+                _ => panic!(),
+            }
         }
     }
 }

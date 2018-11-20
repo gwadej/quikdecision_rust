@@ -50,12 +50,13 @@ pub fn hint() -> HintList
 #[cfg(test)]
 mod tests
 {
+    use ::Decision;
     #[test]
     fn percent_test()
     {
         let choices: usize = (1..=1000)
             .map(|_| super::choose(35))
-            .filter(|x| x == "True")
+            .filter(|x| match x { Decision::Bool(true) => true, _ => false, })
             .count();
         assert!(300 <= choices && choices <= 400);
     }
