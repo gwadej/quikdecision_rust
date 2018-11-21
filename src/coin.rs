@@ -27,30 +27,6 @@ pub fn api_doc() -> ApiDoc
     }
 }
 
-//pub fn hint() -> HintList
-//{
-//    vec![
-//        Hint {
-//            cmd: "flip",
-//            clue: "flip",
-//            blurb: "50% chance of a Heads or Tails",
-//            help: vec![
-//                "Returns one of the two strings 'Heads' or 'Tails'. There is an equal probability",
-//                "of returning either one.",
-//            ],
-//        },
-//        Hint {
-//            cmd: "coin",
-//            clue: "coin",
-//            blurb: "alias for flip",
-//            help: vec![
-//                "Returns one of the two strings 'Heads' or 'Tails'. There is an equal probability",
-//                "of returning either one.",
-//            ],
-//        },
-//    ]
-//}
-
 #[cfg(test)]
 mod tests
 {

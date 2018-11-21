@@ -14,6 +14,7 @@ pub enum Roll
 
 type RollStep = (String, u32);
 
+/// Return the documentation object describing the dice decider.
 pub fn api_doc() -> ApiDoc
 {
     ApiDoc {
@@ -40,34 +41,6 @@ pub fn api_doc() -> ApiDoc
     }
 }
 
-//pub fn hint() -> HintList
-//{
-//    vec![
-//        Hint {
-//            cmd: "roll",
-//            clue: "roll {dice expr}",
-//            blurb: "Roll the described combination of dice",
-//            help: vec![
-//                "Roll the described combination of dice, returning a number and description of the",
-//                "roll. The {dice expr} is a combination of terms of one of three forms joined by +:",
-//                "  - {n}d{s}: roll n s-sided dice (3d6)",
-//                "  - {n}x{s}: roll n s-sided exploding dice (2x8)",
-//                "  - {n}: an increment.",
-//                "The number of sides support are 4, 6, 8, 10, 12, 20, or 100. Exploding dice work",
-//                "much like normal, except when a die rolls the maximum value for the die, then it",
-//                "is re-rolled to generate a value to add to the original roll. This may happen more",
-//                "than once.",
-//                "The return is the sum of all of the rolls followed by a string representing the",
-//                "individual rolls. Normal dice are represented by the expression, followed by the",
-//                "sum of the individual die rolls in parens: 3d6(3+5+1). Exploding dice are",
-//                "represented by the expression followed by an expression in angle brackets. The",
-//                "expression is made of the results of each individual die in parens, with any die",
-//                "that exploded being followed by an !: 3x6<(1)+(6!+5)+(2)>."
-//            ],
-//        },
-//    ]
-//}
-
 fn uint_from_match(m: regex::Match) -> Result<u32, String>
 {
     match m.as_str()
@@ -92,6 +65,7 @@ fn make_exploding_dice(dice: regex::Match, sides: regex::Match) -> Result<Roll, 
     ))
 }
 
+/// Construct a Command object representing the dice to roll.
 pub fn command(expr: String) -> Result<Command, String>
 {
     if expr.is_empty()
@@ -181,6 +155,8 @@ fn explode(val: RollStep, sides: u32) -> RollStep
     (format!("{}!+{}", val.0, roll.0), val.1 + roll.1)
 }
 
+/// Perform the random function and return a Decision object representing
+/// the result.
 pub fn roll(descr: Vec<Roll>) -> Decision
 {
     // { value: roll, description: roll_string }
