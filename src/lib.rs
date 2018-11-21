@@ -22,13 +22,13 @@ pub enum Command
     Oracle,
 }
 
-pub struct Hint
-{
-    pub cmd: &'static str,
-    pub clue: &'static str,
-    pub blurb: &'static str,
-    pub help: Vec<&'static str>,
-}
+//pub struct Hint
+//{
+//    pub cmd: &'static str,
+//    pub clue: &'static str,
+//    pub blurb: &'static str,
+//    pub help: Vec<&'static str>,
+//}
 
 pub struct ApiDoc
 {
@@ -38,7 +38,7 @@ pub struct ApiDoc
     pub help: Vec<&'static str>,
 }
 
-pub type HintList = Vec<Hint>;
+//pub type HintList = Vec<Hint>;
 
 /// The Decision enum encapsulates values returned from the decide method.
 pub enum Decision

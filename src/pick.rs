@@ -1,7 +1,5 @@
 use ::Command;
 use ::Decision;
-use ::Hint;
-use ::HintList;
 use ::ApiDoc;
 
 use rand::Rng;
@@ -37,20 +35,20 @@ pub fn api_doc() -> ApiDoc
     }
 }
 
-pub fn hint() -> HintList
-{
-    vec![
-        Hint {
-            cmd: "pick",
-            clue: "pick {low} {high}",
-            blurb: "pick a number between {low} and {high}",
-            help: vec![
-                "Selects a number between two supplied values (inclusive) with equal probability.",
-                "The two numbers cannot be the same.",
-            ],
-        },
-    ]
-}
+//pub fn hint() -> HintList
+//{
+//    vec![
+//        Hint {
+//            cmd: "pick",
+//            clue: "pick {low} {high}",
+//            blurb: "pick a number between {low} and {high}",
+//            help: vec![
+//                "Selects a number between two supplied values (inclusive) with equal probability.",
+//                "The two numbers cannot be the same.",
+//            ],
+//        },
+//    ]
+//}
 
 #[cfg(test)]
 mod tests

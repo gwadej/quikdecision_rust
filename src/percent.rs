@@ -1,7 +1,5 @@
 use ::Command;
 use ::Decision;
-use ::Hint;
-use ::HintList;
 use ::ApiDoc;
 
 use rand::Rng;
@@ -37,29 +35,29 @@ pub fn api_doc() -> ApiDoc
     }
 }
 
-pub fn hint() -> HintList
-{
-    vec![
-        Hint {
-            cmd: "percent",
-            clue: "percent {num}",
-            blurb: "True {num} percent of the time, otherwise False",
-            help: vec![
-                "Treats the supplied integer as a percentage and returns the string 'True'",
-                "that percent of the time. Otherwise, return the string 'False'.",
-            ],
-        },
-        Hint {
-            cmd: "likely",
-            clue: "likely {num}",
-            blurb: "alias for percent",
-            help: vec![
-                "Treats the supplied integer as a percentage and returns the string 'True'",
-                "that percent of the time. Otherwise, return the string 'False'.",
-            ],
-        },
-    ]
-}
+//pub fn hint() -> HintList
+//{
+//    vec![
+//        Hint {
+//            cmd: "percent",
+//            clue: "percent {num}",
+//            blurb: "True {num} percent of the time, otherwise False",
+//            help: vec![
+//                "Treats the supplied integer as a percentage and returns the string 'True'",
+//                "that percent of the time. Otherwise, return the string 'False'.",
+//            ],
+//        },
+//        Hint {
+//            cmd: "likely",
+//            clue: "likely {num}",
+//            blurb: "alias for percent",
+//            help: vec![
+//                "Treats the supplied integer as a percentage and returns the string 'True'",
+//                "that percent of the time. Otherwise, return the string 'False'.",
+//            ],
+//        },
+//    ]
+//}
 
 #[cfg(test)]
 mod tests
