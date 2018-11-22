@@ -22,6 +22,8 @@ pub fn choose(likely: u32) -> Decision
     Decision::Bool(rand::thread_rng().gen_bool(likely as f64 / 100.0))
 }
 
+/// Return an ApiDoc object containing a description of the PercentTrue
+/// decider.
 pub fn api_doc() -> ApiDoc
 {
     ApiDoc {

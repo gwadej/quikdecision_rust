@@ -4,6 +4,8 @@ use ::ApiDoc;
 
 type StrVec = Vec<String>;
 
+/// Create a Selection Command variant from the supplied
+/// Vec of Strings.
 pub fn command(strings: StrVec) -> Result<Command, String>
 {
     if strings.is_empty()
@@ -21,6 +23,8 @@ pub fn command(strings: StrVec) -> Result<Command, String>
     }
 }
 
+/// Return an ApiDoc object containing a description of the Selection
+/// decider.
 pub fn api_doc() -> ApiDoc
 {
     ApiDoc {
@@ -34,6 +38,8 @@ pub fn api_doc() -> ApiDoc
     }
 }
 
+/// Return a Text Decision containing one of the strings from the
+/// Vec chosen at random.
 pub fn choose(strvec: StrVec) -> Decision
 {
     Decision::Text(super::pick_one(&strvec[..]))

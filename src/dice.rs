@@ -14,7 +14,7 @@ pub enum Roll
 
 type RollStep = (String, u32);
 
-/// Return the documentation object describing the dice decider.
+/// Return an ApiDoc object describing the Dice decider.
 pub fn api_doc() -> ApiDoc
 {
     ApiDoc {
@@ -66,6 +66,7 @@ fn make_exploding_dice(dice: regex::Match, sides: regex::Match) -> Result<Roll, 
 }
 
 /// Construct a Command object representing the dice to roll.
+/// Expects a string containing a dice expression.
 pub fn command(expr: String) -> Result<Command, String>
 {
     if expr.is_empty()

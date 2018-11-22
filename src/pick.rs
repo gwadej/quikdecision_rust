@@ -22,6 +22,8 @@ pub fn choose(low: i32, high: i32) -> Decision
     Decision::Num(rand::thread_rng().gen_range(low, high + 1))
 }
 
+/// Return an ApiDoc object containing a description of the PickNumber
+/// decider.
 pub fn api_doc() -> ApiDoc
 {
     ApiDoc {

@@ -4,16 +4,21 @@ use ::ApiDoc;
 
 const COIN_SIDES: [&str; 2] = ["Heads", "Tails"];
 
+/// Create a CoinFlip Command
 pub fn command() -> Result<Command, String>
 {
     Ok(Command::CoinFlip)
 }
 
+/// Perform the flip operation and return a Text Decision
+/// a value of either "Head" or "Tails" with equal probability.
 pub fn flip() -> Decision
 {
     Decision::Text(super::pick_one(&COIN_SIDES))
 }
 
+/// Return an ApiDoc object containing a description of the CoinFlip
+/// decider.
 pub fn api_doc() -> ApiDoc
 {
     ApiDoc {

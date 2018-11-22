@@ -45,6 +45,8 @@ const ORACLE_LABELS: [&str; 10] = [
     "The fortune cookie says",
 ];
 
+/// Return an ApiDoc object containing a description of the Oracle
+/// decider.
 pub fn api_doc() -> ApiDoc
 {
     ApiDoc {
