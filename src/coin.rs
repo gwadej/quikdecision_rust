@@ -35,6 +35,8 @@ pub fn api_doc() -> ApiDoc
 #[cfg(test)]
 mod tests
 {
+    use spectral::prelude::*;
+
     const NUM_TRIES: u32 = 3;
     use ::Decision;
     use ::Command;
@@ -43,12 +45,7 @@ mod tests
     #[test]
     fn command_check()
     {
-        match command()
-        {
-            Ok(Command::CoinFlip) => assert!(true),
-            Ok(_) => assert!(false, "Wrong Command type"),
-            Err(msg) => assert!(false, "Err({})", msg),
-        }
+        assert_that!(command()).is_ok().is_equal_to(Command::CoinFlip);
     }
 
     #[test]

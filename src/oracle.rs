@@ -78,6 +78,8 @@ pub fn choose() -> Decision
 #[cfg(test)]
 mod tests
 {
+    use spectral::prelude::*;
+
     use ::Decision;
     use ::Decider;
     use ::Command;
@@ -86,12 +88,8 @@ mod tests
     #[test]
     fn command_check()
     {
-        match command()
-        {
-            Ok(Command::Oracle) => assert!(true),
-            Ok(_) => assert!(false, "Unexpected Command type"),
-            Err(_) => assert!(false, "Unexpected Err"),
-        }
+        assert_that!(command()).is_ok()
+            .is_equal_to(Command::Oracle);
     }
 
     #[test]

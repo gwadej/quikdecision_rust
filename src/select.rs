@@ -72,12 +72,10 @@ mod tests
     #[test]
     fn command_string_list()
     {
-        match command(vec!["david".into(), "mark".into(), "kirsten".into(), "connie".into()])
-        {
-            Ok(Command::Selection(_)) => assert!(true),
-            Ok(_) => assert!(false, "Unexpected Command"),
-            Err(_) => assert!(false, "Unexpected error"),
-        }
+        let names: Vec<String> = vec!["david".into(), "mark".into(), "kirsten".into(), "connie".into()];
+        assert_that!(command(names.clone()))
+            .is_ok()
+            .is_equal_to(Command::Selection(names));
     }
 
     #[test]

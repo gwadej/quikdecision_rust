@@ -81,3 +81,21 @@ pub fn pick_one<T>(choices: &[T]) -> String
 
 #[cfg(test)]
 extern crate spectral;
+
+impl PartialEq for Command
+{
+    fn eq(&self, other: &Command) -> bool
+    {
+        match (self, other)
+        {
+            (Command::CoinFlip, Command::CoinFlip) => true,
+            (Command::Oracle,   Command::Oracle) => true,
+            (Command::PickNumber(sl, sh), Command::PickNumber(ol, oh)) => sl == ol && sh == oh,
+            (Command::PercentTrue(sp), Command::PercentTrue(op)) => sp == op,
+            (Command::RollDice(sdice), Command::RollDice(odice)) => sdice == odice,
+            (Command::Selection(sstrs), Command::Selection(ostrs)) => sstrs == ostrs,
+            (_, _) => false,
+        }
+    }
+}
+

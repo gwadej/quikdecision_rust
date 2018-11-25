@@ -57,21 +57,15 @@ mod tests
     #[test]
     fn command_args_in_wrong_order()
     {
-        match command(30, 20)
-        {
-            Ok(Command::PickNumber(low, high)) => assert!(low == 20 && high == 30),
-            _ => assert!(false),
-        }
+        assert_that!(command(30, 20)).is_ok()
+            .is_equal_to(Command::PickNumber(20, 30));
     }
 
     #[test]
     fn command_args_in_correct_order()
     {
-        match command(10, 20)
-        {
-            Ok(Command::PickNumber(low, high)) => assert!(low == 10 && high == 20),
-            _ => assert!(false),
-        }
+        assert_that!(command(10, 20)).is_ok()
+            .is_equal_to(Command::PickNumber(10, 20));
     }
 
     #[test]

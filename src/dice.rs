@@ -13,6 +13,20 @@ pub enum Roll
     Incr(u32),
 }
 
+impl PartialEq for Roll
+{
+    fn eq(&self, other: &Roll) -> bool
+    {
+        match (self, other)
+        {
+            (Roll::Dice(sl, sh), Roll::Dice(ol, oh)) => sl == ol && sh == oh,
+            (Roll::ExplodingDice(sl, sh), Roll::ExplodingDice(ol, oh)) => sl == ol && sh == oh,
+            (Roll::Incr(val), Roll::Incr(oval)) => val == oval,
+            (_, _) => false,
+        }
+    }
+}
+
 type RollStep = (String, u32);
 
 /// Return an ApiDoc object describing the Dice decider.
@@ -194,45 +208,28 @@ mod tests
     #[test]
     fn command_simple_roll()
     {
-        match command(String::from("3d8"))
-        {
-            Ok(Command::RollDice(dice)) => {
-                assert_eq!(dice.len(), 1);
-                match dice.first()
-                {
-                    Some(Roll::Dice(num, sides)) => assert!(*num == 3 && *sides == 8),
-                    Some(_) => assert!(false, "Wrong die type"),
-                    None => assert!(false, "Missing die"),
-                }
-            },
-            Ok(_) => assert!(false, "Wrong Command type"),
-            Err(msg) => assert!(false, "Err({})", msg),
-        }
+        assert_that!(command("3d8".into())).is_ok()
+            .is_equal_to(Command::RollDice(vec![Roll::Dice(3, 8)]))
     }
 
     #[test]
     fn command_exploding_roll()
     {
-        match command(String::from("3x6"))
-        {
-            Ok(Command::RollDice(dice)) => {
-                assert_eq!(dice.len(), 1);
-                match dice.first()
-                {
-                    Some(Roll::ExplodingDice(num, sides)) => assert!(*num == 3 && *sides == 6),
-                    Some(_) => assert!(false, "Wrong die type"),
-                    None => assert!(false, "Missing die"),
-                }
-            },
-            Ok(_) => assert!(false, "Wrong Command type"),
-            Err(msg) => assert!(false, "Err({})", msg),
-        }
+        assert_that!(command("3x6".into())).is_ok()
+            .is_equal_to(Command::RollDice(vec![Roll::ExplodingDice(3, 6)]))
+    }
+
+    #[test]
+    fn command_multiterm_expresion()
+    {
+        assert_that!(command("2d12 + 3x6 + 2".into())).is_ok()
+            .is_equal_to(Command::RollDice(vec![Roll::Dice(2, 12), Roll::ExplodingDice(3, 6), Roll::Incr(2)]))
     }
 
     #[test]
     fn dice_roll_decision()
     {
-        match command("2d12 + 3x6 + 2".to_string()).unwrap().decide()
+        match command("2d12 + 3x6 + 2".into()).unwrap().decide()
         {
             Decision::AnnotatedNum{value,extra: _} => {
                 assert!(value >= 7, "Value is reasonable");
