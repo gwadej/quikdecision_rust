@@ -51,6 +51,7 @@ mod tests
     use spectral::prelude::*;
 
     use ::Decision;
+    use ::DecisionAssertions;
     use ::Decider;
     use ::Command;
     use super::*;
@@ -67,6 +68,14 @@ mod tests
     {
         assert_that!(command(vec!["fred".into()])).is_err()
             .is_equal_to("Must supply at least two strings".to_string());
+    }
+
+    #[test]
+    fn decide_check()
+    {
+        let names: Vec<String> = vec!["david".into(), "mark".into(), "kirsten".into(), "connie".into()];
+        assert_that!(command(names.clone()).unwrap().decide())
+            .matches_enum_variant(Decision::Text("david".into()));
     }
 
     #[test]

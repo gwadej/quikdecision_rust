@@ -44,6 +44,8 @@ mod tests
 
     const NUM_TRIES: u32 = 3;
     use ::Decision;
+    use ::DecisionAssertions;
+    use ::Decider;
     use ::Command;
     use super::*;
 
@@ -66,6 +68,13 @@ mod tests
     {
         assert_that!(command(10, 20)).is_ok()
             .is_equal_to(Command::PickNumber(10, 20));
+    }
+
+    #[test]
+    fn decide_check()
+    {
+        assert_that!(command(1, 10).unwrap().decide())
+            .matches_enum_variant(Decision::Num(5));
     }
 
     #[test]

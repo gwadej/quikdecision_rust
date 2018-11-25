@@ -43,6 +43,8 @@ mod tests
     use spectral::prelude::*;
 
     use ::Decision;
+    use ::DecisionAssertions;
+    use ::Decider;
     use ::Command;
     use super::*;
 
@@ -70,12 +72,15 @@ mod tests
     #[test]
     fn command_50_percent()
     {
-        match command(50)
-        {
-            Ok(Command::PercentTrue(p)) => assert_eq!(p, 50),
-            Ok(_) => assert!(false, "Unexpected command"),
-            Err(_) => assert!(false, "Unexpected error"),
-        }
+        assert_that!(command(50)).is_ok()
+            .is_equal_to(Command::PercentTrue(50));
+    }
+
+    #[test]
+    fn decide_check()
+    {
+        assert_that!(command(45).unwrap().decide())
+            .matches_enum_variant(Decision::Bool(true));
     }
 
     #[test]

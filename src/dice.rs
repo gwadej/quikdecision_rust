@@ -194,6 +194,7 @@ mod tests
     use spectral::prelude::*;
 
     use ::Decision;
+    use ::DecisionAssertions;
     use ::Decider;
     use ::Command;
     use super::*;
@@ -229,12 +230,7 @@ mod tests
     #[test]
     fn dice_roll_decision()
     {
-        match command("2d12 + 3x6 + 2".into()).unwrap().decide()
-        {
-            Decision::AnnotatedNum{value,extra: _} => {
-                assert!(value >= 7, "Value is reasonable");
-            },
-            _ => assert!(false, "Not correct decision type"),
-        }
+        assert_that!(command("2d12 + 3x6 + 2".into()).unwrap().decide())
+            .matches_enum_variant(Decision::AnnotatedNum{value: 1, extra: "foo".into()});
     }
 }

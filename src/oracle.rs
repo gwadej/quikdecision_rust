@@ -69,7 +69,7 @@ pub fn command() -> Result<Command, String>
 /// Perform the actual decision for the Oracle and return the Decision.
 pub fn choose() -> Decision
 {
-    Decision::LabeledText{
+    Decision::LabelledText{
         value: ::pick_one(&ORACLE_ANSWERS).to_string(),
         label: ::pick_one(&ORACLE_LABELS).to_string(),
     }
@@ -81,6 +81,7 @@ mod tests
     use spectral::prelude::*;
 
     use ::Decision;
+    use ::DecisionAssertions;
     use ::Decider;
     use ::Command;
     use super::*;
@@ -95,10 +96,7 @@ mod tests
     #[test]
     fn decision_check()
     {
-        match command().unwrap().decide()
-        {
-            Decision::LabeledText{value:_, label:_} => assert!(true),
-            _ => assert!(false, "Unexpected decision"),
-        }
+        assert_that!(command().unwrap().decide())
+            .matches_enum_variant(Decision::LabelledText{value: "foo".into(), label: "bar".into()});
     }
 }

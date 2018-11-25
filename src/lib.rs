@@ -38,7 +38,7 @@ pub struct ApiDoc
 pub enum Decision
 {
     Text(String),
-    LabeledText{ value: String, label: String },
+    LabelledText{ value: String, label: String },
     Num(i32),
     AnnotatedNum{ value: u32, extra: String },
     Bool(bool),
@@ -82,20 +82,46 @@ pub fn pick_one<T>(choices: &[T]) -> String
 #[cfg(test)]
 extern crate spectral;
 
+/// Add PartialEq implementation for Command for use only in tests.
 impl PartialEq for Command
 {
     fn eq(&self, other: &Command) -> bool
     {
         match (self, other)
         {
-            (Command::CoinFlip, Command::CoinFlip) => true,
-            (Command::Oracle,   Command::Oracle) => true,
+            (Command::CoinFlip,           Command::CoinFlip) => true,
+            (Command::Oracle,             Command::Oracle) => true,
             (Command::PickNumber(sl, sh), Command::PickNumber(ol, oh)) => sl == ol && sh == oh,
-            (Command::PercentTrue(sp), Command::PercentTrue(op)) => sp == op,
-            (Command::RollDice(sdice), Command::RollDice(odice)) => sdice == odice,
-            (Command::Selection(sstrs), Command::Selection(ostrs)) => sstrs == ostrs,
+            (Command::PercentTrue(sp),    Command::PercentTrue(op)) => sp == op,
+            (Command::RollDice(sdice),    Command::RollDice(odice)) => sdice == odice,
+            (Command::Selection(sstrs),   Command::Selection(ostrs)) => sstrs == ostrs,
             (_, _) => false,
         }
     }
 }
 
+/// DecisionAssertions trait to support spectral tests on the Decision enum.
+trait DecisionAssertions<'s>
+{
+    /// Returns true if the Decision being tested matches the same variant as the
+    /// supplied other.
+    fn matches_enum_variant(&self, other: Decision) -> bool;
+}
+
+impl<'s> DecisionAssertions<'s> for spectral::Spec<'s, Decision>
+{
+    fn matches_enum_variant(&self, other: Decision) -> bool
+    {
+        match (self.subject, other)
+        {
+            (Decision::Text(_),         Decision::Text(_)) => true,
+            (Decision::LabelledText{value:_, label:_},
+             Decision::LabelledText{value:_, label:_}) => true,
+            (Decision::Num(_),          Decision::Num(_)) => true,
+            (Decision::AnnotatedNum{value:_, extra:_},
+             Decision::AnnotatedNum{value:_, extra:_}) => true,
+            (Decision::Bool(_),         Decision::Bool(_)) => true,
+            (_, _) => false,
+        }
+    }
+}

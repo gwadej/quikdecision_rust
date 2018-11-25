@@ -39,6 +39,8 @@ mod tests
 
     const NUM_TRIES: u32 = 3;
     use ::Decision;
+    use ::DecisionAssertions;
+    use ::Decider;
     use ::Command;
     use super::*;
 
@@ -46,6 +48,13 @@ mod tests
     fn command_check()
     {
         assert_that!(command()).is_ok().is_equal_to(Command::CoinFlip);
+    }
+
+    #[test]
+    fn decide_check()
+    {
+        assert_that!(command().unwrap().decide())
+            .matches_enum_variant(Decision::Text("Heads".into()));
     }
 
     #[test]
