@@ -48,6 +48,8 @@ pub fn choose(strvec: StrVec) -> Decision
 #[cfg(test)]
 mod tests
 {
+    use spectral::prelude::*;
+
     use ::Decision;
     use ::Decider;
     use ::Command;
@@ -56,27 +58,21 @@ mod tests
     #[test]
     fn command_empty_vector()
     {
-        match command(Vec::new())
-        {
-            Ok(_) => assert!(false, "Unexpected Command"),
-            Err(msg) => assert_eq!(msg, "Missing required strings".to_string()),
-        }
+        assert_that!(command(Vec::new())).is_err()
+            .is_equal_to("Missing required strings".to_string());
     }
 
     #[test]
     fn command_single_string()
     {
-        match command(vec!["fred".to_string()])
-        {
-            Ok(_) => assert!(false, "Unexpected Command"),
-            Err(msg) => assert_eq!(msg, "Must supply at least two strings".to_string()),
-        }
+        assert_that!(command(vec!["fred".into()])).is_err()
+            .is_equal_to("Must supply at least two strings".to_string());
     }
 
     #[test]
     fn command_string_list()
     {
-        match command(vec!["david".to_string(), "mark".to_string(), "kirsten".to_string(), "connie".to_string()])
+        match command(vec!["david".into(), "mark".into(), "kirsten".into(), "connie".into()])
         {
             Ok(Command::Selection(_)) => assert!(true),
             Ok(_) => assert!(false, "Unexpected Command"),

@@ -40,6 +40,8 @@ pub fn api_doc() -> ApiDoc
 #[cfg(test)]
 mod tests
 {
+    use spectral::prelude::*;
+
     use ::Decision;
     use ::Command;
     use super::*;
@@ -47,21 +49,22 @@ mod tests
     #[test]
     fn command_0_percent()
     {
-        match command(0)
-        {
-            Ok(_) => assert!(false, "Unexpected xommand"),
-            Err(msg) => assert_eq!(msg, "percent arg cannot be 0".to_string()),
-        }
+        assert_that!(command(0)).is_err()
+            .is_equal_to("percent arg cannot be 0".to_string());
     }
 
     #[test]
     fn command_100_percent()
     {
-        match command(100)
-        {
-            Ok(_) => assert!(false, "Unexpected xommand"),
-            Err(msg) => assert_eq!(msg, "percent arg cannot be 100 percent or greater".to_string()),
-        }
+        assert_that!(command(100)).is_err()
+            .is_equal_to("percent arg cannot be 100 percent or greater".to_string());
+    }
+
+    #[test]
+    fn command_gt_100_percent()
+    {
+        assert_that!(command(200)).is_err()
+            .is_equal_to("percent arg cannot be 100 percent or greater".to_string());
     }
 
     #[test]
@@ -72,16 +75,6 @@ mod tests
             Ok(Command::PercentTrue(p)) => assert_eq!(p, 50),
             Ok(_) => assert!(false, "Unexpected command"),
             Err(_) => assert!(false, "Unexpected error"),
-        }
-    }
-
-    #[test]
-    fn command_gt_100_percent()
-    {
-        match command(200)
-        {
-            Ok(_) => assert!(false, "Unexpected xommand"),
-            Err(msg) => assert_eq!(msg, "percent arg cannot be 100 percent or greater".to_string()),
         }
     }
 

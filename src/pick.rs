@@ -40,6 +40,8 @@ pub fn api_doc() -> ApiDoc
 #[cfg(test)]
 mod tests
 {
+    use spectral::prelude::*;
+
     const NUM_TRIES: u32 = 3;
     use ::Decision;
     use ::Command;
@@ -48,11 +50,8 @@ mod tests
     #[test]
     fn command_with_equal_params()
     {
-        match command(1, 1)
-        {
-            Err(msg) => assert_eq!(msg, String::from("High parameter cannot equal low parameter")),
-            _ => assert!(false),
-        }
+        assert_that!(command(1, 1)).is_err()
+            .is_equal_to(String::from("High parameter cannot equal low parameter"));
     }
 
     #[test]

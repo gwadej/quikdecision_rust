@@ -12,6 +12,7 @@ pub mod select;
 
 /// Enum defining the types of quik decision commands, and the parameters that
 /// determine their functioning.
+#[derive(Debug)]
 pub enum Command
 {
     CoinFlip,
@@ -23,6 +24,7 @@ pub enum Command
 }
 
 /// Structure containing the documentation for a quik decision command
+#[derive(Debug)]
 pub struct ApiDoc
 {
     pub name: &'static str,
@@ -32,6 +34,7 @@ pub struct ApiDoc
 }
 
 /// The Decision enum encapsulates values returned from the decide method.
+#[derive(Debug)]
 pub enum Decision
 {
     Text(String),
@@ -75,3 +78,6 @@ pub fn pick_one<T>(choices: &[T]) -> String
     let mut rng = rand::thread_rng();
     seq::sample_slice(&mut rng, choices, 1)[0].to_string()
 }
+
+#[cfg(test)]
+extern crate spectral;

@@ -5,6 +5,7 @@ use ::ApiDoc;
 use rand::Rng;
 use regex::Regex;
 
+#[derive(Debug)]
 pub enum Roll
 {
     Dice(u32, u32),
@@ -176,6 +177,8 @@ pub fn roll(descr: Vec<Roll>) -> Decision
 #[cfg(test)]
 mod tests
 {
+    use spectral::prelude::*;
+
     use ::Decision;
     use ::Decider;
     use ::Command;
@@ -184,11 +187,8 @@ mod tests
     #[test]
     fn command_empty_string()
     {
-        match command(String::new())
-        {
-            Ok(_) => assert!(false, "Unexpected Dice"),
-            Err(msg) => assert_eq!(msg, String::from("Missing dice expression")),
-        }
+        assert_that!(command(String::new())).is_err()
+            .is_equal_to(String::from("Missing dice expression"));
     }
 
     #[test]
