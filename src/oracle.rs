@@ -1,7 +1,6 @@
 use ::Command;
 use ::Decision;
-use ::Hint;
-use ::HintList;
+use ::ApiDoc;
 
 const ORACLE_ANSWERS: [&str; 24] = [
     // Positive answeers
@@ -46,28 +45,58 @@ const ORACLE_LABELS: [&str; 10] = [
     "The fortune cookie says",
 ];
 
-pub fn hint() -> HintList
+/// Return an ApiDoc object containing a description of the Oracle
+/// decider.
+pub fn api_doc() -> ApiDoc
 {
-    vec![Hint {
-        cmd: "oracle",
-        clue: "oracle",
-        blurb: "Return a random answer from the oracle",
+    ApiDoc {
+        name: "oracle",
+        params: vec![],
+        hint: "Return a random answer from the oracle",
         help: vec![
             "This command returns a string randomly selected from the Oracle's set of",
             "9 positive answers, 9 negative answers, or 6 indeterminate answers.",
         ],
-    }]
+    }
 }
 
+/// Construct an Oracle Command variant
 pub fn command() -> Result<Command, String>
 {
     Ok(Command::Oracle)
 }
 
+/// Perform the actual decision for the Oracle and return the Decision.
 pub fn choose() -> Decision
 {
-    Decision::LabeledText{
+    Decision::LabelledText{
         value: ::pick_one(&ORACLE_ANSWERS).to_string(),
         label: ::pick_one(&ORACLE_LABELS).to_string(),
+    }
+}
+
+#[cfg(test)]
+mod tests
+{
+    use spectral::prelude::*;
+
+    use ::Decision;
+    use ::DecisionAssertions;
+    use ::Decider;
+    use ::Command;
+    use super::*;
+
+    #[test]
+    fn command_check()
+    {
+        assert_that!(command()).is_ok()
+            .is_equal_to(Command::Oracle);
+    }
+
+    #[test]
+    fn decision_check()
+    {
+        assert_that!(command().unwrap().decide())
+            .matches_enum_variant(Decision::LabelledText{value: "foo".into(), label: "bar".into()});
     }
 }

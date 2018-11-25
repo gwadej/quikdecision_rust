@@ -1,7 +1,6 @@
 use ::Command;
 use ::Decision;
-use ::Hint;
-use ::HintList;
+use ::ApiDoc;
 
 use rand::Rng;
 
@@ -23,35 +22,73 @@ pub fn choose(low: i32, high: i32) -> Decision
     Decision::Num(rand::thread_rng().gen_range(low, high + 1))
 }
 
-pub fn hint() -> HintList
+/// Return an ApiDoc object containing a description of the PickNumber
+/// decider.
+pub fn api_doc() -> ApiDoc
 {
-    vec![
-        Hint {
-            cmd: "pick",
-            clue: "pick {low} {high}",
-            blurb: "pick a number between {low} and {high}",
-            help: vec![
-                "Selects a number between two supplied values (inclusive) with equal probability.",
-                "The two numbers cannot be the same.",
-            ],
-        },
-    ]
+    ApiDoc {
+        name: "pick",
+        params: vec!["low", "high"],
+        hint: "pick a number between {low} and {high}",
+        help: vec![
+            "Selects a number between two supplied values (inclusive) with equal probability.",
+            "The two numbers cannot be the same.",
+        ],
+    }
 }
 
 #[cfg(test)]
 mod tests
 {
+    use spectral::prelude::*;
+
     const NUM_TRIES: u32 = 3;
+    use ::Decision;
+    use ::DecisionAssertions;
+    use ::Decider;
+    use ::Command;
+    use super::*;
+
+    #[test]
+    fn command_with_equal_params()
+    {
+        assert_that!(command(1, 1)).is_err()
+            .is_equal_to(String::from("High parameter cannot equal low parameter"));
+    }
+
+    #[test]
+    fn command_args_in_wrong_order()
+    {
+        assert_that!(command(30, 20)).is_ok()
+            .is_equal_to(Command::PickNumber(20, 30));
+    }
+
+    #[test]
+    fn command_args_in_correct_order()
+    {
+        assert_that!(command(10, 20)).is_ok()
+            .is_equal_to(Command::PickNumber(10, 20));
+    }
+
+    #[test]
+    fn decide_check()
+    {
+        assert_that!(command(1, 10).unwrap().decide())
+            .matches_enum_variant(Decision::Num(5));
+    }
 
     #[test]
     fn choose_a_small_number()
     {
-        let expected = ["1", "2"];
+        let expected = [1, 2];
 
         for _ in 1..=NUM_TRIES
         {
-            let choice = super::choose(1, 2);
-            assert_ne!(expected.iter().find(|&&x| x == choice), None);
+            match super::choose(1, 2)
+            {
+                Decision::Num(choice) => assert_ne!(expected.iter().find(|&&x| x == choice), None),
+                _ => panic!(),
+            }
         }
     }
 
@@ -60,12 +97,15 @@ mod tests
     {
         let low: i32 = 2;
         let high: i32 = 10;
-        let expected = ["2", "3", "4", "5", "6", "7", "8", "9", "10"];
+        let expected = [2, 3, 4, 5, 6, 7, 8, 9, 10];
 
         for _ in 1..=NUM_TRIES
         {
-            let choice = super::choose(low, high);
-            assert_ne!(expected.iter().find(|&&x| x == choice), None);
+            match super::choose(low, high)
+            {
+                Decision::Num(choice) => assert_ne!(expected.iter().find(|&&x| x == choice), None),
+                _ => panic!(),
+            }
         }
     }
 }

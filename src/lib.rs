@@ -1,17 +1,18 @@
 extern crate rand;
 extern crate regex;
 
-use std::env;
 use rand::seq;
 
-mod coin;
-mod dice;
-mod help;
-mod oracle;
-mod percent;
-mod pick;
-mod select;
+pub mod coin;
+pub mod dice;
+pub mod oracle;
+pub mod percent;
+pub mod pick;
+pub mod select;
 
+/// Enum defining the types of quik decision commands, and the parameters that
+/// determine their functioning.
+#[derive(Debug)]
 pub enum Command
 {
     CoinFlip,
@@ -22,32 +23,37 @@ pub enum Command
     Oracle,
 }
 
-pub struct Hint
+/// Structure containing the documentation for a quik decision command
+#[derive(Debug)]
+pub struct ApiDoc
 {
-    pub cmd: &'static str,
-    pub clue: &'static str,
-    pub blurb: &'static str,
+    pub name: &'static str,
+    pub params: Vec<&'static str>,
+    pub hint: &'static str,
     pub help: Vec<&'static str>,
 }
 
-type HintList = Vec<Hint>;
-
+/// The Decision enum encapsulates values returned from the decide method.
+#[derive(Debug)]
 pub enum Decision
 {
     Text(String),
-    LabeledText{ value: String, label: String },
+    LabelledText{ value: String, label: String },
     Num(i32),
     AnnotatedNum{ value: u32, extra: String },
     Bool(bool),
 }
 
+/// trait for making a random decision.
 pub trait Decider
 {
     fn decide(self) -> Decision;
 }
 
+/// Trait implementation for making a random decision for a Command.
 impl Decider for Command
 {
+    /// Perform appropriate command returning a Decision object.
     fn decide(self) -> Decision
     {
         match self
@@ -62,53 +68,10 @@ impl Decider for Command
     }
 }
 
-pub fn parse_args(mut args: std::env::Args) -> Result<Command, String>
-{
-    let progname = args.next().unwrap();
-    let cmd = match args.next()
-    {
-        Some(c) => c,
-        None => return Err(String::from("Missing decision type")),
-    };
-    let all_hints = vec![
-        coin::hint(),
-        pick::hint(),
-        percent::hint(),
-        dice::hint(),
-        select::hint(),
-        oracle::hint(),
-        help::hint(),
-    ];
-
-    match &cmd[..]
-    {
-        "coin" | "flip" => coin::command(),
-        "pick" => match (int_arg::<i32>(args.next()), int_arg::<i32>(args.next()))
-        {
-            (Ok(low), Ok(high)) => pick::command(low, high),
-            (Err(e),  _) => return Err(format!("low arg: {}", e)),
-            (_,       Err(e)) => return Err(format!("high arg: {}", e)),
-        },
-        "percent" | "likely" => percent::command(int_arg::<u32>(args.next())?),
-        "roll"  => dice::command(args_to_string(&mut args)),
-        "select" => select::command(args_to_string_vec(&mut args)),
-        "oracle" => oracle::command(),
-        "help" => help::usage(progname, args.next(), all_hints),
-        "man" => help::help(progname, args.next(), all_hints),
-        _ => Err(String::from("Unknown command")),
-    }
-}
-
-fn args_to_string(args: &mut env::Args) -> String
-{
-    args.collect::<Vec<String>>().join(" ")
-}
-
-fn args_to_string_vec(args: &mut env::Args) -> Vec<String>
-{
-    args.into_iter().collect::<Vec<String>>()
-}
-
+/// Randomly select one of the supplied choices and return it as a String.
+///
+/// choices:  an array slice of a type that can be cloned and converted to a
+///           String.
 pub fn pick_one<T>(choices: &[T]) -> String
     where T : std::string::ToString + std::clone::Clone
 {
@@ -116,17 +79,49 @@ pub fn pick_one<T>(choices: &[T]) -> String
     seq::sample_slice(&mut rng, choices, 1)[0].to_string()
 }
 
-pub fn int_arg<T>(opt: Option<String>) -> Result<T, String>
-where
-    T: std::str::FromStr,
+#[cfg(test)]
+extern crate spectral;
+
+/// Add PartialEq implementation for Command for use only in tests.
+impl PartialEq for Command
 {
-    match opt
+    fn eq(&self, other: &Command) -> bool
     {
-        None => Err(String::from("Missing required parameter")),
-        Some(arg) => match arg.parse::<T>()
+        match (self, other)
         {
-            Ok(a) => Ok(a),
-            Err(_) => Err(String::from("Argument not a valid integer")),
-        },
+            (Command::CoinFlip,           Command::CoinFlip) => true,
+            (Command::Oracle,             Command::Oracle) => true,
+            (Command::PickNumber(sl, sh), Command::PickNumber(ol, oh)) => sl == ol && sh == oh,
+            (Command::PercentTrue(sp),    Command::PercentTrue(op)) => sp == op,
+            (Command::RollDice(sdice),    Command::RollDice(odice)) => sdice == odice,
+            (Command::Selection(sstrs),   Command::Selection(ostrs)) => sstrs == ostrs,
+            (_, _) => false,
+        }
+    }
+}
+
+/// DecisionAssertions trait to support spectral tests on the Decision enum.
+trait DecisionAssertions<'s>
+{
+    /// Returns true if the Decision being tested matches the same variant as the
+    /// supplied other.
+    fn matches_enum_variant(&self, other: Decision) -> bool;
+}
+
+impl<'s> DecisionAssertions<'s> for spectral::Spec<'s, Decision>
+{
+    fn matches_enum_variant(&self, other: Decision) -> bool
+    {
+        match (self.subject, other)
+        {
+            (Decision::Text(_),         Decision::Text(_)) => true,
+            (Decision::LabelledText{value:_, label:_},
+             Decision::LabelledText{value:_, label:_}) => true,
+            (Decision::Num(_),          Decision::Num(_)) => true,
+            (Decision::AnnotatedNum{value:_, extra:_},
+             Decision::AnnotatedNum{value:_, extra:_}) => true,
+            (Decision::Bool(_),         Decision::Bool(_)) => true,
+            (_, _) => false,
+        }
     }
 }

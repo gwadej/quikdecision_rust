@@ -1,48 +1,61 @@
 use ::Command;
 use ::Decision;
-use ::Hint;
-use ::HintList;
+use ::ApiDoc;
 
 const COIN_SIDES: [&str; 2] = ["Heads", "Tails"];
 
+/// Create a CoinFlip Command
 pub fn command() -> Result<Command, String>
 {
     Ok(Command::CoinFlip)
 }
 
+/// Perform the flip operation and return a Text Decision
+/// a value of either "Head" or "Tails" with equal probability.
 pub fn flip() -> Decision
 {
     Decision::Text(super::pick_one(&COIN_SIDES))
 }
 
-pub fn hint() -> HintList
+/// Return an ApiDoc object containing a description of the CoinFlip
+/// decider.
+pub fn api_doc() -> ApiDoc
 {
-    vec![
-        Hint {
-            cmd: "flip",
-            clue: "flip",
-            blurb: "50% chance of a Heads or Tails",
-            help: vec![
-                "Returns one of the two strings 'Heads' or 'Tails'. There is an equal probability",
-                "of returning either one.",
-            ],
-        },
-        Hint {
-            cmd: "coin",
-            clue: "coin",
-            blurb: "alias for flip",
-            help: vec![
-                "Returns one of the two strings 'Heads' or 'Tails'. There is an equal probability",
-                "of returning either one.",
-            ],
-        },
-    ]
+    ApiDoc {
+        name: "coin",
+        params: vec![],
+        hint: "50% chance of a Heads or Tails",
+        help: vec![
+            "Returns one of the two strings 'Heads' or 'Tails'. There is an equal probability",
+            "of returning either one.",
+        ],
+    }
 }
 
 #[cfg(test)]
 mod tests
 {
+    use spectral::prelude::*;
+
     const NUM_TRIES: u32 = 3;
+    use ::Decision;
+    use ::DecisionAssertions;
+    use ::Decider;
+    use ::Command;
+    use super::*;
+
+    #[test]
+    fn command_check()
+    {
+        assert_that!(command()).is_ok().is_equal_to(Command::CoinFlip);
+    }
+
+    #[test]
+    fn decide_check()
+    {
+        assert_that!(command().unwrap().decide())
+            .matches_enum_variant(Decision::Text("Heads".into()));
+    }
 
     #[test]
     fn coin_tosses()
@@ -51,8 +64,12 @@ mod tests
 
         for _ in 1..=NUM_TRIES
         {
-            let flip = super::flip();
-            assert_ne!(expected.iter().find(|&&x| x == flip), None);
+            match super::flip()
+            {
+                Decision::Text(flip) =>
+                    assert_ne!(expected.iter().find(|&&x| x == flip), None),
+                _ => panic!(),
+            }
         }
     }
 }

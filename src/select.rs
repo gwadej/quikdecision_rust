@@ -1,35 +1,21 @@
 use ::Command;
 use ::Decision;
-use ::Hint;
-use ::HintList;
-
-use std::fs::File;
-use std::io::prelude::*;
-use std::iter::once;
+use ::ApiDoc;
 
 type StrVec = Vec<String>;
 
-pub fn command(args: StrVec) -> Result<Command, String>
+/// Create a Selection Command variant from the supplied
+/// Vec of Strings.
+pub fn command(strings: StrVec) -> Result<Command, String>
 {
-    let mut it = args.into_iter();
-    let first = match it.next()
+    if strings.is_empty()
     {
-        Some(s) => s,
-        None => return Err(String::from("Missing required strings")),
-    };
-
-    let strvec = if first.starts_with("@")
-    {
-        list_from_file(&first[1..])?
+        return Err(String::from("Missing required strings"));
     }
-    else
-    {
-        once(first).chain(it).collect::<StrVec>()
-    };
 
-    if strvec.len() > 1
+    if strings.len() > 1
     {
-        Ok(Command::Selection(strvec))
+        Ok(Command::Selection(strings))
     }
     else
     {
@@ -37,50 +23,78 @@ pub fn command(args: StrVec) -> Result<Command, String>
     }
 }
 
-pub fn hint() -> HintList
+/// Return an ApiDoc object containing a description of the Selection
+/// decider.
+pub fn api_doc() -> ApiDoc
 {
-    vec![
-        Hint {
-            cmd: "select",
-            clue: "select {strs}",
-            blurb: "Select one of two or more strings supplied as arguments",
-            help: vec![
-                "Selects one of the supplied strings with equal probability. There must be",
-                "at least two strings to choose between.",
-            ],
-        },
-        Hint {
-            cmd: "select",
-            clue: "select @{filename}",
-            blurb: "Select one of the lines in the file specified",
-            help: vec![
-                "Loads a series of strings from the specified file. (Each line is one string.)",
-                "Selects one of the supplied strings with equal probability. There must be",
-                "at least two strings to choose between.",
-            ],
-        },
-    ]
-}
-
-fn list_from_file(filename: &str) -> Result<StrVec, String>
-{
-    let mut file = match File::open(filename)
-    {
-        Ok(f) => f,
-        Err(_) => return Err(String::from("Cannot open supplied file")),
-    };
-    let mut contents = String::new();
-    if let Err(_) = file.read_to_string(&mut contents)
-    {
-        return Err(String::from("Cannot read supplied file"));
+    ApiDoc {
+        name: "select",
+        params: vec!["strs"],
+        hint: "Select one of two or more strings supplied as arguments",
+        help: vec![
+            "Selects one of the supplied strings with equal probability. There must be",
+            "at least two strings to choose between.",
+        ],
     }
-    Ok(contents.split("\n")
-               .filter(|line| !line.is_empty())
-               .map(|s| s.to_string())
-               .collect::<StrVec>())
 }
 
+/// Return a Text Decision containing one of the strings from the
+/// Vec chosen at random.
 pub fn choose(strvec: StrVec) -> Decision
 {
     Decision::Text(super::pick_one(&strvec[..]))
+}
+
+#[cfg(test)]
+mod tests
+{
+    use spectral::prelude::*;
+
+    use ::Decision;
+    use ::DecisionAssertions;
+    use ::Decider;
+    use ::Command;
+    use super::*;
+
+    #[test]
+    fn command_empty_vector()
+    {
+        assert_that!(command(Vec::new())).is_err()
+            .is_equal_to("Missing required strings".to_string());
+    }
+
+    #[test]
+    fn command_single_string()
+    {
+        assert_that!(command(vec!["fred".into()])).is_err()
+            .is_equal_to("Must supply at least two strings".to_string());
+    }
+
+    #[test]
+    fn decide_check()
+    {
+        let names: Vec<String> = vec!["david".into(), "mark".into(), "kirsten".into(), "connie".into()];
+        assert_that!(command(names.clone()).unwrap().decide())
+            .matches_enum_variant(Decision::Text("david".into()));
+    }
+
+    #[test]
+    fn command_string_list()
+    {
+        let names: Vec<String> = vec!["david".into(), "mark".into(), "kirsten".into(), "connie".into()];
+        assert_that!(command(names.clone()))
+            .is_ok()
+            .is_equal_to(Command::Selection(names));
+    }
+
+    #[test]
+    fn selection_decision()
+    {
+        let names = vec!["david".to_string(), "mark".to_string(), "kirsten".to_string(), "connie".to_string()];
+        match command(names.clone()).unwrap().decide()
+        {
+            Decision::Text(guess) => assert!(names.iter().any(|s| *s == guess)),
+            _ => assert!(false, "Unexpected Decision"),
+        }
+    }
 }
