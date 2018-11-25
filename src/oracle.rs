@@ -74,3 +74,33 @@ pub fn choose() -> Decision
         label: ::pick_one(&ORACLE_LABELS).to_string(),
     }
 }
+
+#[cfg(test)]
+mod tests
+{
+    use ::Decision;
+    use ::Decider;
+    use ::Command;
+    use super::*;
+
+    #[test]
+    fn command_check()
+    {
+        match command()
+        {
+            Ok(Command::Oracle) => assert!(true),
+            Ok(_) => assert!(false, "Unexpected Command type"),
+            Err(_) => assert!(false, "Unexpected Err"),
+        }
+    }
+
+    #[test]
+    fn decision_check()
+    {
+        match command().unwrap().decide()
+        {
+            Decision::LabeledText{value:_, label:_} => assert!(true),
+            _ => assert!(false, "Unexpected decision"),
+        }
+    }
+}

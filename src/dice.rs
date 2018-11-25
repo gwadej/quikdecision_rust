@@ -172,3 +172,72 @@ pub fn roll(descr: Vec<Roll>) -> Decision
         .fold((String::new(), 0), |acc, r| accum_roll(acc, r, " + "));
     Decision::AnnotatedNum{ value: val.1, extra: val.0.to_string() }
 }
+
+#[cfg(test)]
+mod tests
+{
+    use ::Decision;
+    use ::Decider;
+    use ::Command;
+    use super::*;
+
+    #[test]
+    fn command_empty_string()
+    {
+        match command(String::new())
+        {
+            Ok(_) => assert!(false, "Unexpected Dice"),
+            Err(msg) => assert_eq!(msg, String::from("Missing dice expression")),
+        }
+    }
+
+    #[test]
+    fn command_simple_roll()
+    {
+        match command(String::from("3d8"))
+        {
+            Ok(Command::RollDice(dice)) => {
+                assert_eq!(dice.len(), 1);
+                match dice.first()
+                {
+                    Some(Roll::Dice(num, sides)) => assert!(*num == 3 && *sides == 8),
+                    Some(_) => assert!(false, "Wrong die type"),
+                    None => assert!(false, "Missing die"),
+                }
+            },
+            Ok(_) => assert!(false, "Wrong Command type"),
+            Err(msg) => assert!(false, "Err({})", msg),
+        }
+    }
+
+    #[test]
+    fn command_exploding_roll()
+    {
+        match command(String::from("3x6"))
+        {
+            Ok(Command::RollDice(dice)) => {
+                assert_eq!(dice.len(), 1);
+                match dice.first()
+                {
+                    Some(Roll::ExplodingDice(num, sides)) => assert!(*num == 3 && *sides == 6),
+                    Some(_) => assert!(false, "Wrong die type"),
+                    None => assert!(false, "Missing die"),
+                }
+            },
+            Ok(_) => assert!(false, "Wrong Command type"),
+            Err(msg) => assert!(false, "Err({})", msg),
+        }
+    }
+
+    #[test]
+    fn dice_roll_decision()
+    {
+        match command("2d12 + 3x6 + 2".to_string()).unwrap().decide()
+        {
+            Decision::AnnotatedNum{value,extra: _} => {
+                assert!(value >= 7, "Value is reasonable");
+            },
+            _ => assert!(false, "Not correct decision type"),
+        }
+    }
+}

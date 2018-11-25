@@ -42,6 +42,38 @@ mod tests
 {
     const NUM_TRIES: u32 = 3;
     use ::Decision;
+    use ::Command;
+    use super::*;
+
+    #[test]
+    fn command_with_equal_params()
+    {
+        match command(1, 1)
+        {
+            Err(msg) => assert_eq!(msg, String::from("High parameter cannot equal low parameter")),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn command_args_in_wrong_order()
+    {
+        match command(30, 20)
+        {
+            Ok(Command::PickNumber(low, high)) => assert!(low == 20 && high == 30),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn command_args_in_correct_order()
+    {
+        match command(10, 20)
+        {
+            Ok(Command::PickNumber(low, high)) => assert!(low == 10 && high == 20),
+            _ => assert!(false),
+        }
+    }
 
     #[test]
     fn choose_a_small_number()

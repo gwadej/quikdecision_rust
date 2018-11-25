@@ -44,3 +44,54 @@ pub fn choose(strvec: StrVec) -> Decision
 {
     Decision::Text(super::pick_one(&strvec[..]))
 }
+
+#[cfg(test)]
+mod tests
+{
+    use ::Decision;
+    use ::Decider;
+    use ::Command;
+    use super::*;
+
+    #[test]
+    fn command_empty_vector()
+    {
+        match command(Vec::new())
+        {
+            Ok(_) => assert!(false, "Unexpected Command"),
+            Err(msg) => assert_eq!(msg, "Missing required strings".to_string()),
+        }
+    }
+
+    #[test]
+    fn command_single_string()
+    {
+        match command(vec!["fred".to_string()])
+        {
+            Ok(_) => assert!(false, "Unexpected Command"),
+            Err(msg) => assert_eq!(msg, "Must supply at least two strings".to_string()),
+        }
+    }
+
+    #[test]
+    fn command_string_list()
+    {
+        match command(vec!["david".to_string(), "mark".to_string(), "kirsten".to_string(), "connie".to_string()])
+        {
+            Ok(Command::Selection(_)) => assert!(true),
+            Ok(_) => assert!(false, "Unexpected Command"),
+            Err(_) => assert!(false, "Unexpected error"),
+        }
+    }
+
+    #[test]
+    fn selection_decision()
+    {
+        let names = vec!["david".to_string(), "mark".to_string(), "kirsten".to_string(), "connie".to_string()];
+        match command(names.clone()).unwrap().decide()
+        {
+            Decision::Text(guess) => assert!(names.iter().any(|s| *s == guess)),
+            _ => assert!(false, "Unexpected Decision"),
+        }
+    }
+}

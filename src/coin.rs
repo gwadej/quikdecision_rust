@@ -37,6 +37,19 @@ mod tests
 {
     const NUM_TRIES: u32 = 3;
     use ::Decision;
+    use ::Command;
+    use super::*;
+
+    #[test]
+    fn command_check()
+    {
+        match command()
+        {
+            Ok(Command::CoinFlip) => assert!(true),
+            Ok(_) => assert!(false, "Wrong Command type"),
+            Err(msg) => assert!(false, "Err({})", msg),
+        }
+    }
 
     #[test]
     fn coin_tosses()
