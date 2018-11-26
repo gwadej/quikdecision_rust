@@ -1,6 +1,7 @@
 # Quick Decision in Rust
 
-Make random decisions using one of a few different methods.
+Library for making random decisions using one of a few different methods.
+Command line interface available at https://github.com/gwadej/quikdecision-cli.
 
 ## Interface
 
