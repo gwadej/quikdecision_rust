@@ -10,6 +10,8 @@ pub mod percent;
 pub mod pick;
 pub mod select;
 
+const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+
 /// Enum defining the types of quik decision commands, and the parameters that
 /// determine their functioning.
 #[derive(Debug)]
@@ -66,6 +68,12 @@ impl Decider for Command
             Command::Oracle => oracle::choose(),
         }
     }
+}
+
+/// Return the library version as a string.
+pub fn version() -> &'static str
+{
+    VERSION
 }
 
 /// Randomly select one of the supplied choices and return it as a String.
