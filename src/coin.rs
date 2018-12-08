@@ -1,6 +1,6 @@
-use ::Command;
-use ::Decision;
-use ::ApiDoc;
+use crate::Command;
+use crate::Decision;
+use crate::ApiDoc;
 
 const COIN_SIDES: [&str; 2] = ["Heads", "Tails"];
 
@@ -38,10 +38,10 @@ mod tests
     use spectral::prelude::*;
 
     const NUM_TRIES: u32 = 3;
-    use ::Decision;
-    use ::DecisionAssertions;
-    use ::Decider;
-    use ::Command;
+    use crate::Decision;
+    use crate::DecisionAssertions;
+    use crate::Decider;
+    use crate::Command;
     use super::*;
 
     #[test]

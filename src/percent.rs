@@ -1,6 +1,6 @@
-use ::Command;
-use ::Decision;
-use ::ApiDoc;
+use crate::Command;
+use crate::Decision;
+use crate::ApiDoc;
 
 use rand::Rng;
 
@@ -42,10 +42,10 @@ mod tests
 {
     use spectral::prelude::*;
 
-    use ::Decision;
-    use ::DecisionAssertions;
-    use ::Decider;
-    use ::Command;
+    use crate::Decision;
+    use crate::DecisionAssertions;
+    use crate::Decider;
+    use crate::Command;
     use super::*;
 
     #[test]

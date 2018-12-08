@@ -1,6 +1,6 @@
-use ::Command;
-use ::Decision;
-use ::ApiDoc;
+use crate::Command;
+use crate::Decision;
+use crate::ApiDoc;
 
 const ORACLE_ANSWERS: [&str; 24] = [
     // Positive answeers
@@ -70,8 +70,8 @@ pub fn command() -> Result<Command, String>
 pub fn choose() -> Decision
 {
     Decision::LabelledText{
-        value: ::pick_one(&ORACLE_ANSWERS).to_string(),
-        label: ::pick_one(&ORACLE_LABELS).to_string(),
+        value: crate::pick_one(&ORACLE_ANSWERS).to_string(),
+        label: crate::pick_one(&ORACLE_LABELS).to_string(),
     }
 }
 
@@ -80,10 +80,10 @@ mod tests
 {
     use spectral::prelude::*;
 
-    use ::Decision;
-    use ::DecisionAssertions;
-    use ::Decider;
-    use ::Command;
+    use crate::Decision;
+    use crate::DecisionAssertions;
+    use crate::Decider;
+    use crate::Command;
     use super::*;
 
     #[test]

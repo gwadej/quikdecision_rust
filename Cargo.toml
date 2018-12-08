@@ -7,6 +7,7 @@ readme = "README.md"
 keywords = ["decisions", "random", "coin flip", "dice roll"]
 categories = ["command-line-utilities", "games"]
 license = "MIT"
+edition = "2018"
 
 [dependencies]
 
