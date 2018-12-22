@@ -42,7 +42,7 @@ pub fn api_doc() -> ApiDoc
             "  - {n}d{s}: roll n s-sided dice (3d6)",
             "  - {n}x{s}: roll n s-sided exploding dice (2x8)",
             "  - {n}: an increment.",
-            "The number of sides supported are 4, 6, 8, 10, 12, 20, or 100. Exploding dice",
+            "The number of sides supported are 3, 4, 6, 8, 10, 12, 20, or 100. Exploding dice",
             "work much like normal, except when a die rolls the maximum value for the die,",
             "then it is re-rolled to generate a value to add to the original roll. This may",
             "happen more than once.",
@@ -91,7 +91,7 @@ pub fn command(expr: String) -> Result<Command, String>
         return Err(String::from("Missing dice expression"));
     }
 
-    let re = Regex::new(r"^\s*(?:(?P<num>(?:[1-9][0-9]*)?)(?P<type>[dDxX])(?P<sides>4|6|8|10|12|20|100)|(?P<val>[1-9][0-9]*))\s*$").unwrap();
+    let re = Regex::new(r"^\s*(?:(?P<num>(?:[1-9][0-9]*)?)(?P<type>[dDxX])(?P<sides>[3468]|1[02]|20|100)|(?P<val>[1-9][0-9]*))\s*$").unwrap();
     let mut descr: Vec<Roll> = vec![];
     for term in expr.split("+")
     {
@@ -125,33 +125,33 @@ fn roll_die(rng: &mut rand::ThreadRng, sides: u32) -> RollStep
     incr_step(rng.gen_range(1, sides + 1))
 }
 
-fn accum_roll(acc: RollStep, roll: RollStep, sep: &str) -> RollStep
+fn accum_roll((desc, val): RollStep, (rdesc, roll): RollStep, sep: &str) -> RollStep
 {
-    if acc.0.is_empty()
+    if desc.is_empty()
     {
-        return (roll.0, acc.1 + roll.1);
+        return (rdesc, val + roll);
     }
-    (acc.0 + sep + &roll.0, acc.1 + roll.1)
+    (desc + sep + &rdesc, val + roll)
 }
 
 fn roll_step(num: u32, sides: u32) -> RollStep
 {
     let mut rng = rand::thread_rng();
-    let out = (1..=num)
+    let (desc, roll) = (1..=num)
         .map(|_| roll_die(&mut rng, sides))
         .fold((String::new(), 0), |acc, r| accum_roll(acc, r, "+"));
-    (format!("{}d{}({})", num, sides, out.0), out.1)
+    (format!("{}d{}({})", num, sides, desc), roll)
 }
 
 fn roll_explode_step(num: u32, sides: u32) -> RollStep
 {
     let mut rng = rand::thread_rng();
-    let out = (1..=num)
+    let (desc, roll) = (1..=num)
         .map(|_| roll_die(&mut rng, sides))
         .map(|r| explode(r, sides))
-        .map(|r| (format!(" ({}) ", r.0), r.1))
+        .map(|(d, r)| (format!(" ({}) ", d), r))
         .fold((String::new(), 0), |acc, r| accum_roll(acc, r, "+"));
-    (format!("{}x{}<{}>", num, sides, out.0.trim()), out.1)
+    (format!("{}x{}<{}>", num, sides, desc.trim()), roll)
 }
 
 fn roll_exploded_step(sides: u32) -> RollStep
@@ -165,12 +165,12 @@ fn incr_step(num: u32) -> RollStep
     (num.to_string(), num)
 }
 
-fn explode(val: RollStep, sides: u32) -> RollStep
+fn explode((desc, val): RollStep, sides: u32) -> RollStep
 {
-    if val.1 != sides { return val; }
+    if val != sides { return (desc, val); }
 
-    let roll = roll_exploded_step(sides);
-    (format!("{}!+{}", val.0, roll.0), val.1 + roll.1)
+    let (rdesc, roll) = roll_exploded_step(sides);
+    (format!("{}!+{}", desc, rdesc), val + roll)
 }
 
 /// Perform the random function and return a Decision object representing
@@ -178,7 +178,7 @@ fn explode(val: RollStep, sides: u32) -> RollStep
 pub fn roll(descr: Vec<Roll>) -> Decision
 {
     // { value: roll, description: roll_string }
-    let val = descr
+    let (desc, roll) = descr
         .iter()
         .map(|ref x| match x
         {
@@ -187,7 +187,7 @@ pub fn roll(descr: Vec<Roll>) -> Decision
             Roll::Incr(num) => incr_step(*num),
         })
         .fold((String::new(), 0), |acc, r| accum_roll(acc, r, " + "));
-    Decision::AnnotatedNum{ value: val.1, extra: val.0.to_string() }
+    Decision::AnnotatedNum{ value: roll, extra: desc.to_string() }
 }
 
 #[cfg(test)]
@@ -213,6 +213,16 @@ mod tests
     {
         assert_that!(command("3d8".into())).is_ok()
             .is_equal_to(Command::RollDice(vec![Roll::Dice(3, 8)]))
+    }
+
+    #[test]
+    fn command_all_sides()
+    {
+        for i in vec![3,4,6,8,10,12,20,100]
+        {
+            assert_that!(command(format!("1d{}", i))).is_ok()
+                .is_equal_to(Command::RollDice(vec![Roll::Dice(1, i)]))
+        }
     }
 
     #[test]

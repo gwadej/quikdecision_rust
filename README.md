@@ -38,7 +38,7 @@ The dice expression is a combination of terms of one of three forms joined by +:
    - {n}x{s}: roll n s-sided exploding dice (2x8)
    - {n}: an increment.
 
-The number of sides supported are 4, 6, 8, 10, 12, 20, or 100. Exploding dice work
+The number of sides supported are 3, 4, 6, 8, 10, 12, 20, or 100. Exploding dice work
 much like normal, except when a die rolls the maximum value for the die, then it
 is re-rolled to generate a value to add to the original roll. This may happen more
 than once.
