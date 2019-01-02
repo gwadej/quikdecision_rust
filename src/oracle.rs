@@ -51,7 +51,7 @@ pub fn api_doc() -> ApiDoc
 {
     ApiDoc {
         name: "oracle",
-        params: vec![],
+        params: Vec::new(),
         hint: "Return a random answer from the oracle",
         help: vec![
             "This command returns a string randomly selected from the Oracle's set of",

@@ -42,7 +42,7 @@ pub fn api_doc() -> ApiDoc
 /// Vec chosen at random.
 pub fn choose(strvec: StrVec) -> Decision
 {
-    Decision::Text(super::pick_one(&strvec[..]))
+    Decision::Text(super::pick_one(strvec.as_slice()))
 }
 
 #[cfg(test)]

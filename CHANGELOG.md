@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update help on the PercentLikely command
 - Make the parameter validation on Pick Number more idiomatic
+- Minor code cleanup.
 
 ## [0.8.0] - 2018-12-21
 ### Changed

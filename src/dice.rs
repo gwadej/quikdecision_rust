@@ -92,7 +92,7 @@ pub fn command(expr: String) -> Result<Command, String>
     }
 
     let re = Regex::new(r"^\s*(?:(?P<num>(?:[1-9][0-9]*)?)(?P<type>[dDxX])(?P<sides>[3468]|1[02]|20|100)|(?P<val>[1-9][0-9]*))\s*$").unwrap();
-    let mut descr: Vec<Roll> = vec![];
+    let mut descr: Vec<Roll> = Vec::new();
     for term in expr.split("+")
     {
         let cap = match re.captures(&term)
