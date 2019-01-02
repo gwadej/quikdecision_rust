@@ -31,8 +31,8 @@ pub fn api_doc() -> ApiDoc
         params: vec!["num"],
         hint: "True {num} percent of the time, otherwise False",
         help: vec![
-            "Treats the supplied integer as a percentage and returns the string 'True'",
-            "that percent of the time. Otherwise, return the string 'False'.",
+            "Treats the supplied integer as a percentage and returns the boolean true",
+            "that percent of the time. Otherwise, return the boolean false.",
         ],
     }
 }

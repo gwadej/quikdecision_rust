@@ -2,17 +2,18 @@ use crate::Command;
 use crate::Decision;
 use crate::ApiDoc;
 
+use std::cmp::Ordering;
 use rand::Rng;
 
 /// Create a PickNumber command based on the two supplied values
 /// Return either the command or an error if the parameters are not appropriate.
 pub fn command(low: i32, high: i32) -> Result<Command, String>
 {
-    match (low, high)
+    match low.cmp(&high)
     {
-        (l, h) if l == h => return Err(String::from("High parameter cannot equal low parameter")),
-        (l, h) if l > h => Ok(Command::PickNumber(h, l)),
-        (l, h) => Ok(Command::PickNumber(l, h)),
+        Ordering::Equal   => return Err(String::from("High parameter cannot equal low parameter")),
+        Ordering::Greater => Ok(Command::PickNumber(high, low)),
+        Ordering::Less    => Ok(Command::PickNumber(low, high)),
     }
 }
 
