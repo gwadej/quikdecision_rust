@@ -3,6 +3,7 @@ extern crate regex;
 
 use rand::seq;
 
+pub mod cards;
 pub mod coin;
 pub mod dice;
 pub mod oracle;
@@ -18,6 +19,7 @@ const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 pub enum Command
 {
     CoinFlip,
+    DrawCard,
     PickNumber(i32, i32),
     PercentTrue(u32),
     RollDice(Vec<dice::Roll>),
@@ -44,6 +46,7 @@ pub enum Decision
     Num(i32),
     AnnotatedNum{ value: u32, extra: String },
     Bool(bool),
+    Card(cards::Card),
 }
 
 /// trait for making a random decision.
@@ -61,6 +64,7 @@ impl Decider for Command
         match self
         {
             Command::CoinFlip => coin::flip(),
+            Command::DrawCard => cards::draw(),
             Command::PickNumber(low, high) => pick::choose(low, high),
             Command::PercentTrue(likely) => percent::choose(likely),
             Command::RollDice(expr) => dice::roll(expr),
@@ -98,6 +102,7 @@ impl PartialEq for Command
         match (self, other)
         {
             (Command::CoinFlip,           Command::CoinFlip) => true,
+            (Command::DrawCard,           Command::DrawCard) => true,
             (Command::Oracle,             Command::Oracle) => true,
             (Command::PickNumber(sl, sh), Command::PickNumber(ol, oh)) => sl == ol && sh == oh,
             (Command::PercentTrue(sp),    Command::PercentTrue(op)) => sp == op,
@@ -129,6 +134,7 @@ impl<'s> DecisionAssertions<'s> for spectral::Spec<'s, Decision>
             (Decision::AnnotatedNum{value:_, extra:_},
              Decision::AnnotatedNum{value:_, extra:_}) => true,
             (Decision::Bool(_),         Decision::Bool(_)) => true,
+            (Decision::Card(_),         Decision::Card(_)) => true,
             (_, _) => false,
         }
     }
