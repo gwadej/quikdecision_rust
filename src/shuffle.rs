@@ -2,7 +2,7 @@ use crate::Command;
 use crate::Decision;
 use crate::ApiDoc;
 
-use rand::Rng;
+use rand::thread_rng;
 use rand::seq::SliceRandom;
 
 type StrVec = Vec<String>;
@@ -45,7 +45,9 @@ pub fn api_doc() -> ApiDoc
 pub fn order(strvec: StrVec) -> Decision
 {
     let mut rng = thread_rng();
-    Decision::List(strvec.as_slice().shuffle(&mut rng))
+    let mut strvec = strvec.clone();
+    strvec.as_mut_slice().shuffle(&mut rng);
+    Decision::List(strvec)
 }
 
 #[cfg(test)]
@@ -78,7 +80,7 @@ mod tests
     {
         let names: Vec<String> = vec!["david".into(), "mark".into(), "kirsten".into(), "connie".into()];
         assert_that!(command(names.clone()).unwrap().decide())
-            .matches_enum_variant(Decision::Text("david".into()));
+            .matches_enum_variant(Decision::List(names));
     }
 
     #[test]
@@ -87,7 +89,7 @@ mod tests
         let names: Vec<String> = vec!["david".into(), "mark".into(), "kirsten".into(), "connie".into()];
         assert_that!(command(names.clone()))
             .is_ok()
-            .is_equal_to(Command::Selection(names));
+            .is_equal_to(Command::Shuffle(names));
     }
 
     #[test]
@@ -96,7 +98,11 @@ mod tests
         let names = vec!["david".to_string(), "mark".to_string(), "kirsten".to_string(), "connie".to_string()];
         match command(names.clone()).unwrap().decide()
         {
-            Decision::Text(guess) => assert!(names.iter().any(|s| *s == guess)),
+            Decision::List(guesses) => {
+                assert!(guesses.len() == names.len());
+                assert!(guesses.iter().all(|g| names.contains(&g)));
+                assert!(names.iter().all(|g| guesses.contains(&g)));
+            },
             _ => assert!(false, "Unexpected Decision"),
         }
     }

@@ -10,6 +10,7 @@ pub mod oracle;
 pub mod percent;
 pub mod pick;
 pub mod select;
+pub mod shuffle;
 
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
@@ -23,6 +24,7 @@ pub enum Command
     PercentTrue(u32),
     RollDice(Vec<dice::Roll>),
     Selection(Vec<String>),
+    Shuffle(Vec<String>),
     Oracle,
 }
 
@@ -45,6 +47,7 @@ pub enum Decision
     Num(i32),
     AnnotatedNum{ value: u32, extra: String },
     Bool(bool),
+    List(Vec<String>),
 }
 
 /// trait for making a random decision.
@@ -66,6 +69,7 @@ impl Decider for Command
             Command::PercentTrue(likely) => percent::choose(likely),
             Command::RollDice(expr) => dice::roll(expr),
             Command::Selection(strvec) => select::choose(strvec),
+            Command::Shuffle(strvec) => shuffle::order(strvec),
             Command::Oracle => oracle::choose(),
         }
     }
@@ -104,6 +108,7 @@ impl PartialEq for Command
             (Command::PercentTrue(sp),    Command::PercentTrue(op)) => sp == op,
             (Command::RollDice(sdice),    Command::RollDice(odice)) => sdice == odice,
             (Command::Selection(sstrs),   Command::Selection(ostrs)) => sstrs == ostrs,
+            (Command::Shuffle(sstrs),     Command::Shuffle(ostrs)) => sstrs == ostrs,
             (_, _) => false,
         }
     }
@@ -130,6 +135,7 @@ impl<'s> DecisionAssertions<'s> for spectral::Spec<'s, Decision>
             (Decision::AnnotatedNum{value:_, extra:_},
              Decision::AnnotatedNum{value:_, extra:_}) => true,
             (Decision::Bool(_),         Decision::Bool(_)) => true,
+            (Decision::List(_),         Decision::List(_)) => true,
             (_, _) => false,
         }
     }
