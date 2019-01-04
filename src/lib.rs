@@ -1,7 +1,8 @@
 extern crate rand;
 extern crate regex;
 
-use rand::seq;
+use rand::thread_rng;
+use rand::seq::SliceRandom;
 
 pub mod coin;
 pub mod dice;
@@ -83,8 +84,8 @@ pub fn version() -> &'static str
 pub fn pick_one<T>(choices: &[T]) -> String
     where T : std::string::ToString + std::clone::Clone
 {
-    let mut rng = rand::thread_rng();
-    seq::sample_slice(&mut rng, choices, 1)[0].to_string()
+    let mut rng = thread_rng();
+    choices.choose(&mut rng).expect("Somehow ended up with no strings").to_string()
 }
 
 #[cfg(test)]

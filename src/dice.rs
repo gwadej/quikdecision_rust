@@ -3,6 +3,7 @@ use crate::Decision;
 use crate::ApiDoc;
 
 use rand::Rng;
+use rand::rngs::ThreadRng;
 use regex::Regex;
 
 #[derive(Debug)]
@@ -120,7 +121,7 @@ pub fn command(expr: String) -> Result<Command, String>
     Ok(Command::RollDice(descr))
 }
 
-fn roll_die(rng: &mut rand::ThreadRng, sides: u32) -> RollStep
+fn roll_die(rng: &mut ThreadRng, sides: u32) -> RollStep
 {
     incr_step(rng.gen_range(1, sides + 1))
 }
