@@ -4,8 +4,8 @@ extern crate regex;
 use rand::thread_rng;
 use rand::seq::SliceRandom;
 
-pub mod cards;
 pub mod coin;
+pub mod deck;
 pub mod dice;
 pub mod oracle;
 pub mod percent;
@@ -50,7 +50,7 @@ pub enum Decision
     AnnotatedNum{ value: u32, extra: String },
     Bool(bool),
     List(Vec<String>),
-    Card(cards::Card),
+    Card(deck::Card),
 }
 
 /// trait for making a random decision.
@@ -68,7 +68,7 @@ impl Decider for Command
         match self
         {
             Command::CoinFlip => coin::flip(),
-            Command::DrawCard => cards::draw(),
+            Command::DrawCard => deck::draw(),
             Command::PickNumber(low, high) => pick::choose(low, high),
             Command::PercentTrue(likely) => percent::choose(likely),
             Command::RollDice(expr) => dice::roll(expr),
