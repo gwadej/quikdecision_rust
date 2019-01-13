@@ -21,7 +21,7 @@ const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 pub enum Command
 {
     CoinFlip,
-    DrawCard,
+    DrawCard(deck::Deck),
     PickNumber(i32, i32),
     PercentTrue(u32),
     RollDice(Vec<dice::Roll>),
@@ -68,7 +68,7 @@ impl Decider for Command
         match self
         {
             Command::CoinFlip => coin::flip(),
-            Command::DrawCard => deck::draw(),
+            Command::DrawCard(deck) => deck::draw(deck),
             Command::PickNumber(low, high) => pick::choose(low, high),
             Command::PercentTrue(likely) => percent::choose(likely),
             Command::RollDice(expr) => dice::roll(expr),
@@ -107,7 +107,7 @@ impl PartialEq for Command
         match (self, other)
         {
             (Command::CoinFlip,           Command::CoinFlip) => true,
-            (Command::DrawCard,           Command::DrawCard) => true,
+            (Command::DrawCard(dl),       Command::DrawCard(dr)) => dl == dr,
             (Command::Oracle,             Command::Oracle) => true,
             (Command::PickNumber(sl, sh), Command::PickNumber(ol, oh)) => sl == ol && sh == oh,
             (Command::PercentTrue(sp),    Command::PercentTrue(op)) => sp == op,

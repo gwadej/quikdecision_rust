@@ -12,6 +12,30 @@ pub struct Card
     number: usize,
 }
 
+#[derive(Debug)]
+pub enum Deck
+{
+    Standard52,
+    Joker,
+    TwoJokers,
+    Tarot,
+}
+
+impl PartialEq for Deck
+{
+    fn eq(&self, other: &Deck) -> bool
+    {
+        match (self, other)
+        {
+            (Deck::Standard52, Deck::Standard52) => true,
+            (Deck::Joker, Deck::Joker)           => true,
+            (Deck::TwoJokers, Deck::TwoJokers)   => true,
+            (Deck::Tarot, Deck::Tarot)           => true,
+            (_,_)                                => false,
+        }
+    }
+}
+
 //#[derive(Debug)]
 //pub enum Card
 //{
@@ -81,13 +105,20 @@ impl std::string::ToString for Card
 }
 
 /// Create a DrawCard Command
-pub fn command() -> Result<Command, String>
+pub fn command(deck: &str) -> Result<Command, String>
 {
-    Ok(Command::DrawCard)
+    match deck
+    {
+        "52-card"  => Ok(Command::DrawCard(Deck::Standard52)),
+        "joker"    => Ok(Command::DrawCard(Deck::Joker)),
+        "2 jokers" => Ok(Command::DrawCard(Deck::TwoJokers)),
+        "tarot"    => Ok(Command::DrawCard(Deck::Tarot)),
+        _ => Err("Unrecognized deck type".to_string()),
+    }
 }
 
 /// Draw a card from the deck
-pub fn draw() -> Decision
+pub fn draw(_deck: Deck) -> Decision
 {
     let num = rand::thread_rng().gen_range(0, 52);
     let (suit, rank) = (num / 13, (num % 13) + 1);
