@@ -9,10 +9,10 @@ use numerals::roman::Roman;
 #[derive(Debug)]
 pub enum Card
 {
-    Pip{glyph: char, suit: &'static str, number: usize},
-    Face{glyph: char, suit: &'static str, number: usize, face: &'static str},
-    Joker{glyph: char, name: &'static str},
-    Trump{glyph: char, name: &'static str, number: usize},
+    Pip{glyph: Option<char>, suit: &'static str, number: usize},
+    Face{glyph: Option<char>, suit: &'static str, number: usize, face: &'static str},
+    Joker{glyph: Option<char>, name: &'static str},
+    Trump{glyph: Option<char>, name: &'static str, number: usize},
 }
 
 #[derive(Debug)]
@@ -39,8 +39,8 @@ impl PartialEq for Deck
 
 impl Card
 {
-    /// Return the Unicode glyph associated with the card
-    pub fn glyph(&self) -> char
+    /// Return an Option containing the Unicode glyph associated with the card
+    pub fn glyph(&self) -> Option<char>
     {
         match self
         {
@@ -128,9 +128,9 @@ mod standard
         \u{1F0D1}\u{1F0D2}\u{1F0D3}\u{1F0D4}\u{1F0D5}\u{1F0D6}\u{1F0D7}\u{1F0D8}\u{1F0D9}\u{1F0DA}\u{1F0DB}\u{1F0DD}\u{1F0DE}\
         \u{1F0BF}\u{1F0CF}\u{1F0DF}";
 
-    fn get_glyph(num: usize) -> char
+    fn get_glyph(num: usize) -> Option<char>
     {
-        GLYPHS.chars().nth(num).unwrap_or('\u{1F0A0}')
+        GLYPHS.chars().nth(num)
     }
 
     /// Convert a number from 0 to 51 to a Card as a result
@@ -197,9 +197,9 @@ mod tarot
         \u{1F0E0}\u{1F0E1}\u{1F0E2}\u{1F0E3}\u{1F0E4}\u{1F0E5}\u{1F0E6}\u{1F0E7}\u{1F0E8}\u{1F0E9}\u{1F0EA}\u{1F0EB}\u{1F0EC}\u{1F0ED}\u{1F0EE}\u{1F0EF}\u{1F0F0}\u{1F0F1}\u{1F0F2}\u{1F0F3}\u{1F0F4}\u{1F0F5}"
     ;
 
-    fn get_glyph(num: usize) -> char
+    fn get_glyph(num: usize) -> Option<char>
     {
-        GLYPHS.chars().nth(num).unwrap_or('\u{1F0A0}')
+        GLYPHS.chars().nth(num)
     }
 
     fn minor_card(num: usize) -> Result<Card,String>
