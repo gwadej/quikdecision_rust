@@ -47,7 +47,7 @@ mod tests
     #[test]
     fn command_check()
     {
-        assert_that!(command()).is_ok().is_equal_to(Command::CoinFlip);
+        assert_that!(command()).is_ok_containing(Command::CoinFlip);
     }
 
     #[test]

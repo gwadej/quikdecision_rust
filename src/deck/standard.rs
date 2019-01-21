@@ -76,29 +76,31 @@ mod tests
     #[test]
     fn new_cards()
     {
-        assert_that!(standard::card(0)).is_ok()
-            .is_equal_to(Card::Pip{glyph: Some('\u{1F0A1}'), suit: "Spades", number: 1});
-        assert_that!(standard::card(13+10)).is_ok()
-            .is_equal_to(Card::Face{glyph: Some('\u{1F0BB}'), suit: "Hearts", number: 11, face: "Jack"});
-        assert_that!(standard::card(26+2)).is_ok()
-            .is_equal_to(Card::Pip{glyph: Some('\u{1F0C3}'), suit: "Diamonds", number: 3});
-        assert_that!(standard::card(39+11)).is_ok()
-            .is_equal_to(Card::Face{glyph: Some('\u{1F0DD}'), suit: "Clubs", number: 12, face: "Queen"});
+        assert_that!(standard::card(0))
+            .is_ok_containing(Card::Pip{glyph: Some('\u{1F0A1}'), suit: "Spades", number: 1});
+        assert_that!(standard::card(13+10))
+            .is_ok_containing(Card::Face{glyph: Some('\u{1F0BB}'), suit: "Hearts", number: 11, face: "Jack"});
+        assert_that!(standard::card(26+2))
+            .is_ok_containing(Card::Pip{glyph: Some('\u{1F0C3}'), suit: "Diamonds", number: 3});
+        assert_that!(standard::card(39+11))
+            .is_ok_containing(Card::Face{glyph: Some('\u{1F0DD}'), suit: "Clubs", number: 12, face: "Queen"});
     }
 
     #[test]
     fn invalid_cards()
     {
-        assert_that!(standard::card(52)).is_err();
-        assert_that!(standard::card_or_joker(54)).is_err();
+        assert_that!(standard::card(52))
+            .is_err_containing("52 is out of range for a valid card".to_string());
+        assert_that!(standard::card_or_joker(54))
+            .is_err_containing("54 is out of range for a valid card".to_string());
     }
 
     #[test]
     fn new_jokers()
     {
-        assert_that!(standard::card_or_joker(52)).is_ok()
-            .is_equal_to(Card::Joker{glyph: Some('\u{1F0BF}'), name: "Black Joker"});
-        assert_that!(standard::card_or_joker(53)).is_ok()
-            .is_equal_to(Card::Joker{glyph: Some('\u{1F0CF}'), name: "Red Joker"});
+        assert_that!(standard::card_or_joker(52))
+            .is_ok_containing(Card::Joker{glyph: Some('\u{1F0BF}'), name: "Black Joker"});
+        assert_that!(standard::card_or_joker(53))
+            .is_ok_containing(Card::Joker{glyph: Some('\u{1F0CF}'), name: "Red Joker"});
     }
 }

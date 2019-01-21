@@ -51,29 +51,29 @@ mod tests
     #[test]
     fn command_0_percent()
     {
-        assert_that!(command(0)).is_err()
-            .is_equal_to("percent arg cannot be 0".to_string());
+        assert_that!(command(0))
+            .is_err_containing("percent arg cannot be 0".to_string());
     }
 
     #[test]
     fn command_100_percent()
     {
-        assert_that!(command(100)).is_err()
-            .is_equal_to("percent arg cannot be 100 percent or greater".to_string());
+        assert_that!(command(100))
+            .is_err_containing("percent arg cannot be 100 percent or greater".to_string());
     }
 
     #[test]
     fn command_gt_100_percent()
     {
-        assert_that!(command(200)).is_err()
-            .is_equal_to("percent arg cannot be 100 percent or greater".to_string());
+        assert_that!(command(200))
+            .is_err_containing("percent arg cannot be 100 percent or greater".to_string());
     }
 
     #[test]
     fn command_50_percent()
     {
-        assert_that!(command(50)).is_ok()
-            .is_equal_to(Command::PercentTrue(50));
+        assert_that!(command(50))
+            .is_ok_containing(Command::PercentTrue(50));
     }
 
     #[test]

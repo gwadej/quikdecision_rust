@@ -203,15 +203,15 @@ mod tests
     #[test]
     fn command_empty_string()
     {
-        assert_that!(command(String::new())).is_err()
-            .is_equal_to("Missing dice expression".to_string());
+        assert_that!(command(String::new()))
+            .is_err_containing("Missing dice expression".to_string());
     }
 
     #[test]
     fn command_simple_roll()
     {
-        assert_that!(command("3d8".into())).is_ok()
-            .is_equal_to(Command::RollDice(vec![Roll::Dice(3, 8)]))
+        assert_that!(command("3d8".into()))
+            .is_ok_containing(Command::RollDice(vec![Roll::Dice(3, 8)]))
     }
 
     #[test]
@@ -219,23 +219,23 @@ mod tests
     {
         for i in vec![3,4,6,8,10,12,20,100]
         {
-            assert_that!(command(format!("1d{}", i))).is_ok()
-                .is_equal_to(Command::RollDice(vec![Roll::Dice(1, i)]))
+            assert_that!(command(format!("1d{}", i)))
+                .is_ok_containing(Command::RollDice(vec![Roll::Dice(1, i)]))
         }
     }
 
     #[test]
     fn command_exploding_roll()
     {
-        assert_that!(command("3x6".into())).is_ok()
-            .is_equal_to(Command::RollDice(vec![Roll::ExplodingDice(3, 6)]))
+        assert_that!(command("3x6".into()))
+            .is_ok_containing(Command::RollDice(vec![Roll::ExplodingDice(3, 6)]))
     }
 
     #[test]
     fn command_multiterm_expresion()
     {
-        assert_that!(command("2d12 + 3x6 + 2".into())).is_ok()
-            .is_equal_to(Command::RollDice(vec![Roll::Dice(2, 12), Roll::ExplodingDice(3, 6), Roll::Incr(2)]))
+        assert_that!(command("2d12 + 3x6 + 2".into()))
+            .is_ok_containing(Command::RollDice(vec![Roll::Dice(2, 12), Roll::ExplodingDice(3, 6), Roll::Incr(2)]))
     }
 
     #[test]

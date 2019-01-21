@@ -53,22 +53,22 @@ mod tests
     #[test]
     fn command_with_equal_params()
     {
-        assert_that!(command(1, 1)).is_err()
-            .is_equal_to(String::from("High parameter cannot equal low parameter"));
+        assert_that!(command(1, 1))
+            .is_err_containing(String::from("High parameter cannot equal low parameter"));
     }
 
     #[test]
     fn command_args_in_wrong_order()
     {
-        assert_that!(command(30, 20)).is_ok()
-            .is_equal_to(Command::PickNumber(20, 30));
+        assert_that!(command(30, 20))
+            .is_ok_containing(Command::PickNumber(20, 30));
     }
 
     #[test]
     fn command_args_in_correct_order()
     {
-        assert_that!(command(10, 20)).is_ok()
-            .is_equal_to(Command::PickNumber(10, 20));
+        assert_that!(command(10, 20))
+            .is_ok_containing(Command::PickNumber(10, 20));
     }
 
     #[test]

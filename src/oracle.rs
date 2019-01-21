@@ -89,8 +89,8 @@ mod tests
     #[test]
     fn command_check()
     {
-        assert_that!(command()).is_ok()
-            .is_equal_to(Command::Oracle);
+        assert_that!(command())
+            .is_ok_containing(Command::Oracle);
     }
 
     #[test]

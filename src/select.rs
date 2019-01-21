@@ -59,15 +59,15 @@ mod tests
     #[test]
     fn command_empty_vector()
     {
-        assert_that!(command(Vec::new())).is_err()
-            .is_equal_to("Missing required strings".to_string());
+        assert_that!(command(Vec::new()))
+            .is_err_containing("Missing required strings".to_string());
     }
 
     #[test]
     fn command_single_string()
     {
-        assert_that!(command(vec!["fred".into()])).is_err()
-            .is_equal_to("Must supply at least two strings".to_string());
+        assert_that!(command(vec!["fred".into()]))
+            .is_err_containing("Must supply at least two strings".to_string());
     }
 
     #[test]
@@ -83,8 +83,7 @@ mod tests
     {
         let names: Vec<String> = vec!["david".into(), "mark".into(), "kirsten".into(), "connie".into()];
         assert_that!(command(names.clone()))
-            .is_ok()
-            .is_equal_to(Command::Selection(names));
+            .is_ok_containing(Command::Selection(names));
     }
 
     #[test]
