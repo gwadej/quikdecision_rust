@@ -196,21 +196,21 @@ mod tests
     const STD_DATA: [CardTestData; 5] =
     [
         CardTestData{num: 0,     glyph: '\u{1f0a1}', val:  1, suit: "Spades", display: "Ace of Spades"},
-        CardTestData{num: 13+11, glyph: '\u{1f0bb}', val: 11, suit: "Hearts", display: "Jack of Hearts"},
+        CardTestData{num: 13+10, glyph: '\u{1f0bb}', val: 11, suit: "Hearts", display: "Jack of Hearts"},
         CardTestData{num: 26+2,  glyph: '\u{1f0c3}', val:  3, suit: "Diamonds", display: "3 of Diamonds"},
-        CardTestData{num: 39+12, glyph: '\u{1f0dd}', val: 12, suit: "Clubs", display: "Queen of Clubs"},
+        CardTestData{num: 39+11, glyph: '\u{1f0dd}', val: 12, suit: "Clubs", display: "Queen of Clubs"},
         CardTestData{num: 53,    glyph: '\u{1f0cf}', val:  0, suit: "", display: "Red Joker"},
     ];
 
     const TAROT_DATA: [CardTestData; 7] =
     [
-        CardTestData{num: 0,     glyph: '\u{1f0a1}', val:  1, suit: "Spades", display: "Ace of Swords"},
-        CardTestData{num: 14+12, glyph: '\u{1f0bb}', val: 11, suit: "Hearts", display: "Jack of Cups"},
-        CardTestData{num: 28+2,  glyph: '\u{1f0c3}', val:  3, suit: "Diamonds", display: "3 of Coins"},
-        CardTestData{num: 42+13, glyph: '\u{1f0dd}', val: 12, suit: "Clubs", display: "Queen of Wands"},
-        CardTestData{num: 54,    glyph: '\u{1f0e0}', val:  0, suit: "", display: "The Fool"},
-        CardTestData{num: 63,    glyph: '\u{1f0e9}', val:  9, suit: "Trumps", display: "The Hermit"},
-        CardTestData{num: 77,    glyph: '\u{1f0f5}', val: 21, suit: "Trumps", display: "The World"},
+        CardTestData{num: 0,     glyph: '\u{1f0a1}', val:  1, suit: "Swords", display: "Ace of Swords"},
+        CardTestData{num: 14+11, glyph: '\u{1f0bc}', val: 12, suit: "Cups", display: "Knight of Cups"},
+        CardTestData{num: 28+2,  glyph: '\u{1f0c3}', val:  3, suit: "Coins", display: "3 of Coins"},
+        CardTestData{num: 42+12, glyph: '\u{1f0dd}', val: 13, suit: "Wands", display: "Queen of Wands"},
+        CardTestData{num: 56,    glyph: '\u{1f0e0}', val:  0, suit: "", display: "The Fool"},
+        CardTestData{num: 65,    glyph: '\u{1f0e9}', val:  9, suit: "Trumps", display: "IX - The Hermit"},
+        CardTestData{num: 77,    glyph: '\u{1f0f5}', val: 21, suit: "Trumps", display: "XXI - The World"},
     ];
 
     #[test]
@@ -218,7 +218,9 @@ mod tests
     {
         for CardTestData{num, display, ..} in STD_DATA.iter()
         {
-            assert_that!(standard::card_or_joker(*num).unwrap().to_string() == display.to_string());
+            let card = standard::card_or_joker(*num);
+            assert_that!(card).is_ok();
+            assert_that!(card.unwrap().to_string()).is_equal_to(display.to_string());
         }
     }
 
@@ -227,7 +229,9 @@ mod tests
     {
         for CardTestData{num, glyph, ..} in STD_DATA.iter()
         {
-            assert_that!(standard::card_or_joker(*num).unwrap().glyph().unwrap() == *glyph);
+            let card = standard::card_or_joker(*num);
+            assert_that!(card).is_ok();
+            assert_that!(card.unwrap().glyph()).is_some().is_equal_to(*glyph);
         }
     }
 
@@ -236,7 +240,9 @@ mod tests
     {
         for CardTestData{num, suit, ..} in STD_DATA.iter()
         {
-            assert_that!(standard::card_or_joker(*num).unwrap().suit() == *suit);
+            let card = standard::card_or_joker(*num);
+            assert_that!(card).is_ok();
+            assert_that!(card.unwrap().suit()).is_equal_to(*suit);
         }
     }
 
@@ -245,16 +251,18 @@ mod tests
     {
         for CardTestData{num, val, ..} in STD_DATA.iter()
         {
-            assert_that!(standard::card_or_joker(*num).unwrap().value() == *val);
+            let card = standard::card_or_joker(*num);
+            assert_that!(card).is_ok();
+            assert_that!(card.unwrap().value()).is_equal_to(*val);
         }
     }
 
     #[test]
     fn check_command()
     {
-        assert_that!(deck::command("52-card").unwrap() == deck::Command::DrawCard(Deck::Standard52));
-        assert_that!(deck::command("jokers").unwrap()  == deck::Command::DrawCard(Deck::Jokers));
-        assert_that!(deck::command("tarot").unwrap()   == deck::Command::DrawCard(Deck::Tarot));
+        assert_that!(deck::command("52-card")).is_ok().is_equal_to(deck::Command::DrawCard(Deck::Standard52));
+        assert_that!(deck::command("jokers")).is_ok().is_equal_to(deck::Command::DrawCard(Deck::Jokers));
+        assert_that!(deck::command("tarot")).is_ok().is_equal_to(deck::Command::DrawCard(Deck::Tarot));
     }
 
     #[test]
@@ -262,7 +270,9 @@ mod tests
     {
         for CardTestData{num, display, ..} in TAROT_DATA.iter()
         {
-            assert_that!(tarot::card(*num).unwrap().to_string() == display.to_string());
+            let card = tarot::card(*num);
+            assert_that!(card).is_ok();
+            assert_that!(card.unwrap().to_string()).is_equal_to(display.to_string());
         }
     }
 
@@ -271,7 +281,9 @@ mod tests
     {
         for CardTestData{num, glyph, ..} in TAROT_DATA.iter()
         {
-            assert_that!(tarot::card(*num).unwrap().glyph().unwrap() == *glyph);
+            let card = tarot::card(*num);
+            assert_that!(card).is_ok();
+            assert_that!(card.unwrap().glyph()).is_some().is_equal_to(*glyph);
         }
     }
 
@@ -280,7 +292,9 @@ mod tests
     {
         for CardTestData{num, suit, ..} in TAROT_DATA.iter()
         {
-            assert_that!(tarot::card(*num).unwrap().suit() == *suit);
+            let card = tarot::card(*num);
+            assert_that!(card).is_ok();
+            assert_that!(card.unwrap().suit()).is_equal_to(*suit);
         }
     }
 
@@ -289,7 +303,9 @@ mod tests
     {
         for CardTestData{num, val, ..} in TAROT_DATA.iter()
         {
-            assert_that!(tarot::card(*num).unwrap().value() == *val);
+            let card = tarot::card(*num);
+            assert_that!(card).is_ok();
+            assert_that!(card.unwrap().value()).is_equal_to(*val);
         }
     }
 }

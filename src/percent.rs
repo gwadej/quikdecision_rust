@@ -90,6 +90,7 @@ mod tests
             .map(|_| super::choose(35))
             .filter(|x| match x { Decision::Bool(true) => true, _ => false, })
             .count();
-        assert!(300 <= choices && choices <= 400);
+        assert_that!(&choices).is_greater_than_or_equal_to(300);
+        assert_that!(&choices).is_less_than_or_equal_to(400);
     }
 }

@@ -6,6 +6,8 @@ use rand::Rng;
 use rand::rngs::ThreadRng;
 use regex::Regex;
 
+type RollStep = (String, u32);
+
 #[derive(Debug)]
 pub enum Roll
 {
@@ -27,8 +29,6 @@ impl PartialEq for Roll
         }
     }
 }
-
-type RollStep = (String, u32);
 
 /// Return an ApiDoc object describing the Dice decider.
 pub fn api_doc() -> ApiDoc
@@ -135,30 +135,27 @@ fn accum_roll((desc, val): RollStep, (rdesc, roll): RollStep, sep: &str) -> Roll
     (desc + sep + &rdesc, val + roll)
 }
 
-fn roll_step(num: u32, sides: u32) -> RollStep
+fn roll_step(mut rng: &mut ThreadRng, num: u32, sides: u32) -> RollStep
 {
-    let mut rng = rand::thread_rng();
     let (desc, roll) = (1..=num)
         .map(|_| roll_die(&mut rng, sides))
         .fold((String::new(), 0), |acc, r| accum_roll(acc, r, "+"));
     (format!("{}d{}({})", num, sides, desc), roll)
 }
 
-fn roll_explode_step(num: u32, sides: u32) -> RollStep
+fn roll_explode_step(mut rng: &mut ThreadRng, num: u32, sides: u32) -> RollStep
 {
-    let mut rng = rand::thread_rng();
     let (desc, roll) = (1..=num)
-        .map(|_| roll_die(&mut rng, sides))
-        .map(|r| explode(r, sides))
+        .map(|_| roll_exploded_step(&mut rng, sides))
         .map(|(d, r)| (format!(" ({}) ", d), r))
         .fold((String::new(), 0), |acc, r| accum_roll(acc, r, "+"));
     (format!("{}x{}<{}>", num, sides, desc.trim()), roll)
 }
 
-fn roll_exploded_step(sides: u32) -> RollStep
+fn roll_exploded_step(mut rng: &mut ThreadRng, sides: u32) -> RollStep
 {
-    let mut rng = rand::thread_rng();
-    explode(roll_die(&mut rng, sides), sides)
+    let roll = roll_die(&mut rng, sides);
+    explode(&mut rng, roll, sides)
 }
 
 fn incr_step(num: u32) -> RollStep
@@ -166,11 +163,11 @@ fn incr_step(num: u32) -> RollStep
     (num.to_string(), num)
 }
 
-fn explode((desc, val): RollStep, sides: u32) -> RollStep
+fn explode(mut rng: &mut ThreadRng, (desc, val): RollStep, sides: u32) -> RollStep
 {
     if val != sides { return (desc, val); }
 
-    let (rdesc, roll) = roll_exploded_step(sides);
+    let (rdesc, roll) = roll_exploded_step(&mut rng, sides);
     (format!("{}!+{}", desc, rdesc), val + roll)
 }
 
@@ -178,13 +175,14 @@ fn explode((desc, val): RollStep, sides: u32) -> RollStep
 /// the result.
 pub fn roll(descr: Vec<Roll>) -> Decision
 {
+    let mut rng = rand::thread_rng();
     // { value: roll, description: roll_string }
     let (desc, roll) = descr
         .iter()
         .map(|ref x| match x
         {
-            Roll::Dice(num, sides) => roll_step(*num, *sides),
-            Roll::ExplodingDice(num, sides) => roll_explode_step(*num, *sides),
+            Roll::Dice(num, sides) => roll_step(&mut rng, *num, *sides),
+            Roll::ExplodingDice(num, sides) => roll_explode_step(&mut rng, *num, *sides),
             Roll::Incr(num) => incr_step(*num),
         })
         .fold((String::new(), 0), |acc, r| accum_roll(acc, r, " + "));
@@ -206,7 +204,7 @@ mod tests
     fn command_empty_string()
     {
         assert_that!(command(String::new())).is_err()
-            .is_equal_to(String::from("Missing dice expression"));
+            .is_equal_to("Missing dice expression".to_string());
     }
 
     #[test]
@@ -253,7 +251,8 @@ mod tests
         match roll(vec![Roll::Dice(1, 6)])
         {
             Decision::AnnotatedNum{value, extra} => {
-                assert_that!(1 <= value && value <= 6);
+                assert_that!(&value).is_greater_than_or_equal_to(1);
+                assert_that!(&value).is_less_than_or_equal_to(6);
                 assert_that!(extra).starts_with("1d6(");
                 assert_that!(extra).ends_with(")");
             },
@@ -267,7 +266,8 @@ mod tests
         match roll(vec![Roll::ExplodingDice(1, 6)])
         {
             Decision::AnnotatedNum{value, extra} => {
-                assert_that!(1 <= value && value % 6 != 0);
+                assert_that!(&value).is_greater_than_or_equal_to(1);
+                assert_that!(value % 6).is_not_equal_to(0);
                 assert_that!(extra).starts_with("1x6<");
                 assert_that!(extra).ends_with(">");
             },
@@ -294,7 +294,8 @@ mod tests
         match roll(vec![Roll::Dice(3, 6)])
         {
             Decision::AnnotatedNum{value, extra} => {
-                assert_that!(3 <= value && value <= 18);
+                assert_that!(&value).is_greater_than_or_equal_to(3);
+                assert_that!(&value).is_less_than_or_equal_to(18);
                 assert_that!(extra).starts_with("3d6(");
                 assert_that!(extra).ends_with(")");
             },
@@ -308,7 +309,7 @@ mod tests
         match roll(vec![Roll::ExplodingDice(3, 6)])
         {
             Decision::AnnotatedNum{value, extra} => {
-                assert_that!(3 <= value);
+                assert_that!(&value).is_greater_than_or_equal_to(3);
                 assert_that!(extra).starts_with("3x6<");
                 assert_that!(extra).ends_with(">");
             },
@@ -322,7 +323,7 @@ mod tests
         match roll(vec![Roll::Dice(3, 6), Roll::Dice(2, 8), Roll::ExplodingDice(1, 20), Roll::Incr(2)])
         {
             Decision::AnnotatedNum{value, extra} => {
-                assert_that!(8 <= value);
+                assert_that!(&value).is_greater_than_or_equal_to(8);
                 assert_that!(extra).starts_with("3d6(");
                 assert_that!(extra).contains(") + 2d8(");
                 assert_that!(extra).contains(") + 1x20<");

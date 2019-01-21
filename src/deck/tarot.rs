@@ -78,19 +78,26 @@ mod tests
     #[test]
     fn new_cards()
     {
-        assert_that!(tarot::card(0).unwrap() == Card::Pip{glyph: Some('\u{1F0A1}'), suit: "Swords", number: 1});
-        assert_that!(tarot::card(14+12).unwrap() == Card::Face{glyph: Some('\u{1F0BB}'), suit: "Cups", number: 12, face: "Knight"});
-        assert_that!(tarot::card(28+2).unwrap() == Card::Pip{glyph: Some('\u{1F0C3}'), suit: "Coins", number: 3});
-        assert_that!(tarot::card(42+13).unwrap() == Card::Face{glyph: Some('\u{1F0DD}'), suit: "Wands", number: 13, face: "Queen"});
+        assert_that!(tarot::card(0)).is_ok()
+            .is_equal_to(Card::Pip{glyph: Some('\u{1F0A1}'), suit: "Swords", number: 1});
+        assert_that!(tarot::card(14+11)).is_ok()
+            .is_equal_to(Card::Face{glyph: Some('\u{1F0BC}'), suit: "Cups", number: 12, face: "Knight"});
+        assert_that!(tarot::card(28+2)).is_ok()
+            .is_equal_to(Card::Pip{glyph: Some('\u{1F0C3}'), suit: "Coins", number: 3});
+        assert_that!(tarot::card(42+12)).is_ok()
+            .is_equal_to(Card::Face{glyph: Some('\u{1F0DD}'), suit: "Wands", number: 13, face: "Queen"});
 
-        assert_that!(tarot::card(54).unwrap() == Card::Joker{glyph: Some('\u{1F0E0}'), name: "The Fool"});
-        assert_that!(tarot::card(63).unwrap() == Card::Trump{glyph: Some('\u{1F0E9}'), name: "The Hermit", number: 9});
-        assert_that!(tarot::card(77).unwrap() == Card::Trump{glyph: Some('\u{1F0F5}'), name: "The World", number: 21});
+        assert_that!(tarot::card(56)).is_ok()
+            .is_equal_to(Card::Joker{glyph: Some('\u{1F0E0}'), name: "The Fool"});
+        assert_that!(tarot::card(65)).is_ok()
+            .is_equal_to(Card::Trump{glyph: Some('\u{1F0E9}'), name: "The Hermit", number: 9});
+        assert_that!(tarot::card(77)).is_ok()
+            .is_equal_to(Card::Trump{glyph: Some('\u{1F0F5}'), name: "The World", number: 21});
     }
 
     #[test]
     fn invalid_card()
     {
-        assert_that!(tarot::card(78).is_err());
+        assert_that!(tarot::card(78)).is_err();
     }
 }
