@@ -246,4 +246,89 @@ mod tests
         assert_that!(command("2d12 + 3x6 + 2".into()).unwrap().decide())
             .matches_enum_variant(Decision::AnnotatedNum{value: 1, extra: "foo".into()});
     }
+
+    #[test]
+    fn simple_roll_value()
+    {
+        match roll(vec![Roll::Dice(1, 6)])
+        {
+            Decision::AnnotatedNum{value, extra} => {
+                assert_that!(1 <= value && value <= 6);
+                assert_that!(extra).starts_with("1d6(");
+                assert_that!(extra).ends_with(")");
+            },
+            _ => panic!("Wrong decision type"),
+        }
+    }
+
+    #[test]
+    fn explode_roll_value()
+    {
+        match roll(vec![Roll::ExplodingDice(1, 6)])
+        {
+            Decision::AnnotatedNum{value, extra} => {
+                assert_that!(1 <= value && value % 6 != 0);
+                assert_that!(extra).starts_with("1x6<");
+                assert_that!(extra).ends_with(">");
+            },
+            _ => panic!("Wrong decision type"),
+        }
+    }
+
+    #[test]
+    fn incr_value()
+    {
+        match roll(vec![Roll::Incr(1)])
+        {
+            Decision::AnnotatedNum{value, extra} => {
+                assert_that!(value).is_equal_to(1);
+                assert_that!(extra).is_equal_to("1".to_string());
+            },
+            _ => panic!("Wrong decision type"),
+        }
+    }
+
+    #[test]
+    fn multi_roll_value()
+    {
+        match roll(vec![Roll::Dice(3, 6)])
+        {
+            Decision::AnnotatedNum{value, extra} => {
+                assert_that!(3 <= value && value <= 18);
+                assert_that!(extra).starts_with("3d6(");
+                assert_that!(extra).ends_with(")");
+            },
+            _ => panic!("Wrong decision type"),
+        }
+    }
+
+    #[test]
+    fn multi_exploding_roll_value()
+    {
+        match roll(vec![Roll::ExplodingDice(3, 6)])
+        {
+            Decision::AnnotatedNum{value, extra} => {
+                assert_that!(3 <= value);
+                assert_that!(extra).starts_with("3x6<");
+                assert_that!(extra).ends_with(">");
+            },
+            _ => panic!("Wrong decision type"),
+        }
+    }
+
+    #[test]
+    fn complex_roll_value()
+    {
+        match roll(vec![Roll::Dice(3, 6), Roll::Dice(2, 8), Roll::ExplodingDice(1, 20), Roll::Incr(2)])
+        {
+            Decision::AnnotatedNum{value, extra} => {
+                assert_that!(8 <= value);
+                assert_that!(extra).starts_with("3d6(");
+                assert_that!(extra).contains(") + 2d8(");
+                assert_that!(extra).contains(") + 1x20<");
+                assert_that!(extra).contains("> + 2");
+            },
+            _ => panic!("Wrong decision type"),
+        }
+    }
 }
