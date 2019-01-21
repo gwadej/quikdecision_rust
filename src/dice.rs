@@ -3,7 +3,6 @@ use crate::Decision;
 use crate::ApiDoc;
 
 use rand::Rng;
-use rand::rngs::ThreadRng;
 use regex::Regex;
 
 type RollStep = (String, u32);
@@ -121,7 +120,8 @@ pub fn command(expr: String) -> Result<Command, String>
     Ok(Command::RollDice(descr))
 }
 
-fn roll_die(rng: &mut ThreadRng, sides: u32) -> RollStep
+fn roll_die<T>(rng: &mut T, sides: u32) -> RollStep
+    where T: Rng
 {
     incr_step(rng.gen_range(1, sides + 1))
 }
@@ -135,27 +135,30 @@ fn accum_roll((desc, val): RollStep, (rdesc, roll): RollStep, sep: &str) -> Roll
     (desc + sep + &rdesc, val + roll)
 }
 
-fn roll_step(mut rng: &mut ThreadRng, num: u32, sides: u32) -> RollStep
+fn roll_step<T>(rng: &mut T, num: u32, sides: u32) -> RollStep
+    where T: Rng
 {
     let (desc, roll) = (1..=num)
-        .map(|_| roll_die(&mut rng, sides))
+        .map(|_| roll_die(rng, sides))
         .fold((String::new(), 0), |acc, r| accum_roll(acc, r, "+"));
     (format!("{}d{}({})", num, sides, desc), roll)
 }
 
-fn roll_explode_step(mut rng: &mut ThreadRng, num: u32, sides: u32) -> RollStep
+fn roll_explode_step<T>(rng: &mut T, num: u32, sides: u32) -> RollStep
+    where T: Rng
 {
     let (desc, roll) = (1..=num)
-        .map(|_| roll_exploded_step(&mut rng, sides))
+        .map(|_| roll_exploded_step(rng, sides))
         .map(|(d, r)| (format!(" ({}) ", d), r))
         .fold((String::new(), 0), |acc, r| accum_roll(acc, r, "+"));
     (format!("{}x{}<{}>", num, sides, desc.trim()), roll)
 }
 
-fn roll_exploded_step(mut rng: &mut ThreadRng, sides: u32) -> RollStep
+fn roll_exploded_step<T>(rng: &mut T, sides: u32) -> RollStep
+    where T: Rng
 {
-    let roll = roll_die(&mut rng, sides);
-    explode(&mut rng, roll, sides)
+    let roll = roll_die(rng, sides);
+    explode(rng, roll, sides)
 }
 
 fn incr_step(num: u32) -> RollStep
@@ -163,11 +166,12 @@ fn incr_step(num: u32) -> RollStep
     (num.to_string(), num)
 }
 
-fn explode(mut rng: &mut ThreadRng, (desc, val): RollStep, sides: u32) -> RollStep
+fn explode<T>(rng: &mut T, (desc, val): RollStep, sides: u32) -> RollStep
+    where T: Rng
 {
     if val != sides { return (desc, val); }
 
-    let (rdesc, roll) = roll_exploded_step(&mut rng, sides);
+    let (rdesc, roll) = roll_exploded_step(rng, sides);
     (format!("{}!+{}", desc, rdesc), val + roll)
 }
 
