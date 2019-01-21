@@ -80,6 +80,25 @@ impl Card
     }
 }
 
+impl PartialEq for Card
+{
+    fn eq(&self, other: &Card) -> bool
+    {
+        match(self, other)
+        {
+            (&Card::Pip{glyph: lg, suit: ls, number: ln},
+             &Card::Pip{glyph: rg, suit: rs, number: rn}) => lg == rg && ls == rs && ln == rn,
+            (&Card::Face{glyph: lg, suit: ls, number: ln, face: lf},
+             &Card::Face{glyph: rg, suit: rs, number: rn, face: rf}) => lg == rg && ls == rs && ln == rn && lf == rf,
+            (&Card::Joker{glyph: lg, name: ln},
+             &Card::Joker{glyph: rg, name: rn}) => lg == rg && ln == rn,
+            (&Card::Trump{glyph: lg, name: ln, number: lv},
+             &Card::Trump{glyph: rg, name: rn, number: rv}) => lg == rg && ln == rn && lv == rv,
+             (_, _) => false,
+        }
+    }
+}
+
 impl std::string::ToString for Card
 {
     fn to_string(&self) -> String
@@ -136,6 +155,7 @@ mod standard
     /// Convert a number from 0 to 51 to a Card as a result
     pub fn card(num: usize) -> Result<Card,String>
     {
+        if num >= 52 { return Err(format!("{} is out of range for a valid card", num)); }
         let (suit, rank) = (num / 13, (num % 13) + 1);
         match rank
         {
@@ -157,6 +177,7 @@ mod standard
     /// Convert a number from 0 to 53 to a Card as a result
     pub fn card_or_joker(num: usize) -> Result<Card,String>
     {
+        if num >= 54 { return Err(format!("{} is out of range for a valid card", num)); }
         if num < 52 { return card(num) }
         joker(num)
     }
@@ -270,4 +291,83 @@ pub fn api_doc() -> ApiDoc
             "  'tarot' for the historical Tarot deck.",
         ],
     }
+}
+
+#[cfg(test)]
+mod tests
+{
+    use spectral::prelude::*;
+
+    use crate::deck::standard;
+    use crate::deck::tarot;
+    use crate::deck::Card;
+
+    #[test]
+    fn new_standard_cards()
+    {
+        assert_that!(standard::card(0).unwrap() == Card::Pip{glyph: Some('\u{1F0A1}'), suit: "Spades", number: 1});
+        assert_that!(standard::card(13+11).unwrap() == Card::Face{glyph: Some('\u{1F0BB}'), suit: "Hearts", number: 11, face: "Jack"});
+        assert_that!(standard::card(26+2).unwrap() == Card::Pip{glyph: Some('\u{1F0C3}'), suit: "Diamonds", number: 3});
+        assert_that!(standard::card(39+12).unwrap() == Card::Face{glyph: Some('\u{1F0DD}'), suit: "Clubs", number: 13, face: "Queen"});
+    }
+
+    #[test]
+    fn cards_to_string()
+    {
+        assert_that!(standard::card(0).unwrap().to_string() == "Ace of Spades".to_string());
+        assert_that!(standard::card(13+11).unwrap().to_string() == "Jack of Hearts".to_string());
+        assert_that!(standard::card(26+2).unwrap().to_string() == "3 of Diamonds".to_string());
+        assert_that!(standard::card(39+12).unwrap().to_string() == "Queen of Clubs".to_string());
+    }
+
+    #[test]
+    fn invalid_standard_cards()
+    {
+        assert_that!(standard::card(52).is_err());
+        assert_that!(standard::card_or_joker(54).is_err());
+    }
+
+    #[test]
+    fn new_jokers()
+    {
+        assert_that!(standard::card_or_joker(52).unwrap() == Card::Joker{glyph: Some('\u{1F0BF}'), name: "Black Joker"});
+        assert_that!(standard::card_or_joker(53).unwrap() == Card::Joker{glyph: Some('\u{1F0CF}'), name: "Red Joker"});
+    }
+
+    #[test]
+    fn joker_to_string()
+    {
+        assert_that!(standard::card_or_joker(53).unwrap().to_string() == "Red Joker".to_string());
+    }
+
+    #[test]
+    fn new_tarot_cards()
+    {
+        assert_that!(tarot::card(0).unwrap() == Card::Pip{glyph: Some('\u{1F0A1}'), suit: "Swords", number: 1});
+        assert_that!(tarot::card(14+12).unwrap() == Card::Face{glyph: Some('\u{1F0BB}'), suit: "Cups", number: 12, face: "Knight"});
+        assert_that!(tarot::card(28+2).unwrap() == Card::Pip{glyph: Some('\u{1F0C3}'), suit: "Coins", number: 3});
+        assert_that!(tarot::card(42+13).unwrap() == Card::Face{glyph: Some('\u{1F0DD}'), suit: "Wands", number: 13, face: "Queen"});
+
+        assert_that!(tarot::card(54).unwrap() == Card::Joker{glyph: Some('\u{1F0E0}'), name: "The Fool"});
+        assert_that!(tarot::card(63).unwrap() == Card::Trump{glyph: Some('\u{1F0E9}'), name: "The Hermit", number: 9});
+    }
+
+    #[test]
+    fn tarot_cards_to_string()
+    {
+        assert_that!(tarot::card(0).unwrap().to_string() == "Ace of Swords".to_string());
+        assert_that!(tarot::card(14+12).unwrap().to_string() == "Knight of Cups".to_string());
+        assert_that!(tarot::card(28+2).unwrap().to_string() == "3 of Coins".to_string());
+        assert_that!(tarot::card(42+13).unwrap().to_string() == "Queen of Wands".to_string());
+
+        assert_that!(tarot::card(54).unwrap().to_string() == "The Fool".to_string());
+        assert_that!(tarot::card(63).unwrap().to_string() == "IX: The Hermit".to_string());
+    }
+
+//    #[test]
+//    fn invalid_standard_cards()
+//    {
+//        assert_that!(standard::card(52).is_err());
+//        assert_that!(standard::card_or_joker(54).is_err());
+//    }
 }
