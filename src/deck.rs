@@ -145,7 +145,7 @@ mod standard;
 mod tarot;
 
 /// Draw a card from the deck
-pub fn draw(deck: Deck) -> Decision
+pub fn draw(deck: &Deck) -> Decision
 {
     let mut rng = rand::thread_rng();
     let card = match deck

@@ -42,7 +42,7 @@ pub fn api_doc() -> ApiDoc
 }
 
 /// Return a List containing the strings in a random order.
-pub fn order(strvec: StrVec) -> Decision
+pub fn order(strvec: &StrVec) -> Decision
 {
     let mut rng = thread_rng();
     let mut strvec = strvec.clone();

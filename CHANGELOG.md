@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Iterator interface to the quikdecision::Command enum, turning a command into an infinite iterator.
 ### Changed
 - Change glyph into an Option, so that we can handle cards without a unicode character to match.
 

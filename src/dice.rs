@@ -177,7 +177,7 @@ fn explode<T>(rng: &mut T, (desc, val): RollStep, sides: u32) -> RollStep
 
 /// Perform the random function and return a Decision object representing
 /// the result.
-pub fn roll(descr: Vec<Roll>) -> Decision
+pub fn roll(descr: &Vec<Roll>) -> Decision
 {
     let mut rng = rand::thread_rng();
     // { value: roll, description: roll_string }
@@ -252,7 +252,7 @@ mod tests
     #[test]
     fn simple_roll_value()
     {
-        match roll(vec![Roll::Dice(1, 6)])
+        match roll(&vec![Roll::Dice(1, 6)])
         {
             Decision::AnnotatedNum{value, extra} => {
                 assert_that!(&value).is_greater_than_or_equal_to(1);
@@ -267,7 +267,7 @@ mod tests
     #[test]
     fn explode_roll_value()
     {
-        match roll(vec![Roll::ExplodingDice(1, 6)])
+        match roll(&vec![Roll::ExplodingDice(1, 6)])
         {
             Decision::AnnotatedNum{value, extra} => {
                 assert_that!(&value).is_greater_than_or_equal_to(1);
@@ -282,7 +282,7 @@ mod tests
     #[test]
     fn incr_value()
     {
-        match roll(vec![Roll::Incr(1)])
+        match roll(&vec![Roll::Incr(1)])
         {
             Decision::AnnotatedNum{value, extra} => {
                 assert_that!(value).is_equal_to(1);
@@ -295,7 +295,7 @@ mod tests
     #[test]
     fn multi_roll_value()
     {
-        match roll(vec![Roll::Dice(3, 6)])
+        match roll(&vec![Roll::Dice(3, 6)])
         {
             Decision::AnnotatedNum{value, extra} => {
                 assert_that!(&value).is_greater_than_or_equal_to(3);
@@ -310,7 +310,7 @@ mod tests
     #[test]
     fn multi_exploding_roll_value()
     {
-        match roll(vec![Roll::ExplodingDice(3, 6)])
+        match roll(&vec![Roll::ExplodingDice(3, 6)])
         {
             Decision::AnnotatedNum{value, extra} => {
                 assert_that!(&value).is_greater_than_or_equal_to(3);
@@ -324,7 +324,7 @@ mod tests
     #[test]
     fn complex_roll_value()
     {
-        match roll(vec![Roll::Dice(3, 6), Roll::Dice(2, 8), Roll::ExplodingDice(1, 20), Roll::Incr(2)])
+        match roll(&vec![Roll::Dice(3, 6), Roll::Dice(2, 8), Roll::ExplodingDice(1, 20), Roll::Incr(2)])
         {
             Decision::AnnotatedNum{value, extra} => {
                 assert_that!(&value).is_greater_than_or_equal_to(8);

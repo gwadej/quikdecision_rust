@@ -12,6 +12,7 @@ pub mod percent;
 pub mod pick;
 pub mod select;
 pub mod shuffle;
+pub mod iterator;
 
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
@@ -56,25 +57,25 @@ pub enum Decision
 /// trait for making a random decision.
 pub trait Decider
 {
-    fn decide(self) -> Decision;
+    fn decide(&self) -> Decision;
 }
 
 /// Trait implementation for making a random decision for a Command.
 impl Decider for Command
 {
     /// Perform appropriate command returning a Decision object.
-    fn decide(self) -> Decision
+    fn decide(&self) -> Decision
     {
         match self
         {
-            Command::CoinFlip => coin::flip(),
-            Command::DrawCard(deck) => deck::draw(deck),
-            Command::PickNumber(low, high) => pick::choose(low, high),
-            Command::PercentTrue(likely) => percent::choose(likely),
-            Command::RollDice(expr) => dice::roll(expr),
-            Command::Selection(strvec) => select::choose(strvec),
-            Command::Shuffle(strvec) => shuffle::order(strvec),
-            Command::Oracle => oracle::choose(),
+            &Command::CoinFlip => coin::flip(),
+            &Command::DrawCard(ref deck) => deck::draw(deck),
+            &Command::PickNumber(low, high) => pick::choose(low, high),
+            &Command::PercentTrue(likely) => percent::choose(likely),
+            &Command::RollDice(ref expr) => dice::roll(expr),
+            &Command::Selection(ref strvec) => select::choose(strvec),
+            &Command::Shuffle(ref strvec) => shuffle::order(strvec),
+            &Command::Oracle => oracle::choose(),
         }
     }
 }

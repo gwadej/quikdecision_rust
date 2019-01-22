@@ -40,7 +40,7 @@ pub fn api_doc() -> ApiDoc
 
 /// Return a Text Decision containing one of the strings from the
 /// Vec chosen at random.
-pub fn choose(strvec: StrVec) -> Decision
+pub fn choose(strvec: &StrVec) -> Decision
 {
     Decision::Text(super::pick_one(strvec.as_slice()))
 }
