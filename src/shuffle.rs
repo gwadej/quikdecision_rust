@@ -11,18 +11,11 @@ type StrVec = Vec<String>;
 /// Vec of Strings.
 pub fn command(strings: StrVec) -> Result<Command, String>
 {
-    if strings.is_empty()
+    match strings.len()
     {
-        return Err(String::from("Missing required strings"));
-    }
-
-    if strings.len() > 1
-    {
-        Ok(Command::Shuffle(strings))
-    }
-    else
-    {
-        Err(String::from("Must supply at least two strings"))
+        0 => Err("Missing required strings".to_string()),
+        1 => Err("Must supply at least two strings".to_string()),
+        _ => Ok(Command::Shuffle(strings)),
     }
 }
 

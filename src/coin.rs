@@ -68,7 +68,7 @@ mod tests
             {
                 Decision::Text(flip) =>
                     assert_ne!(expected.iter().find(|&&x| x == flip), None),
-                _ => panic!(),
+                _ => assert!(false, "Wrong decision type"),
             }
         }
     }

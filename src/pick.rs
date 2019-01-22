@@ -11,7 +11,7 @@ pub fn command(low: i32, high: i32) -> Result<Command, String>
 {
     match low.cmp(&high)
     {
-        Ordering::Equal   => return Err(String::from("High parameter cannot equal low parameter")),
+        Ordering::Equal   => Err("High parameter cannot equal low parameter".to_string()),
         Ordering::Greater => Ok(Command::PickNumber(high, low)),
         Ordering::Less    => Ok(Command::PickNumber(low, high)),
     }
@@ -88,7 +88,7 @@ mod tests
             match super::choose(1, 2)
             {
                 Decision::Num(choice) => assert_ne!(expected.iter().find(|&&x| x == choice), None),
-                _ => panic!(),
+                _ => assert!(false, "Wrong decision type"),
             }
         }
     }
@@ -105,7 +105,7 @@ mod tests
             match super::choose(low, high)
             {
                 Decision::Num(choice) => assert_ne!(expected.iter().find(|&&x| x == choice), None),
-                _ => panic!(),
+                _ => assert!(false, "Wrong decision type"),
             }
         }
     }

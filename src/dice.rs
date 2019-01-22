@@ -65,7 +65,7 @@ fn uint_from_match(m: regex::Match) -> Result<u32, String>
         ""   => Ok(1),
         nstr => nstr
             .parse::<u32>()
-            .map_err(|_| String::from("Non-number somehow passed parsing")),
+            .map_err(|_| "Non-number somehow passed parsing".to_string()),
     }
 }
 
@@ -88,7 +88,7 @@ pub fn command(expr: String) -> Result<Command, String>
 {
     if expr.is_empty()
     {
-        return Err(String::from("Missing dice expression"));
+        return Err("Missing dice expression".to_string());
     }
 
     let re = Regex::new(r"^\s*(?:(?P<num>(?:[1-9][0-9]*)?)(?P<type>[dDxX])(?P<sides>[3468]|1[02]|20|100)|(?P<val>[1-9][0-9]*))\s*$").unwrap();
@@ -98,7 +98,7 @@ pub fn command(expr: String) -> Result<Command, String>
         let cap = match re.captures(&term)
         {
             Some(c) => c,
-            None => return Err(String::from("Failed parsing dice expression")),
+            None => return Err("Failed parsing dice expression".to_string()),
         };
         descr.push(match (cap.name("num"), cap.name("sides"))
         {
@@ -106,13 +106,13 @@ pub fn command(expr: String) -> Result<Command, String>
             {
                 "x" | "X" => make_exploding_dice(n, s)?,
                 "d" | "D" => make_dice(n, s)?,
-                _ => return Err(String::from("Unrecognized die type")),
+                _ => return Err("Unrecognized die type".to_string()),
             },
-            (Some(_), None) => return Err(String::from("No sides specified")),
+            (Some(_), None) => return Err("No sides specified".to_string()),
             (None, _) => match cap.name("val")
             {
                 Some(n) => Roll::Incr(uint_from_match(n)?),
-                None => return Err(String::from("Unparseable term")),
+                None => return Err("Unparseable term".to_string()),
             },
         });
     }
@@ -260,7 +260,7 @@ mod tests
                 assert_that!(extra).starts_with("1d6(");
                 assert_that!(extra).ends_with(")");
             },
-            _ => panic!("Wrong decision type"),
+            _ => assert!(false, "Wrong decision type"),
         }
     }
 
@@ -275,7 +275,7 @@ mod tests
                 assert_that!(extra).starts_with("1x6<");
                 assert_that!(extra).ends_with(">");
             },
-            _ => panic!("Wrong decision type"),
+            _ => assert!(false, "Wrong decision type"),
         }
     }
 
@@ -288,7 +288,7 @@ mod tests
                 assert_that!(value).is_equal_to(1);
                 assert_that!(extra).is_equal_to("1".to_string());
             },
-            _ => panic!("Wrong decision type"),
+            _ => assert!(false, "Wrong decision type"),
         }
     }
 
@@ -303,7 +303,7 @@ mod tests
                 assert_that!(extra).starts_with("3d6(");
                 assert_that!(extra).ends_with(")");
             },
-            _ => panic!("Wrong decision type"),
+            _ => assert!(false, "Wrong decision type"),
         }
     }
 
@@ -317,7 +317,7 @@ mod tests
                 assert_that!(extra).starts_with("3x6<");
                 assert_that!(extra).ends_with(">");
             },
-            _ => panic!("Wrong decision type"),
+            _ => assert!(false, "Wrong decision type"),
         }
     }
 
@@ -333,7 +333,7 @@ mod tests
                 assert_that!(extra).contains(") + 1x20<");
                 assert_that!(extra).contains("> + 2");
             },
-            _ => panic!("Wrong decision type"),
+            _ => assert!(false, "Wrong decision type"),
         }
     }
 }

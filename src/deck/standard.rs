@@ -25,7 +25,7 @@ pub fn card(num: usize) -> Result<Card,String>
     {
         1...10  => Ok(Card::Pip{ glyph: get_glyph(num), suit: SUITS[suit], number: rank }),
         11...13 => Ok(Card::Face{ glyph: get_glyph(num), suit: SUITS[suit], number: rank, face: FACES[rank-11] }),
-        _       => Err(format!("{} is not a valid card rank", rank)),
+        _       => unreachable!(), // thanks to modulo above.
     }
 }
 

@@ -29,7 +29,7 @@ fn minor_card(num: usize) -> Result<Card,String>
     {
         1...10  => Ok(Card::Pip{ glyph: get_glyph(num), suit: SUITS[suit], number: rank }),
         11...14 => Ok(Card::Face{ glyph: get_glyph(num), suit: SUITS[suit], number: rank, face: FACES[rank-11] }),
-        _       => Err("Can't get here!".to_string()),
+        _       => unreachable!(), // Thanks to modulo above
     }
 }
 
@@ -37,9 +37,7 @@ fn trump_card(num: usize) -> Result<Card,String>
 {
     match num
     {
-        56 => {
-            Ok(Card::Joker{ glyph: get_glyph(num), name: TRUMPS[0] })
-        },
+        56 => Ok(Card::Joker{ glyph: get_glyph(num), name: TRUMPS[0] }),
         57...77 => {
             let value = num - 56; // Values from 1 - 21
             Ok(Card::Trump{ glyph: get_glyph(num), name: TRUMPS[value], number: value})

@@ -10,8 +10,8 @@ pub fn command(likely: u32) -> Result<Command, String>
 {
     match likely
     {
-        0 => Err(String::from("percent arg cannot be 0")),
-        num if num >= 100 => Err(String::from("percent arg cannot be 100 percent or greater")),
+        0 => Err("percent arg cannot be 0".to_string()),
+        num if num >= 100 => Err("percent arg cannot be 100 percent or greater".to_string()),
         num => Ok(Command::PercentTrue(num))
     }
 }
