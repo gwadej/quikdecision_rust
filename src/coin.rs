@@ -1,3 +1,5 @@
+use rand::thread_rng;
+
 use crate::Command;
 use crate::Decision;
 use crate::ApiDoc;
@@ -14,7 +16,8 @@ pub fn command() -> Result<Command, String>
 /// a value of either "Head" or "Tails" with equal probability.
 pub fn flip() -> Decision
 {
-    Decision::Text(super::pick_one(&COIN_SIDES))
+    let mut rng = thread_rng();
+    Decision::Text(super::pick_one(&mut rng, &COIN_SIDES))
 }
 
 /// Return an ApiDoc object containing a description of the CoinFlip

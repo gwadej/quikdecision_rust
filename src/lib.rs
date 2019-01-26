@@ -1,7 +1,7 @@
 extern crate rand;
 extern crate regex;
 
-use rand::thread_rng;
+use rand::Rng;
 use rand::seq::SliceRandom;
 
 pub mod coin;
@@ -90,10 +90,10 @@ pub fn version() -> &'static str
 ///
 /// choices:  an array slice of a type that can be cloned and converted to a
 ///           String.
-pub fn pick_one<T>(choices: &[T]) -> String
-    where T : std::string::ToString + std::clone::Clone
+pub fn pick_one<R, T>(mut rng: &mut R, choices: &[T]) -> String
+    where R: Rng,
+          T: std::string::ToString + std::clone::Clone
 {
-    let mut rng = thread_rng();
     choices.choose(&mut rng).expect("Somehow ended up with no strings").to_string()
 }
 

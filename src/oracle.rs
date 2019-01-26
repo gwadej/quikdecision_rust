@@ -1,3 +1,5 @@
+use rand::thread_rng;
+
 use crate::Command;
 use crate::Decision;
 use crate::ApiDoc;
@@ -69,10 +71,11 @@ pub fn command() -> Result<Command, String>
 /// Perform the actual decision for the Oracle and return the Decision.
 pub fn choose() -> Decision
 {
-    Decision::LabelledText{
-        value: crate::pick_one(&ORACLE_ANSWERS).to_string(),
-        label: crate::pick_one(&ORACLE_LABELS).to_string(),
-    }
+    let mut rng = thread_rng();
+    let value = crate::pick_one(&mut rng, &ORACLE_ANSWERS).to_string();
+    let label = crate::pick_one(&mut rng, &ORACLE_LABELS).to_string();
+
+    Decision::LabelledText{value, label}
 }
 
 #[cfg(test)]

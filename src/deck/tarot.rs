@@ -25,25 +25,27 @@ fn get_glyph(num: usize) -> Option<char>
 fn minor_card(num: usize) -> Result<Card,String>
 {
     let (suit, rank) = (num / 14, (num % 14) + 1);
-    match rank
+    let card = match rank
     {
-        1...10  => Ok(Card::Pip{ glyph: get_glyph(num), suit: SUITS[suit], number: rank }),
-        11...14 => Ok(Card::Face{ glyph: get_glyph(num), suit: SUITS[suit], number: rank, face: FACES[rank-11] }),
+        1...10  => Card::Pip{ glyph: get_glyph(num), suit: SUITS[suit], number: rank },
+        11...14 => Card::Face{ glyph: get_glyph(num), suit: SUITS[suit], number: rank, face: FACES[rank-11] },
         _       => unreachable!(), // Thanks to modulo above
-    }
+    };
+    Ok(card)
 }
 
 fn trump_card(num: usize) -> Result<Card,String>
 {
-    match num
+    let card = match num
     {
-        56 => Ok(Card::Joker{ glyph: get_glyph(num), name: TRUMPS[0] }),
+        56 => Card::Joker{ glyph: get_glyph(num), name: TRUMPS[0] },
         57...77 => {
             let value = num - 56; // Values from 1 - 21
-            Ok(Card::Trump{ glyph: get_glyph(num), name: TRUMPS[value], number: value})
+            Card::Trump{ glyph: get_glyph(num), name: TRUMPS[value], number: value}
         },
-        _ => Err("Invalid Trump num".to_string()),
-    }
+        _ => return Err("Invalid Trump num".to_string()),
+    };
+    Ok(card)
 }
 
 /// Convert a number from 0 to 77 into a Tarot Card as a Result
