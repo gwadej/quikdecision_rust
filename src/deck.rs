@@ -132,13 +132,15 @@ impl std::string::ToString for Card
 /// Create a DrawCard Command
 pub fn command(deck: &str) -> Result<Command, String>
 {
-    match deck
-    {
-        "52-card"  => Ok(Command::DrawCard(Deck::Standard52)),
-        "jokers"   => Ok(Command::DrawCard(Deck::Jokers)),
-        "tarot"    => Ok(Command::DrawCard(Deck::Tarot)),
-        _          => Err("Unrecognized deck type".to_string()),
-    }
+    Ok(Command::DrawCard(
+        match deck
+        {
+            "52-card"  => Deck::Standard52,
+            "jokers"   => Deck::Jokers,
+            "tarot"    => Deck::Tarot,
+            _          => return Err("Unrecognized deck type".to_string()),
+        }
+    ))
 }
 
 mod standard;

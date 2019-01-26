@@ -68,14 +68,14 @@ impl Decider for Command
     {
         match self
         {
-            &Command::CoinFlip => coin::flip(),
-            &Command::DrawCard(ref deck) => deck::draw(deck),
+            &Command::CoinFlip              => coin::flip(),
+            &Command::DrawCard(ref deck)    => deck::draw(deck),
             &Command::PickNumber(low, high) => pick::choose(low, high),
-            &Command::PercentTrue(likely) => percent::choose(likely),
-            &Command::RollDice(ref expr) => dice::roll(expr),
+            &Command::PercentTrue(likely  ) => percent::choose(likely),
+            &Command::RollDice(ref expr)    => dice::roll(expr),
             &Command::Selection(ref strvec) => select::choose(strvec),
-            &Command::Shuffle(ref strvec) => shuffle::order(strvec),
-            &Command::Oracle => oracle::choose(),
+            &Command::Shuffle(ref strvec)   => shuffle::order(strvec),
+            &Command::Oracle                => oracle::choose(),
         }
     }
 }

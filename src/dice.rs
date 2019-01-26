@@ -95,11 +95,8 @@ pub fn command(expr: String) -> Result<Command, String>
     let mut descr: Vec<Roll> = Vec::new();
     for term in expr.split("+")
     {
-        let cap = match re.captures(&term)
-        {
-            Some(c) => c,
-            None => return Err("Failed parsing dice expression".to_string()),
-        };
+        let cap = re.captures(&term)
+                    .ok_or("Failed parsing dice expression".to_string())?;
         descr.push(match (cap.name("num"), cap.name("sides"))
         {
             (Some(n), Some(s)) => match cap.name("type").unwrap().as_str()

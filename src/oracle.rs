@@ -96,7 +96,7 @@ mod tests
     #[test]
     fn decision_check()
     {
-        assert_that!(command().unwrap().decide())
+        assert_that!(Command::Oracle.decide())
             .matches_enum_variant(Decision::LabelledText{value: "foo".into(), label: "bar".into()});
     }
 }
