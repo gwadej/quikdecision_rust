@@ -1,4 +1,4 @@
-use quikdecision::{select,Decider,Decision::Text};
+use quikdecision::{select,Decider};
 
 fn main() -> Result<(),String>
 {
@@ -16,10 +16,7 @@ fn main() -> Result<(),String>
     println!("Cuisine:");
     for _ in 0..10
     {
-        if let Text(value) = choose.decide()
-        {
-            println!("{}", value);
-        }
+        println!("{}", choose.decide());
     }
     Ok(())
 }

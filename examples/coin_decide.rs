@@ -1,4 +1,4 @@
-use quikdecision::{coin,Decider,Decision::Text};
+use quikdecision::{coin,Decider};
 
 fn main() -> Result<(),String>
 {
@@ -7,10 +7,7 @@ fn main() -> Result<(),String>
     println!("Flipping a coin 10 times:");
     for _ in 0..10
     {
-        if let Text(face) = coin.decide()
-        {
-            println!("{}", face);
-        }
+        println!("{}", coin.decide());
     }
     Ok(())
 }

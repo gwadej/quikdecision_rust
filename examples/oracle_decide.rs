@@ -1,4 +1,4 @@
-use quikdecision::{oracle,Decider,Decision::LabelledText};
+use quikdecision::{oracle,Decider};
 
 fn main() -> Result<(),String>
 {
@@ -7,10 +7,7 @@ fn main() -> Result<(),String>
     println!("The Oracle answers:");
     for _ in 0..10
     {
-        if let LabelledText{value, label: _} = oracle.decide()
-        {
-            println!("{}", value);
-        }
+        println!("{}", oracle.decide());
     }
     Ok(())
 }

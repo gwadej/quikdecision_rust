@@ -1,4 +1,4 @@
-use quikdecision::{shuffle,Decider,Decision::List};
+use quikdecision::{shuffle,Decider};
 
 fn main() -> Result<(),String>
 {
@@ -12,10 +12,7 @@ fn main() -> Result<(),String>
     println!("Names:");
     for _ in 0..10
     {
-        if let List(value) = shuffle.decide()
-        {
-            println!("{}", value.join(", "));
-        }
+        println!("{}", shuffle.decide());
     }
     Ok(())
 }

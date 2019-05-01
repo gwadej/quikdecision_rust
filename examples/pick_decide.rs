@@ -1,4 +1,4 @@
-use quikdecision::{pick,Decider,Decision::Num};
+use quikdecision::{pick,Decider};
 
 fn main() -> Result<(),String>
 {
@@ -7,10 +7,7 @@ fn main() -> Result<(),String>
     println!("Number between 1 and 20:");
     for _ in 0..10
     {
-        if let Num(value) = num.decide()
-        {
-            println!("{}", value);
-        }
+        println!("{}", num.decide());
     }
     Ok(())
 }

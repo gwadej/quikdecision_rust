@@ -1,4 +1,4 @@
-use quikdecision::{dice,Decider,Decision::AnnotatedNum};
+use quikdecision::{dice,Decider};
 
 fn main() -> Result<(),String>
 {
@@ -7,10 +7,7 @@ fn main() -> Result<(),String>
     println!("Roll 3 6-sided dice:");
     for _ in 0..10
     {
-        if let AnnotatedNum{value, extra} = dice.decide()
-        {
-            println!("{:>2}: [{}]", value, extra);
-        }
+        println!("{}", dice.decide());
     }
     Ok(())
 }

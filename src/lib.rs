@@ -1,6 +1,7 @@
 extern crate rand;
 extern crate regex;
 
+use std::fmt;
 use rand::thread_rng;
 use rand::seq::SliceRandom;
 
@@ -52,6 +53,23 @@ pub enum Decision
     Bool(bool),
     List(Vec<String>),
     Card(deck::Card),
+}
+
+impl fmt::Display for Decision
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
+    {
+        match self
+        {
+            Decision::Text(v) => write!(f, "'{}'", v),
+            Decision::LabelledText{value, label: _} => write!(f, "'{}'", value),
+            Decision::Num(v) => write!(f, "{}", v),
+            Decision::AnnotatedNum{value, extra} => write!(f, "{}: '{}'", value, extra),
+            Decision::Bool(v) => write!(f, "{}", v),
+            Decision::List(v) => write!(f, "'{}'", v.join(", ")),
+            Decision::Card(v) => write!(f, "{}", v.to_string()),
+        }
+    }
 }
 
 /// trait for making a random decision.

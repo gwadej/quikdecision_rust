@@ -1,4 +1,4 @@
-use quikdecision::{percent,Decider,Decision::Bool};
+use quikdecision::{percent,Decider};
 
 fn main() -> Result<(),String>
 {
@@ -7,10 +7,7 @@ fn main() -> Result<(),String>
     println!("True 35% of the time:");
     for _ in 0..10
     {
-        if let Bool(value) = likely.decide()
-        {
-            println!("{}", value);
-        }
+        println!("{}", likely.decide());
     }
     Ok(())
 }

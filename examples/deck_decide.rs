@@ -1,4 +1,4 @@
-use quikdecision::{deck,Decider,Decision::Card};
+use quikdecision::{deck,Decider};
 
 fn main() -> Result<(),String>
 {
@@ -7,10 +7,7 @@ fn main() -> Result<(),String>
     println!("Randomly pick 10 cards:");
     for _ in 0..10
     {
-        if let Card(card) = deck.decide()
-        {
-            println!("{}", card.to_string());
-        }
+        println!("{}", deck.decide());
     }
     Ok(())
 }
