@@ -1,20 +1,20 @@
 use crate::{Command, Decision, Decider};
 
 #[derive(Debug)]
-pub struct QdIter
+pub struct QdIter<'a>
 {
-    decider: Command,
+    decider: &'a Command,
 }
 
-impl QdIter
+impl<'a> QdIter<'a>
 {
-    fn new(decider: Command) -> QdIter
+    fn new(decider: &Command) -> QdIter
     {
         QdIter { decider }
     }
 }
 
-impl Iterator for QdIter
+impl<'a> Iterator for QdIter<'a>
 {
     type Item = Decision;
 
@@ -28,13 +28,13 @@ impl Command
 {
     /// Convert the Command into an infinite iterator that simplifies
     /// calling it multiple times.
-    pub fn iter(self) -> QdIter
+    pub fn iter(&self) -> QdIter
     {
-        QdIter::new(self)
+        QdIter::new(&self)
     }
 }
 
-impl PartialEq for QdIter
+impl<'a> PartialEq for QdIter<'a>
 {
     fn eq(&self, other: &QdIter) -> bool
     {
@@ -55,7 +55,7 @@ mod tests
     {
         let cmd = Command::CoinFlip;
         let ocmd = Command::CoinFlip;
-        assert_that!(cmd.iter()).is_equal_to(&QdIter::new(ocmd));
+        assert_that!(cmd.iter()).is_equal_to(&QdIter::new(&ocmd));
     }
 
     #[test]
