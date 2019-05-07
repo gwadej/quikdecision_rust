@@ -21,12 +21,13 @@ pub fn card(num: usize) -> Result<Card,String>
 {
     if num >= 52 { return Err(format!("{} is out of range for a valid card", num)); }
     let (suit, rank) = (num / 13, (num % 13) + 1);
-    match rank
+    let card = match rank
     {
-        1...10  => Ok(Card::Pip{ glyph: get_glyph(num), suit: SUITS[suit], number: rank }),
-        11...13 => Ok(Card::Face{ glyph: get_glyph(num), suit: SUITS[suit], number: rank, face: FACES[rank-11] }),
+        1...10  => Card::Pip{ glyph: get_glyph(num), suit: SUITS[suit], number: rank },
+        11...13 => Card::Face{ glyph: get_glyph(num), suit: SUITS[suit], number: rank, face: FACES[rank-11] },
         _       => unreachable!(), // thanks to modulo above.
-    }
+    };
+    Ok(card)
 }
 
 fn joker(num: usize) -> Result<Card,String>

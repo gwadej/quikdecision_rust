@@ -1,3 +1,5 @@
+use rand::thread_rng;
+
 use crate::Command;
 use crate::Decision;
 use crate::ApiDoc;
@@ -35,7 +37,8 @@ pub fn api_doc() -> ApiDoc
 /// Vec chosen at random.
 pub fn choose(strvec: &StrVec) -> Decision
 {
-    Decision::Text(super::pick_one(strvec.as_slice()))
+    let mut rng = thread_rng();
+    Decision::Text(super::pick_one(&mut rng, strvec.as_slice()))
 }
 
 #[cfg(test)]

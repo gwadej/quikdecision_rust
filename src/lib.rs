@@ -2,7 +2,7 @@ extern crate rand;
 extern crate regex;
 
 use std::fmt;
-use rand::thread_rng;
+use rand::Rng;
 use rand::seq::SliceRandom;
 
 pub mod coin;
@@ -86,14 +86,14 @@ impl Decider for Command
     {
         match self
         {
-            &Command::CoinFlip => coin::flip(),
-            &Command::DrawCard(ref deck) => deck::draw(deck),
+            &Command::CoinFlip              => coin::flip(),
+            &Command::DrawCard(ref deck)    => deck::draw(deck),
             &Command::PickNumber(low, high) => pick::choose(low, high),
-            &Command::PercentTrue(likely) => percent::choose(likely),
-            &Command::RollDice(ref expr) => dice::roll(expr),
+            &Command::PercentTrue(likely  ) => percent::choose(likely),
+            &Command::RollDice(ref expr)    => dice::roll(expr),
             &Command::Selection(ref strvec) => select::choose(strvec),
-            &Command::Shuffle(ref strvec) => shuffle::order(strvec),
-            &Command::Oracle => oracle::choose(),
+            &Command::Shuffle(ref strvec)   => shuffle::order(strvec),
+            &Command::Oracle                => oracle::choose(),
         }
     }
 }
@@ -108,10 +108,10 @@ pub fn version() -> &'static str
 ///
 /// choices:  an array slice of a type that can be cloned and converted to a
 ///           String.
-pub fn pick_one<T>(choices: &[T]) -> String
-    where T : std::string::ToString + std::clone::Clone
+pub fn pick_one<R, T>(mut rng: &mut R, choices: &[T]) -> String
+    where R: Rng,
+          T: std::string::ToString + std::clone::Clone
 {
-    let mut rng = thread_rng();
     choices.choose(&mut rng).expect("Somehow ended up with no strings").to_string()
 }
 
