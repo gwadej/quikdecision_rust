@@ -5,13 +5,14 @@ use crate::Decision;
 use crate::ApiDoc;
 
 use numerals::roman::Roman;
+use rand::seq::SliceRandom;
 
 /// Enum representing each of the types of cards.
 /// - Card::Pip describes the numbered cards
 /// - Card::Face describes the face or court cards
 /// - Card::Joker describes the joker or fool cards
 /// - Card::Trump describes the trump cards from a tarot deck
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub enum Card
 {
     Pip{glyph: Option<char>, suit: &'static str, number: usize},
@@ -159,6 +160,18 @@ pub fn draw(deck: &Deck) -> Decision
     Decision::Card(card)
 }
 
+pub fn shuffle(deck: &Deck) -> Vec<Card>
+{
+    let cards = match deck
+    {
+        Deck::Standard52 => standard::cards(),
+        Deck::Jokers     => standard::cards_and_jokers(),
+        Deck::Tarot      => tarot::cards(),
+    };
+    let mut rng = &mut rand::thread_rng();
+    cards.choose_multiple(&mut rng, cards.len()).cloned().collect()
+}
+
 /// Return an ApiDoc object containing a description of the DrawCard
 /// decider.
 pub fn api_doc() -> ApiDoc
@@ -268,6 +281,20 @@ mod tests
     }
 
     #[test]
+    fn shuffled_standard_deck()
+    {
+        let cards = deck::shuffle(&Deck::Standard52);
+        assert_eq!(cards.len(), 52);
+    }
+
+    #[test]
+    fn shuffled_jokered_deck()
+    {
+        let cards = deck::shuffle(&Deck::Jokers);
+        assert_eq!(cards.len(), 54);
+    }
+
+    #[test]
     fn tarot_to_string()
     {
         for CardTestData{num, display, ..} in TAROT_DATA.iter()
@@ -309,5 +336,12 @@ mod tests
             assert_that!(card).is_ok();
             assert_that!(card.unwrap().value()).is_equal_to(*val);
         }
+    }
+
+    #[test]
+    fn shuffled_tarot_deck()
+    {
+        let cards = deck::shuffle(&Deck::Tarot);
+        assert_eq!(cards.len(), 78);
     }
 }

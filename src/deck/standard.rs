@@ -17,7 +17,7 @@ fn get_glyph(num: usize) -> Option<char>
 }
 
 /// Convert a number from 0 to 51 to a Card as a result
-pub fn card(num: usize) -> Result<Card,String>
+pub(crate) fn card(num: usize) -> Result<Card,String>
 {
     if num >= 52 { return Err(format!("{} is out of range for a valid card", num)); }
     let (suit, rank) = (num / 13, (num % 13) + 1);
@@ -30,6 +30,13 @@ pub fn card(num: usize) -> Result<Card,String>
     Ok(card)
 }
 
+pub(crate) fn cards() -> Vec<Card>
+{
+    (0..52).into_iter()
+        .map(|n| card(n).unwrap())
+        .collect()
+}
+
 fn joker(num: usize) -> Result<Card,String>
 {
     match num
@@ -40,7 +47,7 @@ fn joker(num: usize) -> Result<Card,String>
 }
 
 /// Convert a number from 0 to 53 to a Card as a result
-pub fn card_or_joker(num: usize) -> Result<Card,String>
+pub(crate) fn card_or_joker(num: usize) -> Result<Card,String>
 {
     match num
     {
@@ -50,8 +57,15 @@ pub fn card_or_joker(num: usize) -> Result<Card,String>
     }
 }
 
+pub(crate) fn cards_and_jokers() -> Vec<Card>
+{
+    (0..54).into_iter()
+            .map(|n| card_or_joker(n).unwrap())
+            .collect()
+}
+
 /// Randomly choose a card from a standard 52 card deck without jokers
-pub fn draw_card<T>(rng: &mut T) -> Card
+pub(crate) fn draw_card<T>(rng: &mut T) -> Card
     where T: Rng
 {
     let num = rng.gen_range(0, 52);
@@ -59,7 +73,7 @@ pub fn draw_card<T>(rng: &mut T) -> Card
 }
 
 /// Randomly choose a card from a standard 52 card deck with jokers
-pub fn draw_card_or_joker<T>(rng: &mut T) -> Card
+pub(crate) fn draw_card_or_joker<T>(rng: &mut T) -> Card
     where T: Rng
 {
     let num = rng.gen_range(0, 54);
@@ -103,5 +117,27 @@ mod tests
             .is_ok_containing(Card::Joker{glyph: Some('\u{1F0BF}'), name: "Black Joker"});
         assert_that!(standard::card_or_joker(53))
             .is_ok_containing(Card::Joker{glyph: Some('\u{1F0CF}'), name: "Red Joker"});
+    }
+
+    #[test]
+    fn get_deck_52()
+    {
+        let deck = standard::cards();
+        assert_eq!(deck.len(), 52);
+        assert_that!(deck[0])
+            .is_equal_to(Card::Pip{glyph: Some('\u{1F0A1}'), suit: "Spades", number: 1});
+        assert_that!(deck[51])
+            .is_equal_to(Card::Face{glyph: Some('\u{1F0DE}'), suit: "Clubs", number: 13, face: "King"});
+    }
+
+    #[test]
+    fn get_deck_jokers()
+    {
+        let deck = standard::cards_and_jokers();
+        assert_eq!(deck.len(), 54);
+        assert_that!(deck[0])
+            .is_equal_to(Card::Pip{glyph: Some('\u{1F0A1}'), suit: "Spades", number: 1});
+        assert_that!(deck[53])
+            .is_equal_to(Card::Joker{glyph: Some('\u{1F0CF}'), name: "Red Joker"});
     }
 }
