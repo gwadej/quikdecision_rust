@@ -160,7 +160,7 @@ pub fn draw(deck: &Deck) -> Decision
     Decision::Card(card)
 }
 
-pub fn shuffle(deck: &Deck) -> Vec<Card>
+pub fn shuffled(deck: &Deck) -> Vec<Card>
 {
     let cards = match deck
     {
@@ -283,14 +283,14 @@ mod tests
     #[test]
     fn shuffled_standard_deck()
     {
-        let cards = deck::shuffle(&Deck::Standard52);
+        let cards = deck::shuffled(&Deck::Standard52);
         assert_eq!(cards.len(), 52);
     }
 
     #[test]
     fn shuffled_jokered_deck()
     {
-        let cards = deck::shuffle(&Deck::Jokers);
+        let cards = deck::shuffled(&Deck::Jokers);
         assert_eq!(cards.len(), 54);
     }
 
@@ -341,7 +341,7 @@ mod tests
     #[test]
     fn shuffled_tarot_deck()
     {
-        let cards = deck::shuffle(&Deck::Tarot);
+        let cards = deck::shuffled(&Deck::Tarot);
         assert_eq!(cards.len(), 78);
     }
 }
