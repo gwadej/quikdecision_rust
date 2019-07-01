@@ -7,6 +7,9 @@ use crate::ApiDoc;
 use numerals::roman::Roman;
 use rand::seq::SliceRandom;
 
+mod standard;
+mod tarot;
+
 /// Enum representing each of the types of cards.
 /// - Card::Pip describes the numbered cards
 /// - Card::Face describes the face or court cards
@@ -143,9 +146,6 @@ pub fn command(deck: &str) -> Result<Command, String>
         }
     ))
 }
-
-mod standard;
-mod tarot;
 
 /// Draw a card from the deck
 pub fn draw(deck: &Deck) -> Decision
