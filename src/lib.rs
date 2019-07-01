@@ -15,7 +15,7 @@ pub mod select;
 pub mod shuffle;
 pub mod iterator;
 
-const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Enum defining the types of quik decision commands, and the parameters that
 /// determine their functioning.
@@ -62,7 +62,7 @@ impl fmt::Display for Decision
         match self
         {
             Decision::Text(v) => write!(f, "'{}'", v),
-            Decision::LabelledText{value, label: _} => write!(f, "'{}'", value),
+            Decision::LabelledText{value, ..} => write!(f, "'{}'", value),
             Decision::Num(v) => write!(f, "{}", v),
             Decision::AnnotatedNum{value, extra} => write!(f, "{}: '{}'", value, extra),
             Decision::Bool(v) => write!(f, "{}", v),
@@ -84,16 +84,16 @@ impl Decider for Command
     /// Perform appropriate command returning a Decision object.
     fn decide(&self) -> Decision
     {
-        match self
+        match *self
         {
-            &Command::CoinFlip              => coin::flip(),
-            &Command::DrawCard(ref deck)    => deck::draw(deck),
-            &Command::PickNumber(low, high) => pick::choose(low, high),
-            &Command::PercentTrue(likely  ) => percent::choose(likely),
-            &Command::RollDice(ref expr)    => dice::roll(expr),
-            &Command::Selection(ref strvec) => select::choose(strvec),
-            &Command::Shuffle(ref strvec)   => shuffle::order(strvec),
-            &Command::Oracle                => oracle::choose(),
+            Command::CoinFlip              => coin::flip(),
+            Command::DrawCard(ref deck)    => deck::draw(deck),
+            Command::PickNumber(low, high) => pick::choose(low, high),
+            Command::PercentTrue(likely)   => percent::choose(likely),
+            Command::RollDice(ref expr)    => dice::roll(expr),
+            Command::Selection(ref strvec) => select::choose(strvec),
+            Command::Shuffle(ref strvec)   => shuffle::order(strvec),
+            Command::Oracle                => oracle::choose(),
         }
     }
 }
@@ -152,15 +152,13 @@ impl<'s> DecisionAssertions<'s> for spectral::Spec<'s, Decision>
     {
         match (self.subject, other)
         {
-            (Decision::Text(_),         Decision::Text(_)) => true,
-            (Decision::LabelledText{value:_, label:_},
-             Decision::LabelledText{value:_, label:_}) => true,
-            (Decision::Num(_),          Decision::Num(_)) => true,
-            (Decision::AnnotatedNum{value:_, extra:_},
-             Decision::AnnotatedNum{value:_, extra:_}) => true,
-            (Decision::Bool(_),         Decision::Bool(_)) => true,
-            (Decision::List(_),         Decision::List(_)) => true,
-            (Decision::Card(_),         Decision::Card(_)) => true,
+            (Decision::Text(_),          Decision::Text(_)) => true,
+            (Decision::LabelledText{..}, Decision::LabelledText{..}) => true,
+            (Decision::Num(_),           Decision::Num(_)) => true,
+            (Decision::AnnotatedNum{..}, Decision::AnnotatedNum{..}) => true,
+            (Decision::Bool(_),          Decision::Bool(_)) => true,
+            (Decision::List(_),          Decision::List(_)) => true,
+            (Decision::Card(_),          Decision::Card(_)) => true,
             (_, _) => false,
         }
     }

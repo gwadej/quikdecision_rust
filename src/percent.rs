@@ -19,7 +19,7 @@ pub fn command(likely: u32) -> Result<Command, String>
 /// Return a boolean Decision with a true value likely% of the time.
 pub fn choose(likely: u32) -> Decision
 {
-    Decision::Bool(rand::thread_rng().gen_bool(likely as f64 / 100.0))
+    Decision::Bool(rand::thread_rng().gen_bool(f64::from(likely) / 100.0))
 }
 
 /// Return an ApiDoc object containing a description of the PercentTrue

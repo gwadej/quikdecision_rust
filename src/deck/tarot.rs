@@ -61,9 +61,8 @@ pub(crate) fn card(num: usize) -> Result<Card,String>
 
 pub(crate) fn cards() -> Vec<Card>
 {
-    (0..78).into_iter()
-        .map(|n| card(n).unwrap())
-        .collect()
+    (0..78).map(|n| card(n).unwrap())
+            .collect()
 }
 
 /// Randomly select a Tarot Card

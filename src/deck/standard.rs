@@ -32,9 +32,8 @@ pub(crate) fn card(num: usize) -> Result<Card,String>
 
 pub(crate) fn cards() -> Vec<Card>
 {
-    (0..52).into_iter()
-        .map(|n| card(n).unwrap())
-        .collect()
+    (0..52).map(|n| card(n).unwrap())
+            .collect()
 }
 
 fn joker(num: usize) -> Result<Card,String>
@@ -59,8 +58,7 @@ pub(crate) fn card_or_joker(num: usize) -> Result<Card,String>
 
 pub(crate) fn cards_and_jokers() -> Vec<Card>
 {
-    (0..54).into_iter()
-            .map(|n| card_or_joker(n).unwrap())
+    (0..54).map(|n| card_or_joker(n).unwrap())
             .collect()
 }
 

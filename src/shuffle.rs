@@ -5,11 +5,9 @@ use crate::ApiDoc;
 use rand::thread_rng;
 use rand::seq::SliceRandom;
 
-type StrVec = Vec<String>;
-
 /// Create a Selection Command variant from the supplied
 /// Vec of Strings.
-pub fn command(strings: StrVec) -> Result<Command, String>
+pub fn command(strings: Vec<String>) -> Result<Command, String>
 {
     match strings.len()
     {
@@ -35,10 +33,10 @@ pub fn api_doc() -> ApiDoc
 }
 
 /// Return a List containing the strings in a random order.
-pub fn order(strvec: &StrVec) -> Decision
+pub fn order(strvec: &[String]) -> Decision
 {
     let mut rng = thread_rng();
-    let mut strvec = strvec.clone();
+    let mut strvec = strvec.to_owned();
     strvec.as_mut_slice().shuffle(&mut rng);
     Decision::List(strvec)
 }

@@ -4,11 +4,9 @@ use crate::Command;
 use crate::Decision;
 use crate::ApiDoc;
 
-type StrVec = Vec<String>;
-
 /// Create a Selection Command variant from the supplied
 /// Vec of Strings.
-pub fn command(strings: StrVec) -> Result<Command, String>
+pub fn command(strings: Vec<String>) -> Result<Command, String>
 {
     match strings.len()
     {
@@ -35,10 +33,10 @@ pub fn api_doc() -> ApiDoc
 
 /// Return a Text Decision containing one of the strings from the
 /// Vec chosen at random.
-pub fn choose(strvec: &StrVec) -> Decision
+pub fn choose(strvec: &[String]) -> Decision
 {
     let mut rng = thread_rng();
-    Decision::Text(super::pick_one(&mut rng, strvec.as_slice()))
+    Decision::Text(super::pick_one(&mut rng, strvec))
 }
 
 #[cfg(test)]

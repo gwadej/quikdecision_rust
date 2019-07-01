@@ -96,7 +96,7 @@ pub fn command(expr: String) -> Result<Command, String>
     for term in expr.split("+")
     {
         let cap = re.captures(&term)
-                    .ok_or("Failed parsing dice expression".to_string())?;
+                    .ok_or_else(|| "Failed parsing dice expression".to_string())?;
         descr.push(match (cap.name("num"), cap.name("sides"))
         {
             (Some(n), Some(s)) => match cap.name("type").unwrap().as_str()
@@ -174,7 +174,7 @@ fn explode<T>(rng: &mut T, (desc, val): RollStep, sides: u32) -> RollStep
 
 /// Perform the random function and return a Decision object representing
 /// the result.
-pub fn roll(descr: &Vec<Roll>) -> Decision
+pub fn roll(descr: &[Roll]) -> Decision
 {
     let mut rng = rand::thread_rng();
     // { value: roll, description: roll_string }
