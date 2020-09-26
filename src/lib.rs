@@ -87,7 +87,7 @@ impl Decider for Command
         match *self
         {
             Command::CoinFlip(ref coin)    => coin.decide(),
-            Command::DrawCard(ref deck)    => deck::draw(deck),
+            Command::DrawCard(ref deck)    => deck.decide(),
             Command::PickNumber(low, high) => pick::choose(low, high),
             Command::PercentTrue(likely)   => percent::choose(likely),
             Command::RollDice(ref expr)    => dice::roll(expr),
