@@ -1,6 +1,12 @@
 use super::Card;
 use rand::Rng;
 
+const DECK_SIZE:  usize = 52;
+const DECK_MAX:   usize = DECK_SIZE-1;
+const JDECK_SIZE: usize = 54;
+const JDECK_MAX:  usize = JDECK_SIZE-1;
+const SUIT_SIZE:  usize = 13;
+
 const SUITS:  [&str; 4] = [ "Spades", "Hearts", "Diamonds", "Clubs" ];
 const FACES:  [&str; 3] = [ "Jack", "Queen", "King" ];
 const JOKERS: [&str; 3] = [ "Black Joker", "Red Joker", "White Joker" ];
@@ -19,8 +25,8 @@ fn get_glyph(num: usize) -> Option<char>
 /// Convert a number from 0 to 51 to a Card as a result
 pub(crate) fn card(num: usize) -> Result<Card,String>
 {
-    if num >= 52 { return Err(format!("{} is out of range for a valid card", num)); }
-    let (suit, rank) = (num / 13, (num % 13) + 1);
+    if num >= DECK_SIZE { return Err(format!("{} is out of range for a valid card", num)); }
+    let (suit, rank) = (num / SUIT_SIZE, (num % SUIT_SIZE) + 1);
     let card = match rank
     {
         1..=10  => Card::Pip{ glyph: get_glyph(num), suit: SUITS[suit], number: rank },
@@ -32,7 +38,7 @@ pub(crate) fn card(num: usize) -> Result<Card,String>
 
 pub(crate) fn cards() -> Vec<Card>
 {
-    (0..52).map(|n| card(n).unwrap())
+    (0..DECK_SIZE).map(|n| card(n).unwrap())
             .collect()
 }
 
@@ -40,7 +46,7 @@ fn joker(num: usize) -> Result<Card,String>
 {
     match num
     {
-        52..=53 => Ok(Card::Joker{ glyph: get_glyph(num), name: JOKERS[num-52] }),
+        DECK_SIZE..=JDECK_MAX => Ok(Card::Joker{ glyph: get_glyph(num), name: JOKERS[num-DECK_SIZE] }),
         _ => Err("Invalid Joker num".to_string()),
     }
 }
@@ -50,15 +56,15 @@ pub(crate) fn card_or_joker(num: usize) -> Result<Card,String>
 {
     match num
     {
-        0..=51 => card(num),
-        52 | 53 => joker(num),
+        0..=DECK_MAX => card(num),
+        DECK_SIZE | JDECK_MAX => joker(num),
         _ => Err(format!("{} is out of range for a valid card", num)),
     }
 }
 
 pub(crate) fn cards_and_jokers() -> Vec<Card>
 {
-    (0..54).map(|n| card_or_joker(n).unwrap())
+    (0..JDECK_SIZE).map(|n| card_or_joker(n).unwrap())
             .collect()
 }
 
@@ -66,7 +72,7 @@ pub(crate) fn cards_and_jokers() -> Vec<Card>
 pub(crate) fn draw_card<T>(rng: &mut T) -> Card
     where T: Rng
 {
-    let num = rng.gen_range(0, 52);
+    let num = rng.gen_range(0, DECK_SIZE);
     card(num).unwrap()
 }
 
@@ -74,7 +80,7 @@ pub(crate) fn draw_card<T>(rng: &mut T) -> Card
 pub(crate) fn draw_card_or_joker<T>(rng: &mut T) -> Card
     where T: Rng
 {
-    let num = rng.gen_range(0, 54);
+    let num = rng.gen_range(0, JDECK_SIZE);
     card_or_joker(num).unwrap()
 }
 
@@ -85,35 +91,36 @@ mod tests
 
     use crate::deck::standard;
     use crate::deck::Card;
+    use super::*;
 
     #[test]
     fn new_cards()
     {
         assert_that!(standard::card(0))
             .is_ok_containing(Card::Pip{glyph: Some('\u{1F0A1}'), suit: "Spades", number: 1});
-        assert_that!(standard::card(13+10))
+        assert_that!(standard::card(SUIT_SIZE+10))
             .is_ok_containing(Card::Face{glyph: Some('\u{1F0BB}'), suit: "Hearts", number: 11, face: "Jack"});
-        assert_that!(standard::card(26+2))
+        assert_that!(standard::card(2*SUIT_SIZE+2))
             .is_ok_containing(Card::Pip{glyph: Some('\u{1F0C3}'), suit: "Diamonds", number: 3});
-        assert_that!(standard::card(39+11))
+        assert_that!(standard::card(3*SUIT_SIZE+11))
             .is_ok_containing(Card::Face{glyph: Some('\u{1F0DD}'), suit: "Clubs", number: 12, face: "Queen"});
     }
 
     #[test]
     fn invalid_cards()
     {
-        assert_that!(standard::card(52))
+        assert_that!(standard::card(DECK_SIZE))
             .is_err_containing("52 is out of range for a valid card".to_string());
-        assert_that!(standard::card_or_joker(54))
+        assert_that!(standard::card_or_joker(JDECK_SIZE))
             .is_err_containing("54 is out of range for a valid card".to_string());
     }
 
     #[test]
     fn new_jokers()
     {
-        assert_that!(standard::card_or_joker(52))
+        assert_that!(standard::card_or_joker(DECK_SIZE))
             .is_ok_containing(Card::Joker{glyph: Some('\u{1F0BF}'), name: "Black Joker"});
-        assert_that!(standard::card_or_joker(53))
+        assert_that!(standard::card_or_joker(JDECK_MAX))
             .is_ok_containing(Card::Joker{glyph: Some('\u{1F0CF}'), name: "Red Joker"});
     }
 
@@ -121,10 +128,10 @@ mod tests
     fn get_deck_52()
     {
         let deck = standard::cards();
-        assert_eq!(deck.len(), 52);
+        assert_eq!(deck.len(), DECK_SIZE);
         assert_that!(deck[0])
             .is_equal_to(Card::Pip{glyph: Some('\u{1F0A1}'), suit: "Spades", number: 1});
-        assert_that!(deck[51])
+        assert_that!(deck[DECK_SIZE-1])
             .is_equal_to(Card::Face{glyph: Some('\u{1F0DE}'), suit: "Clubs", number: 13, face: "King"});
     }
 
@@ -132,7 +139,7 @@ mod tests
     fn get_deck_jokers()
     {
         let deck = standard::cards_and_jokers();
-        assert_eq!(deck.len(), 54);
+        assert_eq!(deck.len(), JDECK_SIZE);
         assert_that!(deck[0])
             .is_equal_to(Card::Pip{glyph: Some('\u{1F0A1}'), suit: "Spades", number: 1});
         assert_that!(deck[53])

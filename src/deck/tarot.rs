@@ -1,6 +1,14 @@
 use super::Card;
 use rand::Rng;
 
+const DECK_SIZE: usize = 78;
+const NUM_MINOR: usize = 56;
+const MAX_MINOR: usize = NUM_MINOR-1;
+const MIN_TRUMP: usize = 56;
+const SEC_TRUMP: usize = 57;
+const MAX_TRUMP: usize = DECK_SIZE-1;
+const SUIT_SIZE: usize = 14;
+
 const SUITS:  [&str; 4] = [ "Swords", "Cups", "Coins", "Wands" ];
 const FACES:  [&str; 4] = [ "Jack", "Knight", "Queen", "King" ];
 const TRUMPS: [&str; 22] = [
@@ -24,7 +32,7 @@ fn get_glyph(num: usize) -> Option<char>
 
 fn minor_card(num: usize) -> Result<Card,String>
 {
-    let (suit, rank) = (num / 14, (num % 14) + 1);
+    let (suit, rank) = (num / SUIT_SIZE, (num % SUIT_SIZE) + 1);
     let card = match rank
     {
         1..=10  => Card::Pip{ glyph: get_glyph(num), suit: SUITS[suit], number: rank },
@@ -38,9 +46,9 @@ fn trump_card(num: usize) -> Result<Card,String>
 {
     let card = match num
     {
-        56 => Card::Joker{ glyph: get_glyph(num), name: TRUMPS[0] },
-        57..=77 => {
-            let value = num - 56; // Values from 1 - 21
+        MIN_TRUMP => Card::Joker{ glyph: get_glyph(num), name: TRUMPS[0] },
+        SEC_TRUMP..=MAX_TRUMP => {
+            let value = num - MIN_TRUMP; // Values from 1 - 21
             Card::Trump{ glyph: get_glyph(num), name: TRUMPS[value], number: value}
         },
         _ => return Err("Invalid Trump num".to_string()),
@@ -53,15 +61,15 @@ pub(crate) fn card(num: usize) -> Result<Card,String>
 {
     match num
     {
-        0..=55 => minor_card(num),
-        56..=77 => trump_card(num),
+        0..=MAX_MINOR => minor_card(num),
+        MIN_TRUMP..=MAX_TRUMP => trump_card(num),
         _ => Err(format!("{} is out of range for a valid card", num)),
     }
 }
 
 pub(crate) fn cards() -> Vec<Card>
 {
-    (0..78).map(|n| card(n).unwrap())
+    (0..DECK_SIZE).map(|n| card(n).unwrap())
             .collect()
 }
 
@@ -69,7 +77,7 @@ pub(crate) fn cards() -> Vec<Card>
 pub(crate) fn draw_card<T>(rng: &mut T) -> Card
     where T: Rng
 {
-    let num = rng.gen_range(0, 78);
+    let num = rng.gen_range(0, DECK_SIZE);
     card(num).unwrap()
 }
 
@@ -80,31 +88,32 @@ mod tests
 
     use crate::deck::tarot;
     use crate::deck::Card;
+    use super::*;
 
     #[test]
     fn new_cards()
     {
         assert_that!(tarot::card(0))
             .is_ok_containing(Card::Pip{glyph: Some('\u{1F0A1}'), suit: "Swords", number: 1});
-        assert_that!(tarot::card(14+11))
+        assert_that!(tarot::card(SUIT_SIZE+11))
             .is_ok_containing(Card::Face{glyph: Some('\u{1F0BC}'), suit: "Cups", number: 12, face: "Knight"});
-        assert_that!(tarot::card(28+2))
+        assert_that!(tarot::card(2*SUIT_SIZE+2))
             .is_ok_containing(Card::Pip{glyph: Some('\u{1F0C3}'), suit: "Coins", number: 3});
-        assert_that!(tarot::card(42+12))
+        assert_that!(tarot::card(3*SUIT_SIZE+12))
             .is_ok_containing(Card::Face{glyph: Some('\u{1F0DD}'), suit: "Wands", number: 13, face: "Queen"});
 
-        assert_that!(tarot::card(56))
+        assert_that!(tarot::card(MIN_TRUMP))
             .is_ok_containing(Card::Joker{glyph: Some('\u{1F0E0}'), name: "The Fool"});
         assert_that!(tarot::card(65))
             .is_ok_containing(Card::Trump{glyph: Some('\u{1F0E9}'), name: "The Hermit", number: 9});
-        assert_that!(tarot::card(77))
+        assert_that!(tarot::card(MAX_TRUMP))
             .is_ok_containing(Card::Trump{glyph: Some('\u{1F0F5}'), name: "The World", number: 21});
     }
 
     #[test]
     fn invalid_card()
     {
-        assert_that!(tarot::card(78))
+        assert_that!(tarot::card(DECK_SIZE))
             .is_err_containing("78 is out of range for a valid card".to_string());
     }
 
@@ -112,10 +121,10 @@ mod tests
     fn get_deck()
     {
         let deck = tarot::cards();
-        assert_eq!(deck.len(), 78);
+        assert_eq!(deck.len(), DECK_SIZE);
         assert_that!(deck[0])
             .is_equal_to(Card::Pip{glyph: Some('\u{1F0A1}'), suit: "Swords", number: 1});
-        assert_that!(deck[77])
+        assert_that!(deck[MAX_TRUMP])
             .is_equal_to(Card::Trump{glyph: Some('\u{1F0F5}'), name: "The World", number: 21});
     }
 }
