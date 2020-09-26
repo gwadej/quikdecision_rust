@@ -25,7 +25,7 @@ pub enum Command
     CoinFlip(coin::Coin),
     DrawCard(deck::Deck),
     PickNumber(i32, i32),
-    PercentTrue(u32),
+    PercentTrue(percent::Likely),
     RollDice(Vec<dice::Roll>),
     Selection(Vec<String>),
     Shuffle(Vec<String>),
@@ -86,14 +86,14 @@ impl Decider for Command
     {
         match *self
         {
-            Command::CoinFlip(ref coin)    => coin.decide(),
-            Command::DrawCard(ref deck)    => deck.decide(),
-            Command::PickNumber(low, high) => pick::choose(low, high),
-            Command::PercentTrue(likely)   => percent::choose(likely),
-            Command::RollDice(ref expr)    => dice::roll(expr),
-            Command::Selection(ref strvec) => select::choose(strvec),
-            Command::Shuffle(ref strvec)   => shuffle::order(strvec),
-            Command::Oracle(ref oracle)    => oracle.decide(),
+            Command::CoinFlip(ref coin)      => coin.decide(),
+            Command::DrawCard(ref deck)      => deck.decide(),
+            Command::PickNumber(low, high)   => pick::choose(low, high),
+            Command::PercentTrue(ref likely) => likely.decide(),
+            Command::RollDice(ref expr)      => dice::roll(expr),
+            Command::Selection(ref strvec)   => select::choose(strvec),
+            Command::Shuffle(ref strvec)     => shuffle::order(strvec),
+            Command::Oracle(ref oracle)      => oracle.decide(),
         }
     }
 }
