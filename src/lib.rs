@@ -24,7 +24,7 @@ pub enum Command
 {
     CoinFlip(coin::Coin),
     DrawCard(deck::Deck),
-    PickNumber(i32, i32),
+    PickNumber(pick::Picker),
     PercentTrue(percent::Likely),
     RollDice(Vec<dice::Roll>),
     Selection(Vec<String>),
@@ -88,7 +88,7 @@ impl Decider for Command
         {
             Command::CoinFlip(ref coin)      => coin.decide(),
             Command::DrawCard(ref deck)      => deck.decide(),
-            Command::PickNumber(low, high)   => pick::choose(low, high),
+            Command::PickNumber(ref range)   => range.decide(),
             Command::PercentTrue(ref likely) => likely.decide(),
             Command::RollDice(ref expr)      => dice::roll(expr),
             Command::Selection(ref strvec)   => select::choose(strvec),
@@ -128,7 +128,7 @@ impl PartialEq for Command
             (Command::CoinFlip(_),        Command::CoinFlip(_)) => true,
             (Command::DrawCard(dl),       Command::DrawCard(dr)) => dl == dr,
             (Command::Oracle(_),          Command::Oracle(_)) => true,
-            (Command::PickNumber(sl, sh), Command::PickNumber(ol, oh)) => sl == ol && sh == oh,
+            (Command::PickNumber(rl),     Command::PickNumber(rr)) => rl == rr,
             (Command::PercentTrue(sp),    Command::PercentTrue(op)) => sp == op,
             (Command::RollDice(sdice),    Command::RollDice(odice)) => sdice == odice,
             (Command::Selection(sstrs),   Command::Selection(ostrs)) => sstrs == ostrs,

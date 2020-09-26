@@ -1,9 +1,16 @@
 use crate::Command;
 use crate::Decision;
+use crate::Decider;
 use crate::ApiDoc;
 
 use std::cmp::Ordering;
 use rand::Rng;
+
+#[derive(Debug)]
+pub struct Picker {
+    low: i32,
+    high: i32
+}
 
 /// Create a PickNumber command based on the two supplied values
 /// Return either the command or an error if the parameters are not appropriate.
@@ -12,15 +19,23 @@ pub fn command(low: i32, high: i32) -> Result<Command, String>
     match low.cmp(&high)
     {
         Ordering::Equal   => Err("High parameter cannot equal low parameter".to_string()),
-        Ordering::Greater => Ok(Command::PickNumber(high, low)),
-        Ordering::Less    => Ok(Command::PickNumber(low, high)),
+        Ordering::Greater => Ok(Command::PickNumber(Picker{low: high, high: low})),
+        Ordering::Less    => Ok(Command::PickNumber(Picker{low, high})),
     }
 }
 
-/// Return a numeric Decision with a value between low and high (inclusive).
-pub fn choose(low: i32, high: i32) -> Decision
-{
-    Decision::Num(rand::thread_rng().gen_range(low, high + 1))
+impl Decider for Picker {
+    /// Return a numeric Decision with a value between low and high (inclusive).
+    fn decide(&self) -> Decision
+    {
+        Decision::Num(rand::thread_rng().gen_range(self.low, self.high + 1))
+    }
+}
+
+impl PartialEq for Picker {
+    fn eq(&self, other: &Self) -> bool {
+        self.low == other.low && self.high == other.high
+    }
 }
 
 /// Return an ApiDoc object containing a description of the PickNumber
@@ -61,14 +76,14 @@ mod tests
     fn command_args_in_wrong_order()
     {
         assert_that!(command(30, 20))
-            .is_ok_containing(Command::PickNumber(20, 30));
+            .is_ok_containing(Command::PickNumber(Picker{low: 20, high: 30}));
     }
 
     #[test]
     fn command_args_in_correct_order()
     {
         assert_that!(command(10, 20))
-            .is_ok_containing(Command::PickNumber(10, 20));
+            .is_ok_containing(Command::PickNumber(Picker{low: 10, high: 20}));
     }
 
     #[test]
@@ -83,9 +98,10 @@ mod tests
     {
         let expected = [1, 2];
 
+        let decider = Picker{low: 1, high: 2};
         for _ in 1..=NUM_TRIES
         {
-            match super::choose(1, 2)
+            match decider.decide()
             {
                 Decision::Num(choice) => assert_ne!(expected.iter().find(|&&x| x == choice), None),
                 _ => assert!(false, "Wrong decision type"),
@@ -100,9 +116,10 @@ mod tests
         let high: i32 = 10;
         let expected = [2, 3, 4, 5, 6, 7, 8, 9, 10];
 
+        let decider = Picker{low, high};
         for _ in 1..=NUM_TRIES
         {
-            match super::choose(low, high)
+            match decider.decide()
             {
                 Decision::Num(choice) => assert_ne!(expected.iter().find(|&&x| x == choice), None),
                 _ => assert!(false, "Wrong decision type"),
