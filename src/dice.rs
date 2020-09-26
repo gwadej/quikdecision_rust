@@ -1,5 +1,6 @@
 use crate::Command;
 use crate::Decision;
+use crate::Decider;
 use crate::ApiDoc;
 
 use rand::Rng;
@@ -14,6 +15,9 @@ pub enum Roll
     ExplodingDice(u32, u32),
     Incr(u32),
 }
+
+#[derive(Debug)]
+pub struct Expr(Vec<Roll>);
 
 impl PartialEq for Roll
 {
@@ -114,7 +118,7 @@ pub fn command(expr: String) -> Result<Command, String>
         });
     }
 
-    Ok(Command::RollDice(descr))
+    Ok(Command::RollDice(Expr(descr)))
 }
 
 fn roll_die<T>(rng: &mut T, sides: u32) -> RollStep
@@ -172,22 +176,30 @@ fn explode<T>(rng: &mut T, (desc, val): RollStep, sides: u32) -> RollStep
     (format!("{}!+{}", desc, rdesc), val + roll)
 }
 
-/// Perform the random function and return a Decision object representing
-/// the result.
-pub fn roll(descr: &[Roll]) -> Decision
-{
-    let mut rng = rand::thread_rng();
-    // { value: roll, description: roll_string }
-    let (desc, roll) = descr
-        .iter()
-        .map(|ref x| match x
-        {
-            Roll::Dice(num, sides) => roll_step(&mut rng, *num, *sides),
-            Roll::ExplodingDice(num, sides) => roll_explode_step(&mut rng, *num, *sides),
-            Roll::Incr(num) => incr_step(*num),
-        })
-        .fold((String::new(), 0), |acc, r| accum_roll(acc, r, " + "));
-    Decision::AnnotatedNum{ value: roll, extra: desc.to_string() }
+impl Decider for Expr {
+    /// Perform the random function and return a Decision object representing
+    /// the result.
+    fn decide(&self) -> Decision
+    {
+        let mut rng = rand::thread_rng();
+        // { value: roll, description: roll_string }
+        let (desc, roll) = self.0
+            .iter()
+            .map(|ref x| match x
+            {
+                Roll::Dice(num, sides) => roll_step(&mut rng, *num, *sides),
+                Roll::ExplodingDice(num, sides) => roll_explode_step(&mut rng, *num, *sides),
+                Roll::Incr(num) => incr_step(*num),
+            })
+            .fold((String::new(), 0), |acc, r| accum_roll(acc, r, " + "));
+        Decision::AnnotatedNum{ value: roll, extra: desc.to_string() }
+    }
+}
+
+impl PartialEq for Expr {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
 }
 
 #[cfg(test)]
@@ -212,7 +224,7 @@ mod tests
     fn command_simple_roll()
     {
         assert_that!(command("3d8".into()))
-            .is_ok_containing(Command::RollDice(vec![Roll::Dice(3, 8)]))
+            .is_ok_containing(Command::RollDice(Expr(vec![Roll::Dice(3, 8)])))
     }
 
     #[test]
@@ -221,7 +233,7 @@ mod tests
         for i in vec![3,4,6,8,10,12,20,100]
         {
             assert_that!(command(format!("1d{}", i)))
-                .is_ok_containing(Command::RollDice(vec![Roll::Dice(1, i)]))
+                .is_ok_containing(Command::RollDice(Expr(vec![Roll::Dice(1, i)])))
         }
     }
 
@@ -229,14 +241,14 @@ mod tests
     fn command_exploding_roll()
     {
         assert_that!(command("3x6".into()))
-            .is_ok_containing(Command::RollDice(vec![Roll::ExplodingDice(3, 6)]))
+            .is_ok_containing(Command::RollDice(Expr(vec![Roll::ExplodingDice(3, 6)])))
     }
 
     #[test]
     fn command_multiterm_expresion()
     {
         assert_that!(command("2d12 + 3x6 + 2".into()))
-            .is_ok_containing(Command::RollDice(vec![Roll::Dice(2, 12), Roll::ExplodingDice(3, 6), Roll::Incr(2)]))
+            .is_ok_containing(Command::RollDice(Expr(vec![Roll::Dice(2, 12), Roll::ExplodingDice(3, 6), Roll::Incr(2)])))
     }
 
     #[test]
@@ -249,7 +261,7 @@ mod tests
     #[test]
     fn simple_roll_value()
     {
-        match roll(&vec![Roll::Dice(1, 6)])
+        match Expr(vec![Roll::Dice(1, 6)]).decide()
         {
             Decision::AnnotatedNum{value, extra} => {
                 assert_that!(&value).is_greater_than_or_equal_to(1);
@@ -264,7 +276,7 @@ mod tests
     #[test]
     fn explode_roll_value()
     {
-        match roll(&vec![Roll::ExplodingDice(1, 6)])
+        match Expr(vec![Roll::ExplodingDice(1, 6)]).decide()
         {
             Decision::AnnotatedNum{value, extra} => {
                 assert_that!(&value).is_greater_than_or_equal_to(1);
@@ -279,7 +291,7 @@ mod tests
     #[test]
     fn incr_value()
     {
-        match roll(&vec![Roll::Incr(1)])
+        match Expr(vec![Roll::Incr(1)]).decide()
         {
             Decision::AnnotatedNum{value, extra} => {
                 assert_that!(value).is_equal_to(1);
@@ -292,7 +304,7 @@ mod tests
     #[test]
     fn multi_roll_value()
     {
-        match roll(&vec![Roll::Dice(3, 6)])
+        match Expr(vec![Roll::Dice(3, 6)]).decide()
         {
             Decision::AnnotatedNum{value, extra} => {
                 assert_that!(&value).is_greater_than_or_equal_to(3);
@@ -307,7 +319,7 @@ mod tests
     #[test]
     fn multi_exploding_roll_value()
     {
-        match roll(&vec![Roll::ExplodingDice(3, 6)])
+        match Expr(vec![Roll::ExplodingDice(3, 6)]).decide()
         {
             Decision::AnnotatedNum{value, extra} => {
                 assert_that!(&value).is_greater_than_or_equal_to(3);
@@ -321,7 +333,7 @@ mod tests
     #[test]
     fn complex_roll_value()
     {
-        match roll(&vec![Roll::Dice(3, 6), Roll::Dice(2, 8), Roll::ExplodingDice(1, 20), Roll::Incr(2)])
+        match Expr(vec![Roll::Dice(3, 6), Roll::Dice(2, 8), Roll::ExplodingDice(1, 20), Roll::Incr(2)]).decide()
         {
             Decision::AnnotatedNum{value, extra} => {
                 assert_that!(&value).is_greater_than_or_equal_to(8);

@@ -26,7 +26,7 @@ pub enum Command
     DrawCard(deck::Deck),
     PickNumber(pick::Picker),
     PercentTrue(percent::Likely),
-    RollDice(Vec<dice::Roll>),
+    RollDice(dice::Expr),
     Selection(select::Choices),
     Shuffle(shuffle::Choices),
     Oracle(oracle::Oracle),
@@ -90,7 +90,7 @@ impl Decider for Command
             Command::DrawCard(ref deck)      => deck.decide(),
             Command::PickNumber(ref range)   => range.decide(),
             Command::PercentTrue(ref likely) => likely.decide(),
-            Command::RollDice(ref expr)      => dice::roll(expr),
+            Command::RollDice(ref expr)      => expr.decide(),
             Command::Selection(ref choices)  => choices.decide(),
             Command::Shuffle(ref choices)    => choices.decide(),
             Command::Oracle(ref oracle)      => oracle.decide(),
@@ -125,14 +125,14 @@ impl PartialEq for Command
     {
         match (self, other)
         {
-            (Command::CoinFlip(_),        Command::CoinFlip(_)) => true,
-            (Command::DrawCard(dl),       Command::DrawCard(dr)) => dl == dr,
-            (Command::Oracle(_),          Command::Oracle(_)) => true,
-            (Command::PickNumber(rl),     Command::PickNumber(rr)) => rl == rr,
-            (Command::PercentTrue(sp),    Command::PercentTrue(op)) => sp == op,
-            (Command::RollDice(sdice),    Command::RollDice(odice)) => sdice == odice,
-            (Command::Selection(cl),      Command::Selection(cr)) => cl == cr,
-            (Command::Shuffle(cl),        Command::Shuffle(cr)) => cl == cr,
+            (Command::CoinFlip(_),     Command::CoinFlip(_)) => true,
+            (Command::DrawCard(dl),    Command::DrawCard(dr)) => dl == dr,
+            (Command::Oracle(_),       Command::Oracle(_)) => true,
+            (Command::PickNumber(rl),  Command::PickNumber(rr)) => rl == rr,
+            (Command::PercentTrue(sp), Command::PercentTrue(op)) => sp == op,
+            (Command::RollDice(el),    Command::RollDice(er)) => el == er,
+            (Command::Selection(cl),   Command::Selection(cr)) => cl == cr,
+            (Command::Shuffle(cl),     Command::Shuffle(cr)) => cl == cr,
             (_, _) => false,
         }
     }
