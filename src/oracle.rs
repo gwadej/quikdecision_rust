@@ -2,6 +2,7 @@ use rand::thread_rng;
 
 use crate::Command;
 use crate::Decision;
+use crate::Decider;
 use crate::ApiDoc;
 
 const ORACLE_ANSWERS: [&str; 24] = [
@@ -47,6 +48,9 @@ const ORACLE_LABELS: [&str; 10] = [
     "The fortune cookie says",
 ];
 
+#[derive(Debug, Clone)]
+pub struct Oracle;
+
 /// Return an ApiDoc object containing a description of the Oracle
 /// decider.
 pub fn api_doc() -> ApiDoc
@@ -65,17 +69,19 @@ pub fn api_doc() -> ApiDoc
 /// Construct an Oracle Command variant
 pub fn command() -> Result<Command, String>
 {
-    Ok(Command::Oracle)
+    Ok(Command::Oracle(Oracle{}))
 }
 
-/// Perform the actual decision for the Oracle and return the Decision.
-pub fn choose() -> Decision
-{
-    let mut rng = thread_rng();
-    let value = crate::pick_one(&mut rng, &ORACLE_ANSWERS).to_string();
-    let label = crate::pick_one(&mut rng, &ORACLE_LABELS).to_string();
+impl Decider for Oracle {
+    /// Perform the actual decision for the Oracle and return the Decision.
+    fn decide(&self) -> Decision
+    {
+        let mut rng = thread_rng();
+        let value = crate::pick_one(&mut rng, &ORACLE_ANSWERS).to_string();
+        let label = crate::pick_one(&mut rng, &ORACLE_LABELS).to_string();
 
-    Decision::LabelledText{value, label}
+        Decision::LabelledText{value, label}
+    }
 }
 
 #[cfg(test)]
@@ -93,13 +99,13 @@ mod tests
     fn command_check()
     {
         assert_that!(command())
-            .is_ok_containing(Command::Oracle);
+            .is_ok_containing(Command::Oracle(Oracle{}));
     }
 
     #[test]
     fn decision_check()
     {
-        assert_that!(Command::Oracle.decide())
+        assert_that!(Command::Oracle(Oracle{}).decide())
             .matches_enum_variant(Decision::LabelledText{value: "foo".into(), label: "bar".into()});
     }
 }

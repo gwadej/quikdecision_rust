@@ -29,7 +29,7 @@ pub enum Command
     RollDice(Vec<dice::Roll>),
     Selection(Vec<String>),
     Shuffle(Vec<String>),
-    Oracle,
+    Oracle(oracle::Oracle),
 }
 
 /// Structure containing the documentation for a quik decision command
@@ -93,7 +93,7 @@ impl Decider for Command
             Command::RollDice(ref expr)    => dice::roll(expr),
             Command::Selection(ref strvec) => select::choose(strvec),
             Command::Shuffle(ref strvec)   => shuffle::order(strvec),
-            Command::Oracle                => oracle::choose(),
+            Command::Oracle(ref oracle)    => oracle.decide(),
         }
     }
 }
@@ -127,7 +127,7 @@ impl PartialEq for Command
         {
             (Command::CoinFlip(_),        Command::CoinFlip(_)) => true,
             (Command::DrawCard(dl),       Command::DrawCard(dr)) => dl == dr,
-            (Command::Oracle,             Command::Oracle) => true,
+            (Command::Oracle(_),          Command::Oracle(_)) => true,
             (Command::PickNumber(sl, sh), Command::PickNumber(ol, oh)) => sl == ol && sh == oh,
             (Command::PercentTrue(sp),    Command::PercentTrue(op)) => sp == op,
             (Command::RollDice(sdice),    Command::RollDice(odice)) => sdice == odice,
