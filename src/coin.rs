@@ -1,8 +1,6 @@
 use rand::thread_rng;
 
-use crate::Command;
-use crate::Decision;
-use crate::Decider;
+use crate::{Command, Decision, Decider};
 use crate::ApiDoc;
 
 const COIN_SIDES: [&str; 2] = ["Heads", "Tails"];

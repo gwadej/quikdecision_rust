@@ -1,6 +1,4 @@
-use crate::Command;
-use crate::Decision;
-use crate::Decider;
+use crate::{Command, Decision, Decider};
 use crate::ApiDoc;
 
 use rand::Rng;
