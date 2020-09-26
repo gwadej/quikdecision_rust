@@ -1,4 +1,4 @@
-use quikdecision::{dice,Decision::AnnotatedNum};
+use quikdecision::{dice,Decision};
 
 fn main() -> Result<(),String>
 {
@@ -8,7 +8,7 @@ fn main() -> Result<(),String>
     {
         match roll
         {
-            AnnotatedNum{value, extra} => println!("{:>2} [{}]", value, extra),
+            Decision::AnnotatedNum{value, extra} => println!("{:>2} [{}]", value, extra),
             _ => println!("Unrecognized response"),
         };
     }

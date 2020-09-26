@@ -1,4 +1,5 @@
 use crate::{Command, Decision, Decider};
+use crate::Error;
 use crate::ApiDoc;
 
 use std::cmp::Ordering;
@@ -12,11 +13,11 @@ pub struct Picker {
 
 /// Create a PickNumber command based on the two supplied values
 /// Return either the command or an error if the parameters are not appropriate.
-pub fn command(low: i32, high: i32) -> Result<Command, String>
+pub fn command(low: i32, high: i32) -> crate::Result<Command>
 {
     match low.cmp(&high)
     {
-        Ordering::Equal   => Err("High parameter cannot equal low parameter".to_string()),
+        Ordering::Equal   => Err(Error::EmptyRange),
         Ordering::Greater => Ok(Command::PickNumber(Picker{low: high, high: low})),
         Ordering::Less    => Ok(Command::PickNumber(Picker{low, high})),
     }
@@ -67,7 +68,7 @@ mod tests
     fn command_with_equal_params()
     {
         assert_that!(command(1, 1))
-            .is_err_containing(String::from("High parameter cannot equal low parameter"));
+            .is_err_containing(Error::EmptyRange);
     }
 
     #[test]

@@ -1,13 +1,14 @@
 extern crate rand;
 extern crate regex;
 
-use std::fmt;
 use rand::Rng;
 use rand::seq::SliceRandom;
 
 pub mod coin;
 pub mod deck;
+pub mod decision;
 pub mod dice;
+pub mod error;
 pub mod oracle;
 pub mod percent;
 pub mod pick;
@@ -32,6 +33,10 @@ pub enum Command
     Oracle(oracle::Oracle),
 }
 
+pub type Result<T> = std::result::Result<T,error::Error>;
+pub type Error = error::Error;
+pub type Decision = decision::Decision;
+
 /// Structure containing the documentation for a quik decision command
 #[derive(Debug)]
 pub struct ApiDoc
@@ -40,36 +45,6 @@ pub struct ApiDoc
     pub params: Vec<&'static str>,
     pub hint: &'static str,
     pub help: Vec<&'static str>,
-}
-
-/// The Decision enum encapsulates values returned from the decide method.
-#[derive(Debug)]
-pub enum Decision
-{
-    Text(String),
-    LabelledText{ value: String, label: String },
-    Num(i32),
-    AnnotatedNum{ value: u32, extra: String },
-    Bool(bool),
-    List(Vec<String>),
-    Card(deck::Card),
-}
-
-impl fmt::Display for Decision
-{
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
-    {
-        match self
-        {
-            Decision::Text(v) => write!(f, "'{}'", v),
-            Decision::LabelledText{value, ..} => write!(f, "'{}'", value),
-            Decision::Num(v) => write!(f, "{}", v),
-            Decision::AnnotatedNum{value, extra} => write!(f, "{}: '{}'", value, extra),
-            Decision::Bool(v) => write!(f, "{}", v),
-            Decision::List(v) => write!(f, "'{}'", v.join(", ")),
-            Decision::Card(v) => write!(f, "{}", v.to_string()),
-        }
-    }
 }
 
 /// trait for making a random decision.

@@ -65,7 +65,7 @@ pub fn api_doc() -> ApiDoc
 }
 
 /// Construct an Oracle Command variant
-pub fn command() -> Result<Command, String>
+pub fn command() -> crate::Result<Command>
 {
     Ok(Command::Oracle(Oracle{}))
 }
