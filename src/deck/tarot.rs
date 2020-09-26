@@ -27,8 +27,8 @@ fn minor_card(num: usize) -> Result<Card,String>
     let (suit, rank) = (num / 14, (num % 14) + 1);
     let card = match rank
     {
-        1...10  => Card::Pip{ glyph: get_glyph(num), suit: SUITS[suit], number: rank },
-        11...14 => Card::Face{ glyph: get_glyph(num), suit: SUITS[suit], number: rank, face: FACES[rank-11] },
+        1..=10  => Card::Pip{ glyph: get_glyph(num), suit: SUITS[suit], number: rank },
+        11..=14 => Card::Face{ glyph: get_glyph(num), suit: SUITS[suit], number: rank, face: FACES[rank-11] },
         _       => unreachable!(), // Thanks to modulo above
     };
     Ok(card)
@@ -39,7 +39,7 @@ fn trump_card(num: usize) -> Result<Card,String>
     let card = match num
     {
         56 => Card::Joker{ glyph: get_glyph(num), name: TRUMPS[0] },
-        57...77 => {
+        57..=77 => {
             let value = num - 56; // Values from 1 - 21
             Card::Trump{ glyph: get_glyph(num), name: TRUMPS[value], number: value}
         },
@@ -53,8 +53,8 @@ pub(crate) fn card(num: usize) -> Result<Card,String>
 {
     match num
     {
-        0...55 => minor_card(num),
-        56...77 => trump_card(num),
+        0..=55 => minor_card(num),
+        56..=77 => trump_card(num),
         _ => Err(format!("{} is out of range for a valid card", num)),
     }
 }

@@ -122,7 +122,7 @@ impl std::string::ToString for Card
                 match number
                 {
                     1      => format!("Ace of {}", suit),
-                    2...10 => format!("{} of {}", number, suit),
+                    2..=10 => format!("{} of {}", number, suit),
                     _      => panic!(format!("{} is not a valid card rank", number)),
                 }
             },

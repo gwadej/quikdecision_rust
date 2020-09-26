@@ -23,8 +23,8 @@ pub(crate) fn card(num: usize) -> Result<Card,String>
     let (suit, rank) = (num / 13, (num % 13) + 1);
     let card = match rank
     {
-        1...10  => Card::Pip{ glyph: get_glyph(num), suit: SUITS[suit], number: rank },
-        11...13 => Card::Face{ glyph: get_glyph(num), suit: SUITS[suit], number: rank, face: FACES[rank-11] },
+        1..=10  => Card::Pip{ glyph: get_glyph(num), suit: SUITS[suit], number: rank },
+        11..=13 => Card::Face{ glyph: get_glyph(num), suit: SUITS[suit], number: rank, face: FACES[rank-11] },
         _       => unreachable!(), // thanks to modulo above.
     };
     Ok(card)
@@ -40,7 +40,7 @@ fn joker(num: usize) -> Result<Card,String>
 {
     match num
     {
-        52...53 => Ok(Card::Joker{ glyph: get_glyph(num), name: JOKERS[num-52] }),
+        52..=53 => Ok(Card::Joker{ glyph: get_glyph(num), name: JOKERS[num-52] }),
         _ => Err("Invalid Joker num".to_string()),
     }
 }
@@ -50,7 +50,7 @@ pub(crate) fn card_or_joker(num: usize) -> Result<Card,String>
 {
     match num
     {
-        0...51 => card(num),
+        0..=51 => card(num),
         52 | 53 => joker(num),
         _ => Err(format!("{} is out of range for a valid card", num)),
     }
