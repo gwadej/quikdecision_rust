@@ -1,6 +1,7 @@
 use rand::thread_rng;
 
 use crate::{Command, Decision, Decider};
+use crate::Error;
 use crate::ApiDoc;
 
 #[derive(Debug)]
@@ -8,12 +9,12 @@ pub struct Choices(Vec<String>);
 
 /// Create a Selection Command variant from the supplied
 /// Vec of Strings.
-pub fn command(strings: Vec<String>) -> Result<Command, String>
+pub fn command(strings: Vec<String>) -> crate::Result<Command>
 {
     match strings.len()
     {
-        0 => Err("Missing required strings".to_string()),
-        1 => Err("Must supply at least two strings".to_string()),
+        0 => Err(Error::ListEmpty),
+        1 => Err(Error::ListOne),
         _ => Ok(Command::Selection(Choices(strings))),
     }
 }
@@ -64,14 +65,14 @@ mod tests
     fn command_empty_vector()
     {
         assert_that!(command(Vec::new()))
-            .is_err_containing("Missing required strings".to_string());
+            .is_err_containing(Error::ListEmpty);
     }
 
     #[test]
     fn command_single_string()
     {
         assert_that!(command(vec!["fred".into()]))
-            .is_err_containing("Must supply at least two strings".to_string());
+            .is_err_containing(Error::ListOne);
     }
 
     #[test]

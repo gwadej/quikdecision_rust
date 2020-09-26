@@ -2,6 +2,7 @@ extern crate numerals;
 
 use crate::{Command, Decision, Decider};
 use crate::ApiDoc;
+use crate::Error;
 
 use numerals::roman::Roman;
 use rand::seq::SliceRandom;
@@ -133,7 +134,7 @@ impl std::string::ToString for Card
 }
 
 /// Create a DrawCard Command
-pub fn command(deck: &str) -> Result<Command, String>
+pub fn command(deck: &str) -> crate::Result<Command>
 {
     Ok(Command::DrawCard(
         match deck
@@ -141,7 +142,7 @@ pub fn command(deck: &str) -> Result<Command, String>
             "52-card"  => Deck::Standard52,
             "jokers"   => Deck::Jokers,
             "tarot"    => Deck::Tarot,
-            _          => return Err("Unrecognized deck type".to_string()),
+            _          => return Err(Error::UnrecognizedDeck),
         }
     ))
 }

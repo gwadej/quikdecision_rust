@@ -1,4 +1,5 @@
 use crate::{Command, Decision, Decider};
+use crate::Error;
 use crate::ApiDoc;
 
 use rand::Rng;
@@ -8,12 +9,12 @@ pub struct Likely(u32);
 
 /// Create a PercentTrue Command based on the supplied percent value.
 /// Returns the command or an error specifying an invald parameter.
-pub fn command(likely: u32) -> Result<Command, String>
+pub fn command(likely: u32) -> crate::Result<Command>
 {
     match likely
     {
-        0 => Err("percent arg cannot be 0".to_string()),
-        num if num >= 100 => Err("percent arg cannot be 100 percent or greater".to_string()),
+        0 => Err(Error::PercentZero),
+        num if num >= 100 => Err(Error::PercentOverflow),
         num => Ok(Command::PercentTrue(Likely(num)))
     }
 }
@@ -62,21 +63,21 @@ mod tests
     fn command_0_percent()
     {
         assert_that!(command(0))
-            .is_err_containing("percent arg cannot be 0".to_string());
+            .is_err_containing(Error::PercentZero);
     }
 
     #[test]
     fn command_100_percent()
     {
         assert_that!(command(100))
-            .is_err_containing("percent arg cannot be 100 percent or greater".to_string());
+            .is_err_containing(Error::PercentOverflow);
     }
 
     #[test]
     fn command_gt_100_percent()
     {
         assert_that!(command(200))
-            .is_err_containing("percent arg cannot be 100 percent or greater".to_string());
+            .is_err_containing(Error::PercentOverflow);
     }
 
     #[test]

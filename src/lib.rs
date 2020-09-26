@@ -8,6 +8,7 @@ use rand::seq::SliceRandom;
 pub mod coin;
 pub mod deck;
 pub mod dice;
+pub mod error;
 pub mod oracle;
 pub mod percent;
 pub mod pick;
@@ -31,6 +32,9 @@ pub enum Command
     Shuffle(shuffle::Choices),
     Oracle(oracle::Oracle),
 }
+
+pub type Result<T> = std::result::Result<T,error::Error>;
+pub type Error = error::Error;
 
 /// Structure containing the documentation for a quik decision command
 #[derive(Debug)]

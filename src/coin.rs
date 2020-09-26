@@ -16,7 +16,7 @@ impl Decider for Coin {
 }
 
 /// Create a CoinFlip Command
-pub fn command() -> Result<Command, String>
+pub fn command() -> crate::Result<Command>
 {
     Ok(Command::CoinFlip(Coin{}))
 }

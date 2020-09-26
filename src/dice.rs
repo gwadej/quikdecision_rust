@@ -1,5 +1,6 @@
 use crate::{Command, Decision, Decider};
 use crate::ApiDoc;
+use crate::Error;
 
 use rand::Rng;
 use regex::Regex;
@@ -60,23 +61,23 @@ pub fn api_doc() -> ApiDoc
     }
 }
 
-fn uint_from_match(m: regex::Match) -> Result<u32, String>
+fn uint_from_match(m: regex::Match) -> crate::Result<u32>
 {
     match m.as_str()
     {
         ""   => Ok(1),
         nstr => nstr
             .parse::<u32>()
-            .map_err(|_| "Non-number somehow passed parsing".to_string()),
+            .map_err(|_| Error::NotANumber),
     }
 }
 
-fn make_dice(dice: regex::Match, sides: regex::Match) -> Result<Roll, String>
+fn make_dice(dice: regex::Match, sides: regex::Match) -> crate::Result<Roll>
 {
     Ok(Roll::Dice(uint_from_match(dice)?, uint_from_match(sides)?))
 }
 
-fn make_exploding_dice(dice: regex::Match, sides: regex::Match) -> Result<Roll, String>
+fn make_exploding_dice(dice: regex::Match, sides: regex::Match) -> crate::Result<Roll>
 {
     Ok(Roll::ExplodingDice(
         uint_from_match(dice)?,
@@ -86,11 +87,11 @@ fn make_exploding_dice(dice: regex::Match, sides: regex::Match) -> Result<Roll, 
 
 /// Construct a Command object representing the dice to roll.
 /// Expects a string containing a dice expression.
-pub fn command(expr: String) -> Result<Command, String>
+pub fn command(expr: String) -> crate::Result<Command>
 {
     if expr.is_empty()
     {
-        return Err("Missing dice expression".to_string());
+        return Err(Error::DiceMissingExpr);
     }
 
     let re = Regex::new(r"^\s*(?:(?P<num>(?:[1-9][0-9]*)?)(?P<type>[dDxX])(?P<sides>[3468]|1[02]|20|100)|(?P<val>[1-9][0-9]*))\s*$").unwrap();
@@ -98,20 +99,20 @@ pub fn command(expr: String) -> Result<Command, String>
     for term in expr.split("+")
     {
         let cap = re.captures(&term)
-                    .ok_or_else(|| "Failed parsing dice expression".to_string())?;
+                    .ok_or_else(|| Error::DiceBadExpr)?;
         descr.push(match (cap.name("num"), cap.name("sides"))
         {
             (Some(n), Some(s)) => match cap.name("type").unwrap().as_str()
             {
                 "x" | "X" => make_exploding_dice(n, s)?,
                 "d" | "D" => make_dice(n, s)?,
-                _ => return Err("Unrecognized die type".to_string()),
+                _ => return Err(Error::DiceBadType),
             },
-            (Some(_), None) => return Err("No sides specified".to_string()),
+            (Some(_), None) => return Err(Error::DiceBadSides),
             (None, _) => match cap.name("val")
             {
                 Some(n) => Roll::Incr(uint_from_match(n)?),
-                None => return Err("Unparseable term".to_string()),
+                None => return Err(Error::UnparseableTerm),
             },
         });
     }
@@ -215,7 +216,7 @@ mod tests
     fn command_empty_string()
     {
         assert_that!(command(String::new()))
-            .is_err_containing("Missing dice expression".to_string());
+            .is_err_containing(Error::DiceMissingExpr);
     }
 
     #[test]
