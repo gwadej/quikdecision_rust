@@ -84,16 +84,22 @@ impl Decider for Command
     /// Perform appropriate command returning a Decision object.
     fn decide(&self) -> Decision
     {
-        match *self
+        self.get_decider().decide()
+    }
+}
+
+impl Command {
+    fn get_decider(&self) -> &dyn Decider {
+        match self
         {
-            Command::CoinFlip(ref coin)      => coin.decide(),
-            Command::DrawCard(ref deck)      => deck.decide(),
-            Command::PickNumber(ref range)   => range.decide(),
-            Command::PercentTrue(ref likely) => likely.decide(),
-            Command::RollDice(ref expr)      => expr.decide(),
-            Command::Selection(ref choices)  => choices.decide(),
-            Command::Shuffle(ref choices)    => choices.decide(),
-            Command::Oracle(ref oracle)      => oracle.decide(),
+            Command::CoinFlip(coin)      => coin,
+            Command::DrawCard(deck)      => deck,
+            Command::PickNumber(range)   => range,
+            Command::PercentTrue(likely) => likely,
+            Command::RollDice(expr)      => expr,
+            Command::Selection(choices)  => choices,
+            Command::Shuffle(choices)    => choices,
+            Command::Oracle(oracle)      => oracle,
         }
     }
 }
