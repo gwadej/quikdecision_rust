@@ -22,14 +22,14 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 #[derive(Debug)]
 pub enum Command
 {
-    CoinFlip,
+    CoinFlip(coin::Coin),
     DrawCard(deck::Deck),
-    PickNumber(i32, i32),
-    PercentTrue(u32),
-    RollDice(Vec<dice::Roll>),
-    Selection(Vec<String>),
-    Shuffle(Vec<String>),
-    Oracle,
+    PickNumber(pick::Picker),
+    PercentTrue(percent::Likely),
+    RollDice(dice::Expr),
+    Selection(select::Choices),
+    Shuffle(shuffle::Choices),
+    Oracle(oracle::Oracle),
 }
 
 /// Structure containing the documentation for a quik decision command
@@ -84,16 +84,22 @@ impl Decider for Command
     /// Perform appropriate command returning a Decision object.
     fn decide(&self) -> Decision
     {
-        match *self
+        self.get_decider().decide()
+    }
+}
+
+impl Command {
+    fn get_decider(&self) -> &dyn Decider {
+        match self
         {
-            Command::CoinFlip              => coin::flip(),
-            Command::DrawCard(ref deck)    => deck::draw(deck),
-            Command::PickNumber(low, high) => pick::choose(low, high),
-            Command::PercentTrue(likely)   => percent::choose(likely),
-            Command::RollDice(ref expr)    => dice::roll(expr),
-            Command::Selection(ref strvec) => select::choose(strvec),
-            Command::Shuffle(ref strvec)   => shuffle::order(strvec),
-            Command::Oracle                => oracle::choose(),
+            Command::CoinFlip(coin)      => coin,
+            Command::DrawCard(deck)      => deck,
+            Command::PickNumber(range)   => range,
+            Command::PercentTrue(likely) => likely,
+            Command::RollDice(expr)      => expr,
+            Command::Selection(choices)  => choices,
+            Command::Shuffle(choices)    => choices,
+            Command::Oracle(oracle)      => oracle,
         }
     }
 }
@@ -125,14 +131,14 @@ impl PartialEq for Command
     {
         match (self, other)
         {
-            (Command::CoinFlip,           Command::CoinFlip) => true,
-            (Command::DrawCard(dl),       Command::DrawCard(dr)) => dl == dr,
-            (Command::Oracle,             Command::Oracle) => true,
-            (Command::PickNumber(sl, sh), Command::PickNumber(ol, oh)) => sl == ol && sh == oh,
-            (Command::PercentTrue(sp),    Command::PercentTrue(op)) => sp == op,
-            (Command::RollDice(sdice),    Command::RollDice(odice)) => sdice == odice,
-            (Command::Selection(sstrs),   Command::Selection(ostrs)) => sstrs == ostrs,
-            (Command::Shuffle(sstrs),     Command::Shuffle(ostrs)) => sstrs == ostrs,
+            (Command::CoinFlip(_),     Command::CoinFlip(_)) => true,
+            (Command::DrawCard(dl),    Command::DrawCard(dr)) => dl == dr,
+            (Command::Oracle(_),       Command::Oracle(_)) => true,
+            (Command::PickNumber(rl),  Command::PickNumber(rr)) => rl == rr,
+            (Command::PercentTrue(sp), Command::PercentTrue(op)) => sp == op,
+            (Command::RollDice(el),    Command::RollDice(er)) => el == er,
+            (Command::Selection(cl),   Command::Selection(cr)) => cl == cr,
+            (Command::Shuffle(cl),     Command::Shuffle(cr)) => cl == cr,
             (_, _) => false,
         }
     }

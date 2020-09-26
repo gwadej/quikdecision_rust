@@ -1,9 +1,11 @@
-use crate::Command;
-use crate::Decision;
+use crate::{Command, Decision, Decider};
 use crate::ApiDoc;
 
 use rand::thread_rng;
 use rand::seq::SliceRandom;
+
+#[derive(Debug)]
+pub struct Choices(Vec<String>);
 
 /// Create a Selection Command variant from the supplied
 /// Vec of Strings.
@@ -13,7 +15,7 @@ pub fn command(strings: Vec<String>) -> Result<Command, String>
     {
         0 => Err("Missing required strings".to_string()),
         1 => Err("Must supply at least two strings".to_string()),
-        _ => Ok(Command::Shuffle(strings)),
+        _ => Ok(Command::Shuffle(Choices(strings))),
     }
 }
 
@@ -32,13 +34,21 @@ pub fn api_doc() -> ApiDoc
     }
 }
 
-/// Return a List containing the strings in a random order.
-pub fn order(strvec: &[String]) -> Decision
-{
-    let mut rng = thread_rng();
-    let mut strvec = strvec.to_owned();
-    strvec.as_mut_slice().shuffle(&mut rng);
-    Decision::List(strvec)
+impl Decider for Choices {
+    /// Return a List containing the strings in a random order.
+    fn decide(&self) -> Decision
+    {
+        let mut rng = thread_rng();
+        let mut strvec = self.0.to_owned();
+        strvec.as_mut_slice().shuffle(&mut rng);
+        Decision::List(strvec)
+    }
+}
+
+impl PartialEq for Choices {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
 }
 
 #[cfg(test)]
@@ -79,7 +89,7 @@ mod tests
     {
         let names: Vec<String> = vec!["david".into(), "mark".into(), "kirsten".into(), "connie".into()];
         assert_that!(command(names.clone()))
-            .is_ok_containing(Command::Shuffle(names));
+            .is_ok_containing(Command::Shuffle(Choices(names)));
     }
 
     #[test]

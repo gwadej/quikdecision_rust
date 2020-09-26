@@ -50,18 +50,20 @@ mod tests
     use super::*;
     use crate::{Command, Decision};
 
+    use crate::coin;
+
     #[test]
     fn test_create()
     {
-        let cmd = Command::CoinFlip;
-        let ocmd = Command::CoinFlip;
+        let cmd = Command::CoinFlip(coin::Coin{});
+        let ocmd = Command::CoinFlip(coin::Coin{});
         assert_that!(cmd.iter()).is_equal_to(&QdIter::new(&ocmd));
     }
 
     #[test]
     fn test_iter()
     {
-        let mut it = Command::CoinFlip.iter();
+        let mut it = Command::CoinFlip(coin::Coin{}).iter();
         match it.next()
         {
             Some(Decision::Text(_)) => assert!(true, "Correct type"),

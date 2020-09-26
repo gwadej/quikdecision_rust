@@ -1,7 +1,6 @@
 extern crate numerals;
 
-use crate::Command;
-use crate::Decision;
+use crate::{Command, Decision, Decider};
 use crate::ApiDoc;
 
 use numerals::roman::Roman;
@@ -122,7 +121,7 @@ impl std::string::ToString for Card
                 match number
                 {
                     1      => format!("Ace of {}", suit),
-                    2...10 => format!("{} of {}", number, suit),
+                    2..=10 => format!("{} of {}", number, suit),
                     _      => panic!(format!("{} is not a valid card rank", number)),
                 }
             },
@@ -147,17 +146,18 @@ pub fn command(deck: &str) -> Result<Command, String>
     ))
 }
 
-/// Draw a card from the deck
-pub fn draw(deck: &Deck) -> Decision
-{
-    let mut rng = rand::thread_rng();
-    let card = match deck
-    {
-        Deck::Standard52 => standard::draw_card(&mut rng),
-        Deck::Jokers     => standard::draw_card_or_joker(&mut rng),
-        Deck::Tarot      => tarot::draw_card(&mut rng),
-    };
-    Decision::Card(card)
+impl Decider for Deck {
+    /// Draw a card from the deck
+    fn decide(&self) -> Decision {
+        let mut rng = rand::thread_rng();
+        let card = match self
+        {
+            Deck::Standard52 => standard::draw_card(&mut rng),
+            Deck::Jokers     => standard::draw_card_or_joker(&mut rng),
+            Deck::Tarot      => tarot::draw_card(&mut rng),
+        };
+        Decision::Card(card)
+    }
 }
 
 pub fn shuffled(deck: &Deck) -> Vec<Card>
