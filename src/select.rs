@@ -2,7 +2,11 @@ use rand::thread_rng;
 
 use crate::Command;
 use crate::Decision;
+use crate::Decider;
 use crate::ApiDoc;
+
+#[derive(Debug)]
+pub struct Choices(Vec<String>);
 
 /// Create a Selection Command variant from the supplied
 /// Vec of Strings.
@@ -12,7 +16,7 @@ pub fn command(strings: Vec<String>) -> Result<Command, String>
     {
         0 => Err("Missing required strings".to_string()),
         1 => Err("Must supply at least two strings".to_string()),
-        _ => Ok(Command::Selection(strings)),
+        _ => Ok(Command::Selection(Choices(strings))),
     }
 }
 
@@ -31,12 +35,20 @@ pub fn api_doc() -> ApiDoc
     }
 }
 
-/// Return a Text Decision containing one of the strings from the
-/// Vec chosen at random.
-pub fn choose(strvec: &[String]) -> Decision
-{
-    let mut rng = thread_rng();
-    Decision::Text(super::pick_one(&mut rng, strvec))
+impl Decider for Choices {
+    /// Return a Text Decision containing one of the strings from the
+    /// Vec chosen at random.
+    fn decide(&self) -> Decision
+    {
+        let mut rng = thread_rng();
+        Decision::Text(super::pick_one(&mut rng, &self.0))
+    }
+}
+
+impl PartialEq for Choices {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
 }
 
 #[cfg(test)]
@@ -77,7 +89,7 @@ mod tests
     {
         let names: Vec<String> = vec!["david".into(), "mark".into(), "kirsten".into(), "connie".into()];
         assert_that!(command(names.clone()))
-            .is_ok_containing(Command::Selection(names));
+            .is_ok_containing(Command::Selection(Choices(names)));
     }
 
     #[test]
