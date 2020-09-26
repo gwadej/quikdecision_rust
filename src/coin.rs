@@ -2,22 +2,25 @@ use rand::thread_rng;
 
 use crate::Command;
 use crate::Decision;
+use crate::Decider;
 use crate::ApiDoc;
 
 const COIN_SIDES: [&str; 2] = ["Heads", "Tails"];
 
+#[derive(Debug, Clone)]
+pub struct Coin;
+
+impl Decider for Coin {
+    fn decide(&self) -> Decision {
+        let mut rng = thread_rng();
+        Decision::Text(super::pick_one(&mut rng, &COIN_SIDES))
+    }
+}
+
 /// Create a CoinFlip Command
 pub fn command() -> Result<Command, String>
 {
-    Ok(Command::CoinFlip)
-}
-
-/// Perform the flip operation and return a Text Decision
-/// a value of either "Head" or "Tails" with equal probability.
-pub fn flip() -> Decision
-{
-    let mut rng = thread_rng();
-    Decision::Text(super::pick_one(&mut rng, &COIN_SIDES))
+    Ok(Command::CoinFlip(Coin{}))
 }
 
 /// Return an ApiDoc object containing a description of the CoinFlip
@@ -44,13 +47,12 @@ mod tests
     use crate::Decision;
     use crate::DecisionAssertions;
     use crate::Decider;
-    use crate::Command;
     use super::*;
 
     #[test]
     fn command_check()
     {
-        assert_that!(command()).is_ok_containing(Command::CoinFlip);
+        assert_that!(command()).is_ok_containing(Command::CoinFlip(Coin{}));
     }
 
     #[test]
@@ -65,9 +67,11 @@ mod tests
     {
         let expected = ["Heads", "Tails"];
 
+        let coin = Coin{};
+
         for _ in 1..=NUM_TRIES
         {
-            match super::flip()
+            match coin.decide()
             {
                 Decision::Text(flip) =>
                     assert_ne!(expected.iter().find(|&&x| x == flip), None),

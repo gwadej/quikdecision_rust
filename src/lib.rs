@@ -22,7 +22,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 #[derive(Debug)]
 pub enum Command
 {
-    CoinFlip,
+    CoinFlip(coin::Coin),
     DrawCard(deck::Deck),
     PickNumber(i32, i32),
     PercentTrue(u32),
@@ -86,7 +86,7 @@ impl Decider for Command
     {
         match *self
         {
-            Command::CoinFlip              => coin::flip(),
+            Command::CoinFlip(ref coin)    => coin.decide(),
             Command::DrawCard(ref deck)    => deck::draw(deck),
             Command::PickNumber(low, high) => pick::choose(low, high),
             Command::PercentTrue(likely)   => percent::choose(likely),
@@ -125,7 +125,7 @@ impl PartialEq for Command
     {
         match (self, other)
         {
-            (Command::CoinFlip,           Command::CoinFlip) => true,
+            (Command::CoinFlip(_),        Command::CoinFlip(_)) => true,
             (Command::DrawCard(dl),       Command::DrawCard(dr)) => dl == dr,
             (Command::Oracle,             Command::Oracle) => true,
             (Command::PickNumber(sl, sh), Command::PickNumber(ol, oh)) => sl == ol && sh == oh,
