@@ -28,7 +28,7 @@ pub enum Command
     PercentTrue(percent::Likely),
     RollDice(Vec<dice::Roll>),
     Selection(select::Choices),
-    Shuffle(Vec<String>),
+    Shuffle(shuffle::Choices),
     Oracle(oracle::Oracle),
 }
 
@@ -92,7 +92,7 @@ impl Decider for Command
             Command::PercentTrue(ref likely) => likely.decide(),
             Command::RollDice(ref expr)      => dice::roll(expr),
             Command::Selection(ref choices)  => choices.decide(),
-            Command::Shuffle(ref strvec)     => shuffle::order(strvec),
+            Command::Shuffle(ref choices)    => choices.decide(),
             Command::Oracle(ref oracle)      => oracle.decide(),
         }
     }
@@ -132,7 +132,7 @@ impl PartialEq for Command
             (Command::PercentTrue(sp),    Command::PercentTrue(op)) => sp == op,
             (Command::RollDice(sdice),    Command::RollDice(odice)) => sdice == odice,
             (Command::Selection(cl),      Command::Selection(cr)) => cl == cr,
-            (Command::Shuffle(sstrs),     Command::Shuffle(ostrs)) => sstrs == ostrs,
+            (Command::Shuffle(cl),        Command::Shuffle(cr)) => cl == cr,
             (_, _) => false,
         }
     }
