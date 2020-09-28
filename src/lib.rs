@@ -1,5 +1,6 @@
 extern crate rand;
 extern crate regex;
+extern crate thiserror;
 
 use rand::Rng;
 use rand::seq::SliceRandom;
@@ -33,8 +34,8 @@ pub enum Command
     Oracle(oracle::Oracle),
 }
 
-pub type Result<T> = std::result::Result<T,error::Error>;
-pub type Error = error::Error;
+pub type Result<T> = std::result::Result<T,error::QuikError>;
+pub type Error = error::QuikError;
 pub type Decision = decision::Decision;
 
 /// Structure containing the documentation for a quik decision command

@@ -1,52 +1,42 @@
-use std::fmt;
+use thiserror::Error;
 
-#[derive(Debug, Clone, Copy)]
-pub enum Error {
+#[derive(Error, Debug, Clone, Copy)]
+pub enum QuikError {
+    #[error("Unrecognized deck type")]
     UnrecognizedDeck,
+    #[error("Non-number somehow passed parsing")]
     NotANumber,
+    #[error("Missing dice expression")]
     DiceMissingExpr,
+    #[error("Failed parsing dice expression")]
     DiceBadExpr,
+    #[error("No sides specified")]
     DiceBadSides,
+    #[error("Unrecognized die type")]
     DiceBadType,
+    #[error("Unparseable term")]
     UnparseableTerm,
+    #[error("percent arg cannot be 0")]
     PercentZero,
+    #[error("percent arg cannot be 100 percent or greater")]
     PercentOverflow,
+    #[error("High parameter cannot equal low parameter")]
     EmptyRange,
+    #[error("Missing required strings")]
     ListEmpty,
+    #[error("Must supply at least two strings")]
     ListOne,
 }
 
-impl From<Error> for String {
-    fn from(error: Error) -> Self {
-        use Error::*;
-        match error
-        {
-            UnrecognizedDeck => "Unrecognized deck type".to_owned(),
-            NotANumber       => "Non-number somehow passed parsing".to_owned(),
-            DiceMissingExpr  => "Missing dice expression".to_owned(),
-            DiceBadExpr      => "Failed parsing dice expression".to_owned(),
-            DiceBadSides     => "No sides specified".to_owned(),
-            DiceBadType      => "Unrecognized die type".to_owned(),
-            UnparseableTerm  => "Unparseable term".to_owned(),
-            PercentZero      => "percent arg cannot be 0".to_owned(),
-            PercentOverflow  => "percent arg cannot be 100 percent or greater".to_owned(),
-            EmptyRange       => "High parameter cannot equal low parameter".to_owned(),
-            ListEmpty        => "Missing required strings".to_owned(),
-            ListOne          => "Must supply at least two strings".to_owned(),
-        }
+impl From<QuikError> for String {
+    fn from(error: QuikError) -> Self {
+        format!("{}", error)
     }
 }
 
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
-    {
-        write!(f, "{}", String::from(*self))
-    }
-}
-
-impl PartialEq for Error {
+impl PartialEq for QuikError {
     fn eq(&self, other: &Self) -> bool {
-        use Error::*;
+        use QuikError::*;
         match (self, other)
         {
             (UnrecognizedDeck, UnrecognizedDeck) => true,
