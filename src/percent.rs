@@ -14,7 +14,7 @@ pub fn command(likely: u32) -> crate::Result<Command>
     match likely
     {
         0 => Err(Error::PercentZero),
-        num if num >= 100 => Err(Error::PercentOverflow),
+        num if num >= 100 => Err(Error::PercentOverflow(num)),
         num => Ok(Command::PercentTrue(Likely(num)))
     }
 }
@@ -70,14 +70,14 @@ mod tests
     fn command_100_percent()
     {
         assert_that!(command(100))
-            .is_err_containing(Error::PercentOverflow);
+            .is_err_containing(Error::PercentOverflow(100));
     }
 
     #[test]
     fn command_gt_100_percent()
     {
         assert_that!(command(200))
-            .is_err_containing(Error::PercentOverflow);
+            .is_err_containing(Error::PercentOverflow(200));
     }
 
     #[test]

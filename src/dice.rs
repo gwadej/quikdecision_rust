@@ -68,7 +68,7 @@ fn uint_from_match(m: regex::Match) -> crate::Result<u32>
         ""   => Ok(1),
         nstr => nstr
             .parse::<u32>()
-            .map_err(|_| Error::NotANumber),
+            .map_err(|_| Error::NotANumber(nstr.to_owned())),
     }
 }
 
@@ -99,14 +99,14 @@ pub fn command(expr: String) -> crate::Result<Command>
     for term in expr.split("+")
     {
         let cap = re.captures(&term)
-                    .ok_or_else(|| Error::DiceBadExpr)?;
+                    .ok_or_else(|| Error::DiceBadExpr(term.to_owned()))?;
         descr.push(match (cap.name("num"), cap.name("sides"))
         {
             (Some(n), Some(s)) => match cap.name("type").unwrap().as_str()
             {
                 "x" | "X" => make_exploding_dice(n, s)?,
                 "d" | "D" => make_dice(n, s)?,
-                _ => return Err(Error::DiceBadType),
+                t => return Err(Error::DiceBadType(t.to_owned())),
             },
             (Some(_), None) => return Err(Error::DiceBadSides),
             (None, _) => match cap.name("val")

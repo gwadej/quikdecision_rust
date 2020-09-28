@@ -142,7 +142,7 @@ pub fn command(deck: &str) -> crate::Result<Command>
             "52-card"  => Deck::Standard52,
             "jokers"   => Deck::Jokers,
             "tarot"    => Deck::Tarot,
-            _          => return Err(Error::UnrecognizedDeck),
+            _          => return Err(Error::UnrecognizedDeck(deck.to_owned())),
         }
     ))
 }
