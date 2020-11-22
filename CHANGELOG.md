@@ -6,6 +6,19 @@ in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.1] - 2020-11-21
+### Changed
+- Separate dev dependencies from release dependencies
+
+## [0.14.0] - 2020-09-27
+### Added
+- Crate-specific Error and Result enums
+- Ability to return Shuffled decks
+### Changed
+- Improved error reporting/handling
+- Refactor some of the enums to contain classes instead of raw data
+- Refactoring to prepare for real changes
+
 ## [Unreleased]
 ### Added
 - Iterator interface to the quikdecision::Command enum, turning a command into an infinite iterator.

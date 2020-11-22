@@ -1,6 +1,6 @@
 [package]
 name = "quikdecision"
-version = "0.14.0"
+version = "0.14.1"
 authors = ["G. Wade Johnson <gwadej@anomaly.org>"]
 description = "Make random decisions using one of a few different methods."
 readme = "README.md"
@@ -10,9 +10,10 @@ license = "MIT"
 edition = "2018"
 
 [dependencies]
-
 rand = "0.6.1"
 regex = "1"
-spectral = "0.6.0"
 numerals = "0.1.2"
 thiserror = "1.0.20"
+
+[dev-dependencies]
+spectral = "0.6.0"

@@ -128,6 +128,7 @@ trait DecisionAssertions<'s>
     fn matches_enum_variant(&self, other: Decision) -> bool;
 }
 
+#[cfg(test)]
 impl<'s> DecisionAssertions<'s> for spectral::Spec<'s, Decision>
 {
     fn matches_enum_variant(&self, other: Decision) -> bool
