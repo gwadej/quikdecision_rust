@@ -5,7 +5,7 @@ use crate::Error;
 use rand::thread_rng;
 use rand::seq::SliceRandom;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Choices(Vec<String>);
 
 /// Create a Selection Command variant from the supplied
@@ -43,12 +43,6 @@ impl Decider for Choices {
         let mut strvec = self.0.to_owned();
         strvec.as_mut_slice().shuffle(&mut rng);
         Decision::List(strvec)
-    }
-}
-
-impl PartialEq for Choices {
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0
     }
 }
 

@@ -7,7 +7,7 @@ use regex::Regex;
 
 type RollStep = (String, u32);
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Roll
 {
     Dice(u32, u32),
@@ -15,22 +15,8 @@ pub enum Roll
     Incr(u32),
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Expr(Vec<Roll>);
-
-impl PartialEq for Roll
-{
-    fn eq(&self, other: &Roll) -> bool
-    {
-        match (self, other)
-        {
-            (Roll::Dice(sl, sh), Roll::Dice(ol, oh)) => sl == ol && sh == oh,
-            (Roll::ExplodingDice(sl, sh), Roll::ExplodingDice(ol, oh)) => sl == ol && sh == oh,
-            (Roll::Incr(val), Roll::Incr(oval)) => val == oval,
-            (_, _) => false,
-        }
-    }
-}
 
 /// Return an ApiDoc object describing the Dice decider.
 pub fn api_doc() -> ApiDoc
@@ -192,12 +178,6 @@ impl Decider for Expr {
             })
             .fold((String::new(), 0), |acc, r| accum_roll(acc, r, " + "));
         Decision::AnnotatedNum{ value: roll, extra: desc.to_string() }
-    }
-}
-
-impl PartialEq for Expr {
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0
     }
 }
 

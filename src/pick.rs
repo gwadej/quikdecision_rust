@@ -5,7 +5,7 @@ use crate::ApiDoc;
 use std::cmp::Ordering;
 use rand::Rng;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Picker {
     low: i32,
     high: i32
@@ -28,12 +28,6 @@ impl Decider for Picker {
     fn decide(&self) -> Decision
     {
         Decision::Num(rand::thread_rng().gen_range(self.low, self.high + 1))
-    }
-}
-
-impl PartialEq for Picker {
-    fn eq(&self, other: &Self) -> bool {
-        self.low == other.low && self.high == other.high
     }
 }
 

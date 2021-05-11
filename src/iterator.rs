@@ -1,6 +1,6 @@
 use crate::{Command, Decision, Decider};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct QdIter<'a>
 {
     decider: &'a Command,
@@ -31,14 +31,6 @@ impl Command
     pub fn iter(&self) -> QdIter
     {
         QdIter::new(&self)
-    }
-}
-
-impl<'a> PartialEq for QdIter<'a>
-{
-    fn eq(&self, other: &QdIter) -> bool
-    {
-        self.decider == other.decider
     }
 }
 

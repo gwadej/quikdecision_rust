@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-#[derive(Error, Debug, Clone)]
+#[derive(Error, Debug, PartialEq, Clone)]
 pub enum QuikError {
     #[error("Unrecognized deck type {0}")]
     UnrecognizedDeck(String),
@@ -31,27 +31,5 @@ pub enum QuikError {
 impl From<QuikError> for String {
     fn from(error: QuikError) -> Self {
         format!("{}", error)
-    }
-}
-
-impl PartialEq for QuikError {
-    fn eq(&self, other: &Self) -> bool {
-        use QuikError::*;
-        match (self, other)
-        {
-            (UnrecognizedDeck(l), UnrecognizedDeck(r)) => l == r,
-            (NotANumber(l), NotANumber(r))             => l == r,
-            (DiceMissingExpr, DiceMissingExpr)         => true,
-            (DiceBadExpr(l), DiceBadExpr(r))           => l == r,
-            (DiceBadSides, DiceBadSides)               => true,
-            (DiceBadType(l), DiceBadType(r))           => l == r,
-            (UnparseableTerm, UnparseableTerm)         => true,
-            (PercentZero, PercentZero)                 => true,
-            (PercentOverflow(l), PercentOverflow(r))   => l == r,
-            (EmptyRange, EmptyRange)                   => true,
-            (ListEmpty, ListEmpty)                     => true,
-            (ListOne, ListOne)                         => true,
-            (_, _)                                     => false,
-        }
     }
 }

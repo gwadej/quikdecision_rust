@@ -4,7 +4,7 @@ use crate::ApiDoc;
 
 use rand::Rng;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Likely(u32);
 
 /// Create a PercentTrue Command based on the supplied percent value.
@@ -24,12 +24,6 @@ impl Decider for Likely {
     fn decide(&self) -> Decision
     {
         Decision::Bool(rand::thread_rng().gen_bool(f64::from(self.0) / 100.0))
-    }
-}
-
-impl PartialEq for Likely {
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0
     }
 }
 

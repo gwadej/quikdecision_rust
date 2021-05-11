@@ -4,7 +4,7 @@ use crate::{Command, Decision, Decider};
 use crate::Error;
 use crate::ApiDoc;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Choices(Vec<String>);
 
 /// Create a Selection Command variant from the supplied
@@ -41,12 +41,6 @@ impl Decider for Choices {
     {
         let mut rng = thread_rng();
         Decision::Text(super::pick_one(&mut rng, &self.0))
-    }
-}
-
-impl PartialEq for Choices {
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0
     }
 }
 

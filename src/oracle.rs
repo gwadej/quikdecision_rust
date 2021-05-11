@@ -46,7 +46,7 @@ const ORACLE_LABELS: [&str; 10] = [
     "The fortune cookie says",
 ];
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Oracle;
 
 /// Return an ApiDoc object containing a description of the Oracle

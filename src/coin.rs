@@ -5,7 +5,7 @@ use crate::ApiDoc;
 
 const COIN_SIDES: [&str; 2] = ["Heads", "Tails"];
 
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Coin;
 
 impl Decider for Coin {

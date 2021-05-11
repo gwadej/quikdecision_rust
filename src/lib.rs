@@ -21,7 +21,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Enum defining the types of quik decision commands, and the parameters that
 /// determine their functioning.
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Command
 {
     CoinFlip(coin::Coin),
@@ -99,26 +99,6 @@ pub fn pick_one<R, T>(mut rng: &mut R, choices: &[T]) -> String
 
 #[cfg(test)]
 extern crate spectral;
-
-/// Add PartialEq implementation for Command for use only in tests.
-impl PartialEq for Command
-{
-    fn eq(&self, other: &Command) -> bool
-    {
-        match (self, other)
-        {
-            (Command::CoinFlip(_),     Command::CoinFlip(_)) => true,
-            (Command::DrawCard(dl),    Command::DrawCard(dr)) => dl == dr,
-            (Command::Oracle(_),       Command::Oracle(_)) => true,
-            (Command::PickNumber(rl),  Command::PickNumber(rr)) => rl == rr,
-            (Command::PercentTrue(sp), Command::PercentTrue(op)) => sp == op,
-            (Command::RollDice(el),    Command::RollDice(er)) => el == er,
-            (Command::Selection(cl),   Command::Selection(cr)) => cl == cr,
-            (Command::Shuffle(cl),     Command::Shuffle(cr)) => cl == cr,
-            (_, _) => false,
-        }
-    }
-}
 
 /// DecisionAssertions trait to support spectral tests on the Decision enum.
 trait DecisionAssertions<'s>

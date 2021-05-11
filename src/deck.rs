@@ -15,7 +15,7 @@ mod tarot;
 /// - Card::Face describes the face or court cards
 /// - Card::Joker describes the joker or fool cards
 /// - Card::Trump describes the trump cards from a tarot deck
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Card
 {
     Pip{glyph: Option<char>, suit: &'static str, number: usize},
@@ -28,26 +28,12 @@ pub enum Card
 /// - Deck::Standrd52: the standard 52-card French or poker deck, without jokers
 /// - Deck::Jokers: The same deck as above with 2 jokers
 /// - Deck::Tarot: the historical tarot deck
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Deck
 {
     Standard52,
     Jokers,
     Tarot,
-}
-
-impl PartialEq for Deck
-{
-    fn eq(&self, other: &Deck) -> bool
-    {
-        match (self, other)
-        {
-            (Deck::Standard52, Deck::Standard52) => true,
-            (Deck::Jokers,     Deck::Jokers)     => true,
-            (Deck::Tarot,      Deck::Tarot)      => true,
-            (_, _)                               => false,
-        }
-    }
 }
 
 impl Card
@@ -93,25 +79,6 @@ impl Card
     }
 }
 
-impl PartialEq for Card
-{
-    fn eq(&self, other: &Card) -> bool
-    {
-        match(self, other)
-        {
-            (&Card::Pip{glyph: lg, suit: ls, number: ln},
-             &Card::Pip{glyph: rg, suit: rs, number: rn}) => lg == rg && ls == rs && ln == rn,
-            (&Card::Face{glyph: lg, suit: ls, number: ln, face: lf},
-             &Card::Face{glyph: rg, suit: rs, number: rn, face: rf}) => lg == rg && ls == rs && ln == rn && lf == rf,
-            (&Card::Joker{glyph: lg, name: ln},
-             &Card::Joker{glyph: rg, name: rn}) => lg == rg && ln == rn,
-            (&Card::Trump{glyph: lg, name: ln, number: lv},
-             &Card::Trump{glyph: rg, name: rn, number: rv}) => lg == rg && ln == rn && lv == rv,
-             (_, _) => false,
-        }
-    }
-}
-
 impl std::string::ToString for Card
 {
     fn to_string(&self) -> String
@@ -123,7 +90,7 @@ impl std::string::ToString for Card
                 {
                     1      => format!("Ace of {}", suit),
                     2..=10 => format!("{} of {}", number, suit),
-                    _      => panic!(format!("{} is not a valid card rank", number)),
+                    _      => panic!("is not a valid card rank"),
                 }
             },
             Card::Face{suit, face, ..}    => format!("{} of {}", face, suit),
