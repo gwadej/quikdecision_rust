@@ -74,7 +74,7 @@ mod tests
     {
         let names: Vec<String> = vec!["david".into(), "mark".into(), "kirsten".into(), "connie".into()];
         assert_that!(command(names.clone()).unwrap().decide())
-            .matches_enum_variant(Decision::Text("david".into()));
+            .is_text_decision();
     }
 
     #[test]

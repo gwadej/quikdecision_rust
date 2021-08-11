@@ -1,32 +1,22 @@
-use std::fmt;
+use derive_more::{Display, IsVariant};
 use crate::deck;
 
 /// The Decision enum encapsulates values returned from the decide method.
-#[derive(Debug)]
+#[derive(Debug, IsVariant, Display)]
 pub enum Decision
 {
+    #[display(fmt = "'{}'", _0)]
     Text(String),
+    #[display(fmt = "'{}'", value)]
     LabelledText{ value: String, label: String },
+    #[display(fmt = "'{}'", _0)]
     Num(i32),
+    #[display(fmt = "{}: '{}'", value, extra)]
     AnnotatedNum{ value: u32, extra: String },
+    #[display(fmt = "{}", _0)]
     Bool(bool),
+    #[display(fmt = "'{:?}'", _0)]
     List(Vec<String>),
+    #[display(fmt = "{}", _0)]
     Card(deck::Card),
-}
-
-impl fmt::Display for Decision
-{
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
-    {
-        match self
-        {
-            Decision::Text(v) => write!(f, "'{}'", v),
-            Decision::LabelledText{value, ..} => write!(f, "'{}'", value),
-            Decision::Num(v) => write!(f, "{}", v),
-            Decision::AnnotatedNum{value, extra} => write!(f, "{}: '{}'", value, extra),
-            Decision::Bool(v) => write!(f, "{}", v),
-            Decision::List(v) => write!(f, "'{}'", v.join(", ")),
-            Decision::Card(v) => write!(f, "{}", v.to_string()),
-        }
-    }
 }

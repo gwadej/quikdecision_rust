@@ -1,3 +1,4 @@
+extern crate derive_more;
 extern crate rand;
 extern crate regex;
 extern crate thiserror;
@@ -103,26 +104,24 @@ extern crate spectral;
 /// DecisionAssertions trait to support spectral tests on the Decision enum.
 trait DecisionAssertions<'s>
 {
-    /// Returns true if the Decision being tested matches the same variant as the
-    /// supplied other.
-    fn matches_enum_variant(&self, other: Decision) -> bool;
+    /// Returns true if the Decision being tested matches the correct variant.
+    fn is_text_decision(&self) -> bool;
+    fn is_labelled_text_decision(&self) -> bool;
+    fn is_num_decision(&self) -> bool;
+    fn is_annotated_num_decision(&self) -> bool;
+    fn is_bool_decision(&self) -> bool;
+    fn is_list_decision(&self) -> bool;
+    fn is_card_decision(&self) -> bool;
 }
 
 #[cfg(test)]
 impl<'s> DecisionAssertions<'s> for spectral::Spec<'s, Decision>
 {
-    fn matches_enum_variant(&self, other: Decision) -> bool
-    {
-        match (self.subject, other)
-        {
-            (Decision::Text(_),          Decision::Text(_)) => true,
-            (Decision::LabelledText{..}, Decision::LabelledText{..}) => true,
-            (Decision::Num(_),           Decision::Num(_)) => true,
-            (Decision::AnnotatedNum{..}, Decision::AnnotatedNum{..}) => true,
-            (Decision::Bool(_),          Decision::Bool(_)) => true,
-            (Decision::List(_),          Decision::List(_)) => true,
-            (Decision::Card(_),          Decision::Card(_)) => true,
-            (_, _) => false,
-        }
-    }
+    fn is_text_decision(&self) -> bool { self.subject.is_text() }
+    fn is_labelled_text_decision(&self) -> bool { self.subject.is_labelled_text() }
+    fn is_num_decision(&self) -> bool { self.subject.is_num() }
+    fn is_annotated_num_decision(&self) -> bool { self.subject.is_num() }
+    fn is_bool_decision(&self) -> bool { self.subject.is_bool() }
+    fn is_list_decision(&self) -> bool { self.subject.is_list() }
+    fn is_card_decision(&self) -> bool { self.subject.is_card() }
 }

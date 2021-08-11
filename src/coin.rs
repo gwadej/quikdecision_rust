@@ -56,8 +56,7 @@ mod tests
     #[test]
     fn decide_check()
     {
-        assert_that!(command().unwrap().decide())
-            .matches_enum_variant(Decision::Text("Heads".into()));
+        assert_that!(command().unwrap().decide()).is_text_decision();
     }
 
     #[test]

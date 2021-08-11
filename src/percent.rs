@@ -85,7 +85,7 @@ mod tests
     fn decide_check()
     {
         assert_that!(command(45).unwrap().decide())
-            .matches_enum_variant(Decision::Bool(true));
+            .is_bool_decision();
     }
 
     #[test]

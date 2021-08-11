@@ -234,7 +234,7 @@ mod tests
     fn dice_roll_decision()
     {
         assert_that!(command("2d12 + 3x6 + 2".into()).unwrap().decide())
-            .matches_enum_variant(Decision::AnnotatedNum{value: 1, extra: "foo".into()});
+            .is_annotated_num_decision();
     }
 
     #[test]

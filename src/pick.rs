@@ -83,7 +83,7 @@ mod tests
     fn decide_check()
     {
         assert_that!(command(1, 10).unwrap().decide())
-            .matches_enum_variant(Decision::Num(5));
+            .is_num_decision();
     }
 
     #[test]

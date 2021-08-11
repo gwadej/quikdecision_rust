@@ -87,7 +87,6 @@ mod tests
 {
     use spectral::prelude::*;
 
-    use crate::Decision;
     use crate::DecisionAssertions;
     use crate::Decider;
     use crate::Command;
@@ -104,6 +103,6 @@ mod tests
     fn decision_check()
     {
         assert_that!(Command::Oracle(Oracle{}).decide())
-            .matches_enum_variant(Decision::LabelledText{value: "foo".into(), label: "bar".into()});
+            .is_labelled_text_decision();
     }
 }

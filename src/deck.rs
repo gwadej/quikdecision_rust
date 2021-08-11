@@ -7,6 +7,8 @@ use crate::Error;
 use numerals::roman::Roman;
 use rand::seq::SliceRandom;
 
+use std::fmt;
+
 mod standard;
 mod tarot;
 
@@ -79,23 +81,43 @@ impl Card
     }
 }
 
-impl std::string::ToString for Card
+// impl std::string::ToString for Card
+// {
+//     fn to_string(&self) -> String
+//     {
+//         match self
+//         {
+//             Card::Pip{number, suit, ..} => {
+//                 match number
+//                 {
+//                     1      => format!("Ace of {}", suit),
+//                     2..=10 => format!("{} of {}", number, suit),
+//                     _      => panic!("is not a valid card rank"),
+//                 }
+//             },
+//             Card::Face{suit, face, ..}    => format!("{} of {}", face, suit),
+//             Card::Joker{name, ..}         => name.to_string(),
+//             Card::Trump{name, number, ..} => format!("{:X} - {}", Roman::from(*number as i16), name),
+//         }
+//     }
+// }
+
+impl fmt::Display for Card
 {
-    fn to_string(&self) -> String
-    {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self
         {
             Card::Pip{number, suit, ..} => {
                 match number
                 {
-                    1      => format!("Ace of {}", suit),
-                    2..=10 => format!("{} of {}", number, suit),
+                    1      => write!(f, "Ace of {}", suit),
+                    2..=10 => write!(f, "{} of {}", number, suit),
                     _      => panic!("is not a valid card rank"),
                 }
             },
-            Card::Face{suit, face, ..}    => format!("{} of {}", face, suit),
-            Card::Joker{name, ..}         => name.to_string(),
-            Card::Trump{name, number, ..} => format!("{:X} - {}", Roman::from(*number as i16), name),
+            Card::Face{suit, face, ..}    => write!(f, "{} of {}", face, suit),
+            Card::Joker{name, ..}         => write!(f, "{}", name),
+            Card::Trump{name, number, ..} => write!(f, "{:X} - {}", Roman::from(*number as i16), name),
         }
     }
 }
